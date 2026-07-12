@@ -434,9 +434,140 @@ footer i {
     </div>
 
     <script>
-       // Array of search options - easily editable by developers
+    
+    // Bookmarks data
+
+    const bookmarks = [
+
+    // Entertainment 
+    { name: "🔴 YouTube", url: "https://www.youtube.com/", category: "Entertainment", tags: ["Entertainment", "Learning", "Video"] },
+    { name: "🟢 Spotify", url: "https://open.spotify.com/", category: "Entertainment", tags: ["Entertainment", "Learning", "Podcast", "Music"] },
+    { name: "🟠 Rumble", url: "https://rumble.com/", category: "Entertainment", tags: ["Entertainment", "Learning", "Podcast"] },
+    { name: "🟣 Odysey", url: "https://odysee.com/", category: "Entertainment", tags: ["Entertainment", "Learning", "Podcast"] },
+   
+    // Prudence 
+    { name: "🟥 Todoist - Upcoming", url: "https://app.todoist.com/app/upcoming", category: "Prudence", tags: ["Prudence", "Planning"] },
+    { name: "📅 Calendar", url: "https://calendar.google.com/calendar/u/0/r", category: "Prudence", tags: ["Prudence", "Planning"] },
+    { name: "🟦 Habitify", url: "https://app.habitify.me/journal/all-habits", category: "Prudence", tags: ["Prudence", "Planning"] },
+    { name: "🔎 Universal Search", url: "https://kay-who-codes.github.io/Universal-Search/", category: "Prudence", tags: ["Prudence", "Search"] },
+    { name: "🔬 MEGASearch", url: "https://kay-who-codes.github.io/MEGASearch/", category: "Prudence", tags: ["Prudence", "Search"] },
+    { name: "🔬 SubSearch", url: "https://kay-who-codes.github.io/SubSearch/", category: "Prudence", tags: ["Prudence", "Search"] },
+
+    // Communication
+    { name: "🟢 WhatsApp", url: "https://web.whatsapp.com/", category: "Communication", tags: ["Messaging", "Chat", "Mobile"] },
+    { name: "🔵 Facebook Messages", url: "https://www.facebook.com/messages/", category: "Communication", tags: ["Messaging", "Chat", "Social"] },
+    { name: "🟣 Discord", url: "https://discord.com/app", category: "Communication", tags: ["Messaging", "Gaming", "Voice Chat", "Community"] },
+    { name: "🔷 Telegram", url: "https://web.telegram.org/", category: "Communication", tags: ["Messaging", "Chat", "Secure"] },
+    { name: "🟥 Gmail", url: "https://mail.google.com/", category: "Communication", tags: ["Email", "Work", "Personal"] },
+    { name: "🟦 Outlook", url: "https://outlook.live.com/", category: "Communication", tags: ["Email", "Work", "Calendar"] },
+
+    // Cloud Storage
+    { name: "📁 Google Drive", url: "https://drive.google.com/", category: "Cloud Storage", tags: ["Free: 15GB", "Integration", "Docs", "Photos"] },
+    { name: "📎 Dropbox", url: "https://www.dropbox.com/", category: "Cloud Storage", tags: ["Free: 2GB", "Sync", "Backup", "Business"] },
+    { name: "📦 OneDrive", url: "https://onedrive.live.com/", category: "Cloud Storage", tags: ["Free: 5GB", "Microsoft", "Office", "Windows"] },
+    { name: "🍎 iCloud", url: "https://www.icloud.com/", category: "Cloud Storage", tags: ["Free: 5GB", "Apple", "Photos", "Backup"] },
+    { name: "📦 Box", url: "https://www.box.com/", category: "Cloud Storage", tags: ["Free: 10GB", "Business", "Enterprise", "Collaboration"] },
+    { name: "☁️ pCloud", url: "https://www.pcloud.com/", category: "Cloud Storage", tags: ["Free: 10GB", "Encryption", "Lifetime Plans", "Privacy"] },
+    { name: "🌐 Mega", url: "https://mega.nz/", category: "Cloud Storage", tags: ["Free: 20GB", "Encrypted", "Privacy", "NZ"] },
+    { name: "🌐 Proton Drive", url: "https://proton.me/drive", category: "Cloud Storage", tags: ["Free: 1GB", "Encrypted", "Privacy", "Swiss"] },
+    
+    // Programming 
+    { name: "🐈‍⬛ GitHub", url: "https://github.com", category: "Programming", tags: ["development", "code", "repository", "version control", "git"] },
+    { name: "🗃️ GitHub Repos", url: "https://github.com/kay-who-codes?tab=repositories", category: "Programming", tags: ["development", "code", "repository", "version control", "git"] },
+    { name: "🖊️ CodePen", url: "https://codepen.io", category: "Programming", tags: ["development", "code", "frontend", "playground"] },
+   
+    // Reading 
+    { name: "📘 Google Play Books", url: "https://play.google.com/books", category: "Reading", tags: ["Learning", "reading", "books"] },
+    { name: "📙 Substack", url: "https://substack.com/", category: "Reading", tags: ["Learning", "reading", "writing", "articles", "blogs"] },
+    { name: "🎓 Google Scholar", url: "https://scholar.google.com", category: "Reading", tags: ["Learning", "academic", "research", "papers", "journals"] },
+    { name: "✍️ Medium", url: "https://medium.com", category: "Reading", tags: ["Learning", "reading", "articles", "blogs", "writing"] },
+    { name: "📚 Internet Archive", url: "https://archive.org", category: "Reading", tags: ["Learning", "reading", "books", "digital library", "historical"] },
+    { name: "🔬 PubMed", url: "https://pubmed.ncbi.nlm.nih.gov", category: "Reading", tags: ["Learning", "medical", "research", "papers", "science"] },
+    { name: "📖 Project Gutenberg", url: "https://www.gutenberg.org", category: "Reading", tags: ["Learning", "reading", "books", "classics", "free ebooks"] },
+        
+    // Words 
+    { name: "🔠 Dictionary", url: "https://www.thefreedictionary.com/", category: "Words", tags: ["Learning", "words", "writing", "lyricism", "music"] },
+    { name: "🆎 Thesaurus", url: "https://www.thefreedictionary.com/", category: "Words", tags: ["Learning", "words", "writing", "lyricism", "music"] },
+    { name: "🎤 Rhymezone", url: "https://www.rhymezone.com/", category: "Words", tags: ["Learning", "words", "writing", "lyricism", "music"] },
+    
+    // Money 
+    { name: "💳 Nationwide", url: "https://www.nationwide.co.uk/", category: "Money", tags: ["money", "fiat"] },
+    { name: "🟢 eToro Watchlist", url: "https://www.etoro.com/watchlists", category: "Money", tags: ["Learning", "money", "investing", "fiat"] },
+    { name: "🔵 Trading 212", url: "https://www.trading212.com/", category: "Money", tags: ["Learning", "money", "investing", "fiat"] },
+    { name: "🟣 Yahoo Finance - Trending", url: "https://uk.finance.yahoo.com/markets/stocks/trending/", category: "Money", tags: ["Learning", "money", "investing", "fiat"] },
+    { name: "📈 TradingView", url: "https://www.tradingview.com", category: "Money", tags: ["Learning", "money", "investing", "charts", "technical analysis", "stocks"] },
+    { name: "🧱 Simply Wall St", url: "https://simplywall.st", category: "Money", tags: ["Learning", "money", "investing", "stocks", "analysis", "visualization"] },
+    { name: "🔍 Finviz", url: "https://finviz.com", category: "Money", tags: ["Learning", "money", "investing", "stocks", "screener", "charts"] },
+    { name: "📈 Seeking Alpha", url: "https://seekingalpha.com/sectors", category: "Money", tags: ["Learning", "money", "investing", "stocks", "analysis", "articles"] },
+
+    // Social Media
+    { name: "⚫ X", url: "https://x.com", category: "Social Media", tags: ["social", "microblogging", "news"] },
+    { name: "🟠 Reddit", url: "https://www.reddit.com", category: "Social Media", tags: ["social", "community", "forums", "discussion"] },
+    { name: "🔵 LinkedIn", url: "https://www.linkedin.com", category: "Social Media", tags: ["social", "professional", "networking", "jobs"] },
+    { name: "🟣 Discord", url: "https://discord.com", category: "Social Media", tags: ["social", "chat", "community", "voice"] },
+    
+    // Gaming 
+    { name: "📊 Steam DB", url: "https://steamdb.info/", category: "Gaming", tags: ["gaming", "learning", "statistics"] },
+    { name: "♟️ Lichess", url: "http://lichess.org/", category: "Gaming", tags: ["gaming", "strategy", "multiplayer"] },
+    { name: "🎲 Board Game Arena", url: "https://boardgamearena.com", category: "Gaming", tags: ["gaming", "Board Games", "multiplayer"] },
+    { name: "🎮 Game Library", url: "https://github.com/kay-who-codes/Game-Library", category: "Gaming", tags: ["gaming", "collection", "tracker", "web app"] },
+    
+    // AI Chat 
+    { name: "⚪ ChatGPT", url: "https://chat.openai.com", category: "AI Chat", tags: ["ai", "chatbot", "assistant", "openai"] },
+    { name: "🟠 Claude", url: "https://claude.ai", category: "AI Chat", tags: ["ai", "chatbot", "assistant", "anthropic"] },
+    { name: "🟣 DeepSeek", url: "https://chat.deepseek.com", category: "AI Chat", tags: ["ai", "chatbot", "assistant", "deepseek"] },
+    { name: "⚫ Perplexity AI", url: "https://perplexity.ai", category: "AI Chat", tags: ["ai", "chatbot", "search", "assistant"] },
+    { name: "🔘 HuggingChat", url: "https://huggingface.co/chat", category: "AI Chat", tags: ["ai", "chatbot", "open-source", "assistant"] },
+    { name: "🔴 Google Gemini", url: "https://gemini.google.com", category: "AI Chat", tags: ["ai", "chatbot", "assistant", "google"] },
+    { name: "🔵 Microsoft Copilot", url: "https://copilot.microsoft.com", category: "AI Chat", tags: ["ai", "chatbot", "assistant", "microsoft", "bing"] },
+    { name: "🟣 Lumo", url: "https://lumo.proton.me/u/0/", category: "AI Chat", tags: ["ai", "chatbot", "private", "assistant"] },
+    { name: "⚫ Grok", url: "https://grok.x.ai", category: "AI Chat", tags: ["ai", "chatbot", "xai", "assistant"] },
+    { name: "🟠 Mistral Chat", url: "https://chat.mistral.ai", category: "AI Chat", tags: ["ai", "chatbot", "open-source", "france"] },
+    { name: "🟢 Pi AI", url: "https://pi.ai", category: "AI Chat", tags: ["ai", "chatbot", "friendly", "assistant"] },
+    { name: "🟣 Poe", url: "https://poe.com", category: "AI Chat", tags: ["ai", "chatbot", "multi-model", "assistant"] },
+    
+    // Shopping 
+    { name: "🐳 Amazon", url: "https://www.amazon.co.uk/", category: "Shopping", tags: ["shopping"] },
+    { name: "🛒 eBay", url: "http://www.ebay.co.uk/", category: "Shopping", tags: ["shopping"] },
+    { name: "🏠 Facebook Marketplace", url: "http://facebook.com/marketplace", category: "Shopping", tags: ["shopping", "Secondhand"] },
+    { name: "🔥 Hot UK Deals", url: "http://hotukdeals.com/", category: "Shopping", tags: ["shopping"] },
+    { name: "👾 Loaded", url: "http://loaded.com/", category: "Shopping", tags: ["shopping", "gaming"] },
+    { name: "🏷️ Is There Any Deal", url: "https://isthereanydeal.com/deals/#filter:N4Iglgdg6ghmAuAbMBneIBc8BOBXApgL5A==", category: "Shopping", tags: ["shopping", "gaming"] },
+    { name: "👗 Vinted", url: "https://www.vinted.co.uk", category: "Shopping", tags: ["shopping", "Secondhand", "clothing", "fashion"] },
+
+    // UK Legal Resources
+    { name: "🔬 LexSearch", url: "https://kay-who-codes.github.io/LexSearch/", category: "UK Legal Resources", tags: ["legal", "statutes", "acts", "search", "primary legislation", "government"] },
+    { name: "⚖️ Legislation.gov.uk", url: "https://www.legislation.gov.uk", category: "UK Legal Resources", tags: ["legal", "statutes", "acts", "primary legislation", "government"] },
+    { name: "📜 BAILII", url: "https://www.bailii.org", category: "UK Legal Resources", tags: ["legal", "case law", "judgments", "courts", "tribunals"] },
+    { name: "⚖️ UK Supreme Court", url: "https://www.supremecourt.uk", category: "UK Legal Resources", tags: ["legal", "case law", "judgments", "courts", "appeals"] },
+    { name: "📋 Judiciary UK", url: "https://www.judiciary.uk", category: "UK Legal Resources", tags: ["legal", "courts", "judgments", "sentencing", "guidance"] },
+    { name: "🔍 LawCom.gov.uk", url: "https://lawcom.gov.uk", category: "UK Legal Resources", tags: ["legal", "law reform", "reports", "consultations", "commission"] },
+    { name: "📖 UK Parliament", url: "https://www.parliament.uk/business/publications", category: "UK Legal Resources", tags: ["legal", "bills", "statutes", "parliamentary", "debates"] },
+    
+    // Art 
+    { name: "🖌️ Canva", url: "https://www.canva.com", category: "Art", tags: ["design", "graphics", "art"] },
+
+    // Language Learning
+    { name: "🦉 Duolingo", url: "https://www.duolingo.com/", category: "Language Learning", tags: ["Free", "Spanish", "Greek", "Gamified", "Mobile"] },
+    { name: "🗣️ SpanishDict", url: "https://www.spanishdict.com/", category: "Language Learning", tags: ["Free", "Spanish", "Dictionary", "Conjugations", "Grammar"] },
+    { name: "📚 StudySpanish.com", url: "https://studyspanish.com/", category: "Language Learning", tags: ["Free/Paid", "Spanish", "Grammar", "Lessons"] },
+    { name: "📖 Notes in Spanish", url: "https://www.notesinspanish.com/", category: "Language Learning", tags: ["Free/Paid", "Spanish", "Podcast", "Real Conversations"] },
+    { name: "🎧 Coffee Break Spanish", url: "https://coffeebreaklanguages.com/coffeebreakspanish/", category: "Language Learning", tags: ["Free/Paid", "Spanish", "Podcast", "Beginner"] },
+    { name: "📺 Dreaming Spanish", url: "https://www.dreamingspanish.com/", category: "Language Learning", tags: ["Free/Paid", "Spanish", "Comprehensible Input", "Video"] },
+    { name: "🇬🇷 Learn Greek Online", url: "https://www.learngreekonline.com/", category: "Language Learning", tags: ["Free/Paid", "Greek", "Lessons", "Grammar"] },
+    { name: "🇬🇷 Kypros.org", url: "https://www.kypros.org/LearnGreek/", category: "Language Learning", tags: ["Free", "Greek", "Lessons", "Audio"] },
+    { name: "📚 CoolJugator", url: "https://cooljugator.com/", category: "Language Learning", tags: ["Free", "Spanish", "Greek", "Verb Conjugation"] },
+    { name: "📚 Anki", url: "https://apps.ankiweb.net/", category: "Language Learning", tags: ["Free", "Spanish", "Greek", "Flashcards", "SRS"] },,
+    { name: "📰 News in Slow Spanish", url: "https://www.newsinslowspanish.com/", category: "Language Learning", tags: ["Paid", "Spanish", "News", "Listening"] }
+    
+];
+    
+    // Array of search options - easily editable by developers
+
 const searchOptions = [
+
     // Search Engines
+
     {
         name: "Google",
         icon: "fab fa-google",
@@ -718,131 +849,6 @@ const searchOptions = [
         home: "https://github.com/",
         color: "#8B5CF6"
     }
-];
-
-// Bookmarks data
-const bookmarks = [
-    
-    // Entertainment 
-    { name: "🔴 YouTube", url: "https://www.youtube.com/", category: "Entertainment", tags: ["Entertainment", "Learning", "Video"] },
-    { name: "🟢 Spotify", url: "https://open.spotify.com/", category: "Entertainment", tags: ["Entertainment", "Learning", "Podcast", "Music"] },
-    { name: "🟠 Rumble", url: "https://rumble.com/", category: "Entertainment", tags: ["Entertainment", "Learning", "Podcast"] },
-    { name: "🟣 Odysey", url: "https://odysee.com/", category: "Entertainment", tags: ["Entertainment", "Learning", "Podcast"] },
-   
-    // Prudence 
-    { name: "🟥 Todoist - Upcoming", url: "https://app.todoist.com/app/upcoming", category: "Prudence", tags: ["Prudence", "Planning"] },
-    { name: "📅 Calendar", url: "https://calendar.google.com/calendar/u/0/r", category: "Prudence", tags: ["Prudence", "Planning"] },
-    { name: "🟦 Habitify", url: "https://app.habitify.me/journal/all-habits", category: "Prudence", tags: ["Prudence", "Planning"] },
-    { name: "🔎 Universal Search", url: "https://kay-who-codes.github.io/Universal-Search/", category: "Prudence", tags: ["Prudence", "Search"] },
-    { name: "🔬 MEGASearch", url: "https://kay-who-codes.github.io/MEGASearch/", category: "Prudence", tags: ["Prudence", "Search"] },
-    
-    // Communication
-    { name: "🟢 WhatsApp", url: "https://web.whatsapp.com/", category: "Communication", tags: ["Messaging", "Chat", "Mobile"] },
-    { name: "🔵 Facebook Messages", url: "https://www.facebook.com/messages/", category: "Communication", tags: ["Messaging", "Chat", "Social"] },
-    { name: "🟣 Discord", url: "https://discord.com/app", category: "Communication", tags: ["Messaging", "Gaming", "Voice Chat", "Community"] },
-    { name: "🔷 Telegram", url: "https://web.telegram.org/", category: "Communication", tags: ["Messaging", "Chat", "Secure"] },
-    { name: "🟥 Gmail", url: "https://mail.google.com/", category: "Communication", tags: ["Email", "Work", "Personal"] },
-    { name: "🟦 Outlook", url: "https://outlook.live.com/", category: "Communication", tags: ["Email", "Work", "Calendar"] },
-
-    // Cloud Storage
-    { name: "📁 Google Drive", url: "https://drive.google.com/", category: "Cloud Storage", tags: ["Free: 15GB", "Integration", "Docs", "Photos"] },
-    { name: "📎 Dropbox", url: "https://www.dropbox.com/", category: "Cloud Storage", tags: ["Free: 2GB", "Sync", "Backup", "Business"] },
-    { name: "📦 OneDrive", url: "https://onedrive.live.com/", category: "Cloud Storage", tags: ["Free: 5GB", "Microsoft", "Office", "Windows"] },
-    { name: "🍎 iCloud", url: "https://www.icloud.com/", category: "Cloud Storage", tags: ["Free: 5GB", "Apple", "Photos", "Backup"] },
-    { name: "📦 Box", url: "https://www.box.com/", category: "Cloud Storage", tags: ["Free: 10GB", "Business", "Enterprise", "Collaboration"] },
-    { name: "☁️ pCloud", url: "https://www.pcloud.com/", category: "Cloud Storage", tags: ["Free: 10GB", "Encryption", "Lifetime Plans", "Privacy"] },
-    { name: "🌐 Mega", url: "https://mega.nz/", category: "Cloud Storage", tags: ["Free: 20GB", "Encrypted", "Privacy", "NZ"] },
-    { name: "🌐 Proton Drive", url: "https://proton.me/drive", category: "Cloud Storage", tags: ["Free: 1GB", "Encrypted", "Privacy", "Swiss"] },
-    
-    // Programming 
-    { name: "🐈‍⬛ GitHub", url: "https://github.com", category: "Programming", tags: ["development", "code", "repository", "version control", "git"] },
-    { name: "🗃️ GitHub Repos", url: "https://github.com/kay-who-codes?tab=repositories", category: "Programming", tags: ["development", "code", "repository", "version control", "git"] },
-    { name: "🖊️ CodePen", url: "https://codepen.io", category: "Programming", tags: ["development", "code", "frontend", "playground"] },
-   
-    // Reading 
-    { name: "📘 Google Play Books", url: "https://play.google.com/books", category: "Reading", tags: ["Learning", "reading", "books"] },
-    { name: "📙 Substack", url: "https://substack.com/", category: "Reading", tags: ["Learning", "reading", "writing", "articles", "blogs"] },
-    { name: "🎓 Google Scholar", url: "https://scholar.google.com", category: "Reading", tags: ["Learning", "academic", "research", "papers", "journals"] },
-    { name: "✍️ Medium", url: "https://medium.com", category: "Reading", tags: ["Learning", "reading", "articles", "blogs", "writing"] },
-    { name: "📚 Internet Archive", url: "https://archive.org", category: "Reading", tags: ["Learning", "reading", "books", "digital library", "historical"] },
-    { name: "🔬 PubMed", url: "https://pubmed.ncbi.nlm.nih.gov", category: "Reading", tags: ["Learning", "medical", "research", "papers", "science"] },
-    { name: "📖 Project Gutenberg", url: "https://www.gutenberg.org", category: "Reading", tags: ["Learning", "reading", "books", "classics", "free ebooks"] },
-        
-    // Words 
-    { name: "🔠 Dictionary", url: "https://www.thefreedictionary.com/", category: "Words", tags: ["Learning", "words", "writing", "lyricism", "music"] },
-    { name: "🆎 Thesaurus", url: "https://www.thefreedictionary.com/", category: "Words", tags: ["Learning", "words", "writing", "lyricism", "music"] },
-    { name: "🎤 Rhymezone", url: "https://www.rhymezone.com/", category: "Words", tags: ["Learning", "words", "writing", "lyricism", "music"] },
-    
-    // Money 
-    { name: "💳 Nationwide", url: "https://www.nationwide.co.uk/", category: "Money", tags: ["money", "fiat"] },
-    { name: "🟢 eToro Watchlist", url: "https://www.etoro.com/watchlists", category: "Money", tags: ["Learning", "money", "investing", "fiat"] },
-    { name: "🔵 Trading 212", url: "https://www.trading212.com/", category: "Money", tags: ["Learning", "money", "investing", "fiat"] },
-    { name: "🟣 Yahoo Finance - Trending", url: "https://uk.finance.yahoo.com/markets/stocks/trending/", category: "Money", tags: ["Learning", "money", "investing", "fiat"] },
-    { name: "📈 TradingView", url: "https://www.tradingview.com", category: "Money", tags: ["Learning", "money", "investing", "charts", "technical analysis", "stocks"] },
-    { name: "🧱 Simply Wall St", url: "https://simplywall.st", category: "Money", tags: ["Learning", "money", "investing", "stocks", "analysis", "visualization"] },
-    { name: "🔍 Finviz", url: "https://finviz.com", category: "Money", tags: ["Learning", "money", "investing", "stocks", "screener", "charts"] },
-    { name: "📈 Seeking Alpha", url: "https://seekingalpha.com/sectors", category: "Money", tags: ["Learning", "money", "investing", "stocks", "analysis", "articles"] },
-
-    // Social Media
-    { name: "⚫ X", url: "https://x.com", category: "Social Media", tags: ["social", "microblogging", "news"] },
-    { name: "🟠 Reddit", url: "https://www.reddit.com", category: "Social Media", tags: ["social", "community", "forums", "discussion"] },
-    { name: "🔵 LinkedIn", url: "https://www.linkedin.com", category: "Social Media", tags: ["social", "professional", "networking", "jobs"] },
-    { name: "🟣 Discord", url: "https://discord.com", category: "Social Media", tags: ["social", "chat", "community", "voice"] },
-    
-    // Gaming 
-    { name: "📊 Steam DB", url: "https://steamdb.info/", category: "Gaming", tags: ["gaming", "learning", "statistics"] },
-    { name: "♟️ Lichess", url: "http://lichess.org/", category: "Gaming", tags: ["gaming", "strategy", "multiplayer"] },
-    { name: "🎲 Board Game Arena", url: "https://boardgamearena.com", category: "Gaming", tags: ["gaming", "Board Games", "multiplayer"] },
-    { name: "🎮 Game Library", url: "https://github.com/kay-who-codes/Game-Library", category: "Gaming", tags: ["gaming", "collection", "tracker", "web app"] },
-    
-    // AI Chat 
-    { name: "⚪ ChatGPT", url: "https://chat.openai.com", category: "AI Chat", tags: ["ai", "chatbot", "assistant", "openai"] },
-    { name: "🟠 Claude", url: "https://claude.ai", category: "AI Chat", tags: ["ai", "chatbot", "assistant", "anthropic"] },
-    { name: "🟣 DeepSeek", url: "https://chat.deepseek.com", category: "AI Chat", tags: ["ai", "chatbot", "assistant", "deepseek"] },
-    { name: "⚫ Perplexity AI", url: "https://perplexity.ai", category: "AI Chat", tags: ["ai", "chatbot", "search", "assistant"] },
-    { name: "🔘 HuggingChat", url: "https://huggingface.co/chat", category: "AI Chat", tags: ["ai", "chatbot", "open-source", "assistant"] },
-    { name: "🔴 Google Gemini", url: "https://gemini.google.com", category: "AI Chat", tags: ["ai", "chatbot", "assistant", "google"] },
-    { name: "🔵 Microsoft Copilot", url: "https://copilot.microsoft.com", category: "AI Chat", tags: ["ai", "chatbot", "assistant", "microsoft", "bing"] },
-    { name: "🟣 Lumo", url: "https://lumo.proton.me/u/0/", category: "AI Chat", tags: ["ai", "chatbot", "private", "assistant"] },
-    { name: "⚫ Grok", url: "https://grok.x.ai", category: "AI Chat", tags: ["ai", "chatbot", "xai", "assistant"] },
-    { name: "🟠 Mistral Chat", url: "https://chat.mistral.ai", category: "AI Chat", tags: ["ai", "chatbot", "open-source", "france"] },
-    { name: "🟢 Pi AI", url: "https://pi.ai", category: "AI Chat", tags: ["ai", "chatbot", "friendly", "assistant"] },
-    { name: "🟣 Poe", url: "https://poe.com", category: "AI Chat", tags: ["ai", "chatbot", "multi-model", "assistant"] },
-    
-    // Shopping 
-    { name: "🐳 Amazon", url: "https://www.amazon.co.uk/", category: "Shopping", tags: ["shopping"] },
-    { name: "🛒 eBay", url: "http://www.ebay.co.uk/", category: "Shopping", tags: ["shopping"] },
-    { name: "🏠 Facebook Marketplace", url: "http://facebook.com/marketplace", category: "Shopping", tags: ["shopping", "Secondhand"] },
-    { name: "🔥 Hot UK Deals", url: "http://hotukdeals.com/", category: "Shopping", tags: ["shopping"] },
-    { name: "👾 Loaded", url: "http://loaded.com/", category: "Shopping", tags: ["shopping", "gaming"] },
-    { name: "🏷️ Is There Any Deal", url: "https://isthereanydeal.com/deals/#filter:N4Iglgdg6ghmAuAbMBneIBc8BOBXApgL5A==", category: "Shopping", tags: ["shopping", "gaming"] },
-    { name: "👗 Vinted", url: "https://www.vinted.co.uk", category: "Shopping", tags: ["shopping", "Secondhand", "clothing", "fashion"] },
-
-    // UK Legal Resources
-    { name: "🔬 LexSearch", url: "https://kay-who-codes.github.io/LexSearch/", category: "UK Legal Resources", tags: ["legal", "statutes", "acts", "search", "primary legislation", "government"] },
-    { name: "⚖️ Legislation.gov.uk", url: "https://www.legislation.gov.uk", category: "UK Legal Resources", tags: ["legal", "statutes", "acts", "primary legislation", "government"] },
-    { name: "📜 BAILII", url: "https://www.bailii.org", category: "UK Legal Resources", tags: ["legal", "case law", "judgments", "courts", "tribunals"] },
-    { name: "⚖️ UK Supreme Court", url: "https://www.supremecourt.uk", category: "UK Legal Resources", tags: ["legal", "case law", "judgments", "courts", "appeals"] },
-    { name: "📋 Judiciary UK", url: "https://www.judiciary.uk", category: "UK Legal Resources", tags: ["legal", "courts", "judgments", "sentencing", "guidance"] },
-    { name: "🔍 LawCom.gov.uk", url: "https://lawcom.gov.uk", category: "UK Legal Resources", tags: ["legal", "law reform", "reports", "consultations", "commission"] },
-    { name: "📖 UK Parliament", url: "https://www.parliament.uk/business/publications", category: "UK Legal Resources", tags: ["legal", "bills", "statutes", "parliamentary", "debates"] },
-    
-    // Art 
-    { name: "🖌️ Canva", url: "https://www.canva.com", category: "Art", tags: ["design", "graphics", "art"] },
-
-    // Language Learning
-    { name: "🦉 Duolingo", url: "https://www.duolingo.com/", category: "Language Learning", tags: ["Free", "Spanish", "Greek", "Gamified", "Mobile"] },
-    { name: "🗣️ SpanishDict", url: "https://www.spanishdict.com/", category: "Language Learning", tags: ["Free", "Spanish", "Dictionary", "Conjugations", "Grammar"] },
-    { name: "📚 StudySpanish.com", url: "https://studyspanish.com/", category: "Language Learning", tags: ["Free/Paid", "Spanish", "Grammar", "Lessons"] },
-    { name: "📖 Notes in Spanish", url: "https://www.notesinspanish.com/", category: "Language Learning", tags: ["Free/Paid", "Spanish", "Podcast", "Real Conversations"] },
-    { name: "🎧 Coffee Break Spanish", url: "https://coffeebreaklanguages.com/coffeebreakspanish/", category: "Language Learning", tags: ["Free/Paid", "Spanish", "Podcast", "Beginner"] },
-    { name: "📺 Dreaming Spanish", url: "https://www.dreamingspanish.com/", category: "Language Learning", tags: ["Free/Paid", "Spanish", "Comprehensible Input", "Video"] },
-    { name: "🇬🇷 Learn Greek Online", url: "https://www.learngreekonline.com/", category: "Language Learning", tags: ["Free/Paid", "Greek", "Lessons", "Grammar"] },
-    { name: "🇬🇷 Kypros.org", url: "https://www.kypros.org/LearnGreek/", category: "Language Learning", tags: ["Free", "Greek", "Lessons", "Audio"] },
-    { name: "📚 CoolJugator", url: "https://cooljugator.com/", category: "Language Learning", tags: ["Free", "Spanish", "Greek", "Verb Conjugation"] },
-    { name: "📚 Anki", url: "https://apps.ankiweb.net/", category: "Language Learning", tags: ["Free", "Spanish", "Greek", "Flashcards", "SRS"] },,
-    { name: "📰 News in Slow Spanish", url: "https://www.newsinslowspanish.com/", category: "Language Learning", tags: ["Paid", "Spanish", "News", "Listening"] }
-    
 ];
 
 // Category colors

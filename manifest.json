@@ -1,0 +1,23 @@
+{
+  "name": "Universal Search",
+  "short_name": "USearch",
+  "description": "Search everything, everywhere, all at once",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#131313",
+  "theme_color": "#F8FF91",
+  "icons": [
+    {
+      "src": "https://cdn.jsdelivr.net/gh/kay-who-codes/SVG-Browser@main/SVGs/Universe-Magnifying-Glass.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "https://cdn.jsdelivr.net/gh/kay-who-codes/SVG-Browser@main/SVGs/Universe-Magnifying-Glass.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

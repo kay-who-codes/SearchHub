@@ -1,0 +1,719 @@
+<style>
+    /* ── Search page — inherits Console tokens, adds its own scoped rules ── */
+    .srch-eyebrow {
+        font-family: var(--font-mono);
+        font-size: 0.66rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--accent2);
+        margin-bottom: 6px;
+    }
+
+    .srch-title {
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: 2rem;
+        letter-spacing: -0.01em;
+        margin-bottom: 6px;
+    }
+
+    .srch-sub {
+        color: var(--text-dim);
+        font-size: 0.9rem;
+        margin-bottom: 28px;
+    }
+
+    /* ── Engine strip: reads like a dial/selector, echoing the rail's channel strip ── */
+    .srch-engines {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 20px;
+    }
+
+    .srch-eng-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 13px;
+        border-radius: 7px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text-dim);
+        font-family: var(--font-mono);
+        font-size: 0.74rem;
+        cursor: pointer;
+        transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+
+    .srch-eng-btn:hover {
+        border-color: var(--eng-c, var(--accent));
+        color: var(--text);
+    }
+
+    .srch-eng-btn.active {
+        border-color: var(--eng-c, var(--accent));
+        color: var(--text);
+        background: color-mix(in srgb, var(--eng-c, var(--accent)) 12%, var(--surface));
+    }
+
+    .srch-eng-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--eng-c, var(--accent));
+        flex-shrink: 0;
+    }
+
+    /* ── Query card ── */
+    .srch-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 22px;
+        box-shadow: var(--shadow);
+    }
+
+    .srch-row {
+        display: flex;
+        gap: 10px;
+    }
+
+    .srch-input {
+        flex: 1;
+        background: var(--bg-rail);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 12px 16px;
+        font-family: var(--font-body);
+        font-size: 0.95rem;
+        color: var(--text);
+        outline: none;
+        transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .srch-input::placeholder { color: var(--text-faint); }
+
+    .srch-input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .srch-go {
+        background: var(--accent);
+        color: #1b1710;
+        border: none;
+        border-radius: 8px;
+        padding: 0 22px;
+        font-family: var(--font-body);
+        font-weight: 600;
+        font-size: 0.88rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: background 0.15s, transform 0.08s;
+        white-space: nowrap;
+    }
+
+    .srch-go:hover { background: #dab873; }
+    .srch-go:active { transform: scale(0.97); }
+    .srch-go i { font-size: 0.82rem; }
+
+    /* ── Advanced toggle ── */
+    .srch-adv-toggle {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        background: none;
+        border: none;
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        cursor: pointer;
+        padding: 14px 0 2px;
+        transition: color 0.15s;
+    }
+
+    .srch-adv-toggle:hover { color: var(--text-dim); }
+
+    .srch-adv-toggle i { font-size: 0.62rem; transition: transform 0.22s; }
+    .srch-adv-toggle.open i { transform: rotate(180deg); }
+
+    .srch-adv-panel {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 0.28s ease;
+    }
+    .srch-adv-panel.open { grid-template-rows: 1fr; }
+    .srch-adv-inner { overflow: hidden; }
+
+    .srch-adv-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+        gap: 12px;
+        padding-top: 18px;
+        border-top: 1px solid var(--border);
+        margin-top: 18px;
+    }
+
+    .srch-field { display: flex; flex-direction: column; gap: 6px; }
+
+    .srch-field label {
+        font-family: var(--font-mono);
+        font-size: 0.64rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+    }
+
+    .srch-field input, .srch-field select {
+        background: var(--bg-rail);
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        padding: 9px 11px;
+        font-family: var(--font-body);
+        font-size: 0.82rem;
+        color: var(--text);
+        outline: none;
+        -webkit-appearance: none;
+        transition: border-color 0.15s;
+    }
+
+    .srch-field input::placeholder { color: var(--text-faint); }
+    .srch-field input:focus, .srch-field select:focus { border-color: var(--accent); }
+
+    .srch-field select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23565c6b'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 30px;
+    }
+
+    .srch-checks {
+        grid-column: 1 / -1;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding-top: 2px;
+    }
+
+    .srch-check {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.78rem;
+        color: var(--text-dim);
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .srch-check input { accent-color: var(--accent2); width: 14px; height: 14px; cursor: pointer; }
+
+    /* ── Quick chips ── */
+    .srch-block-label {
+        font-family: var(--font-mono);
+        font-size: 0.64rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+        margin: 30px 0 12px;
+    }
+
+    .srch-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .srch-chip {
+        padding: 6px 13px;
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--text-dim);
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        cursor: pointer;
+        transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+
+    .srch-chip:hover {
+        border-color: var(--accent2);
+        color: var(--text);
+        background: rgba(79, 176, 168, 0.08);
+    }
+
+    /* ── History ── */
+    .srch-hist-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 30px 0 12px;
+    }
+
+    .srch-hist-head .srch-block-label { margin: 0; }
+
+    .srch-clear {
+        background: none;
+        border: none;
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+        font-size: 0.64rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: color 0.15s;
+    }
+    .srch-clear:hover { color: #c96f5c; }
+
+    .srch-hist-list { display: flex; flex-direction: column; gap: 5px; }
+
+    .srch-hist-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 12px;
+        border-radius: 7px;
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: background 0.15s, border-color 0.15s;
+        font-size: 0.82rem;
+        color: var(--text-dim);
+    }
+
+    .srch-hist-item:hover {
+        background: var(--surface);
+        border-color: var(--border);
+        color: var(--text);
+    }
+
+    .srch-hist-item .srch-badge {
+        font-family: var(--font-mono);
+        font-size: 0.6rem;
+        padding: 2px 7px;
+        border-radius: 4px;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        color: var(--text-faint);
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .srch-hist-item .srch-q {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .srch-hist-item .srch-del {
+        opacity: 0;
+        background: none;
+        border: none;
+        color: var(--text-faint);
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: opacity 0.15s, color 0.15s;
+        flex-shrink: 0;
+    }
+    .srch-hist-item:hover .srch-del { opacity: 1; }
+    .srch-hist-item .srch-del:hover { color: #c96f5c; }
+
+    .srch-hist-empty {
+        color: var(--text-faint);
+        font-size: 0.8rem;
+        padding: 10px 2px;
+    }
+
+    /* ── Footer engine list ── */
+    .srch-footer-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-top: 34px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border);
+    }
+
+    .srch-footer-tag {
+        font-family: var(--font-mono);
+        font-size: 0.6rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+        padding: 3px 8px;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+    }
+
+    /* ── Toast ── */
+    #srch-toast {
+        position: fixed;
+        bottom: 28px;
+        left: 50%;
+        transform: translateX(-50%) translateY(16px);
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px 18px;
+        font-family: var(--font-mono);
+        font-size: 0.76rem;
+        color: var(--text-dim);
+        box-shadow: var(--shadow);
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.25s;
+        z-index: 100;
+        white-space: nowrap;
+    }
+    #srch-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 560px) {
+        .srch-row { flex-direction: column; }
+        .srch-go { justify-content: center; padding: 12px; }
+        .srch-adv-grid { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="srch-eyebrow">Channel 03</div>
+<div class="srch-title">Advanced</div>
+<div class="srch-sub">Pick an engine, refine the query, dispatch it in a new tab.</div>
+
+<div class="srch-engines" id="srchEngineBtns"></div>
+
+<div class="srch-card">
+    <div class="srch-row">
+        <input type="text" id="srchQueryInput" class="srch-input" placeholder="What are you looking for?" spellcheck="false" autocomplete="off">
+        <button type="button" class="srch-go" id="srchGoBtn">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            Search
+        </button>
+    </div>
+
+    <button type="button" class="srch-adv-toggle" id="srchAdvToggle">
+        <i class="fa-solid fa-chevron-down"></i>
+        Advanced options
+    </button>
+
+    <div class="srch-adv-panel" id="srchAdvPanel">
+        <div class="srch-adv-inner">
+            <div class="srch-adv-grid">
+
+                <div class="srch-field">
+                    <label>All these words</label>
+                    <input type="text" id="srch_all" placeholder="word1 word2">
+                </div>
+
+                <div class="srch-field">
+                    <label>Exact phrase</label>
+                    <input type="text" id="srch_exact" placeholder="exact phrase">
+                </div>
+
+                <div class="srch-field">
+                    <label>Any of these words</label>
+                    <input type="text" id="srch_any" placeholder="word1 OR word2">
+                </div>
+
+                <div class="srch-field">
+                    <label>Exclude words</label>
+                    <input type="text" id="srch_none" placeholder="-exclude -these">
+                </div>
+
+                <div class="srch-field">
+                    <label>Site / Domain</label>
+                    <input type="text" id="srch_site" placeholder="site:example.com">
+                </div>
+
+                <div class="srch-field">
+                    <label>File type</label>
+                    <select id="srch_filetype">
+                        <option value="">Any</option>
+                        <option value="filetype:pdf">PDF</option>
+                        <option value="filetype:doc">DOC</option>
+                        <option value="filetype:xls">XLS / XLSX</option>
+                        <option value="filetype:ppt">PPT</option>
+                        <option value="filetype:txt">TXT</option>
+                        <option value="filetype:csv">CSV</option>
+                        <option value="filetype:epub">ePub</option>
+                        <option value="filetype:png">PNG</option>
+                    </select>
+                </div>
+
+                <div class="srch-field">
+                    <label>Language</label>
+                    <select id="srch_lang">
+                        <option value="">Any</option>
+                        <option value="lang_en">English</option>
+                        <option value="lang_fr">French</option>
+                        <option value="lang_de">German</option>
+                        <option value="lang_es">Spanish</option>
+                        <option value="lang_pt">Portuguese</option>
+                        <option value="lang_it">Italian</option>
+                        <option value="lang_ja">Japanese</option>
+                        <option value="lang_zh-CN">Chinese (Simplified)</option>
+                    </select>
+                </div>
+
+                <div class="srch-field">
+                    <label>Time range</label>
+                    <select id="srch_time">
+                        <option value="">Any time</option>
+                        <option value="d">Past 24 hours</option>
+                        <option value="w">Past week</option>
+                        <option value="m">Past month</option>
+                        <option value="y">Past year</option>
+                    </select>
+                </div>
+
+                <div class="srch-field">
+                    <label>Safe search</label>
+                    <select id="srch_safe">
+                        <option value="">Default</option>
+                        <option value="safe:strict">Strict</option>
+                        <option value="safe:moderate">Moderate</option>
+                        <option value="safe:off">Off</option>
+                    </select>
+                </div>
+
+                <div class="srch-field">
+                    <label>Region / Country</label>
+                    <select id="srch_region">
+                        <option value="">Any</option>
+                        <option value="us">United States</option>
+                        <option value="gb">United Kingdom</option>
+                        <option value="ca">Canada</option>
+                        <option value="au">Australia</option>
+                        <option value="de">Germany</option>
+                        <option value="fr">France</option>
+                        <option value="in">India</option>
+                        <option value="jp">Japan</option>
+                    </select>
+                </div>
+
+                <div class="srch-checks">
+                    <label class="srch-check"><input type="checkbox" id="srch_inurl"> in URL</label>
+                    <label class="srch-check"><input type="checkbox" id="srch_intitle"> in Title</label>
+                    <label class="srch-check"><input type="checkbox" id="srch_intext"> in Text</label>
+                    <label class="srch-check"><input type="checkbox" id="srch_cache"> Cached</label>
+                    <label class="srch-check"><input type="checkbox" id="srch_related"> Related sites</label>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="srch-block-label">Quick searches</div>
+<div class="srch-chips" id="srchQuickChips"></div>
+
+<div class="srch-hist-head">
+    <div class="srch-block-label">Recent searches</div>
+    <button class="srch-clear" id="srchClearHistory">Clear all</button>
+</div>
+<div class="srch-hist-list" id="srchHistoryList"></div>
+
+<div class="srch-footer-tags" id="srchEnginesInfo"></div>
+
+<div id="srch-toast"></div>
+
+<script>
+(function () {
+    const ENGINES = [
+        { id: 'google',     label: 'Google',      color: '#c9a35f',
+            url: q => `https://www.google.com/search?q=${q}`,
+            time: t => t === 'd' ? '&tbs=qdr:d' : t === 'w' ? '&tbs=qdr:w' : t === 'm' ? '&tbs=qdr:m' : t === 'y' ? '&tbs=qdr:y' : '' },
+        { id: 'brave',      label: 'Brave',       color: '#4fb0a8', url: q => `https://search.brave.com/search?q=${q}` },
+        { id: 'ddg',        label: 'DuckDuckGo',  color: '#c9a35f', url: q => `https://duckduckgo.com/?q=${q}` },
+        { id: 'bing',       label: 'Bing',        color: '#4fb0a8', url: q => `https://www.bing.com/search?q=${q}` },
+        { id: 'ecosia',     label: 'Ecosia',      color: '#7fae6f', url: q => `https://www.ecosia.org/search?q=${q}` },
+        { id: 'startpage',  label: 'Startpage',   color: '#8189d8', url: q => `https://www.startpage.com/search?q=${q}` },
+        { id: 'kagi',       label: 'Kagi',        color: '#d38a5a', url: q => `https://kagi.com/search?q=${q}` },
+        { id: 'yandex',     label: 'Yandex',      color: '#c96f5c', url: q => `https://yandex.com/search/?text=${q}` },
+        { id: 'you',        label: 'You.com',     color: '#a58bd6', url: q => `https://you.com/search?q=${q}` },
+        { id: 'perplexity', label: 'Perplexity',  color: '#4fb0a8', url: q => `https://www.perplexity.ai/search?q=${q}` },
+    ];
+
+    const QUICK = [
+        'site:reddit.com', 'filetype:pdf', '"exact phrase"',
+        'weather today', 'latest news', 'how to', 'vs comparison',
+        'open source', 'free tool', 'tutorial',
+    ];
+
+    let activeEngine = localStorage.getItem('console_search_engine') || 'google';
+    let history = JSON.parse(localStorage.getItem('console_search_history') || '[]');
+    let advOpen = false;
+
+    const engWrap = document.getElementById('srchEngineBtns');
+    ENGINES.forEach(eng => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'srch-eng-btn' + (eng.id === activeEngine ? ' active' : '');
+        btn.dataset.id = eng.id;
+        btn.style.setProperty('--eng-c', eng.color);
+        btn.innerHTML = `<span class="srch-eng-dot"></span>${eng.label}`;
+        btn.addEventListener('click', () => {
+            activeEngine = eng.id;
+            localStorage.setItem('console_search_engine', activeEngine);
+            document.querySelectorAll('.srch-eng-btn').forEach(b => b.classList.toggle('active', b.dataset.id === activeEngine));
+        });
+        engWrap.appendChild(btn);
+    });
+
+    const infoWrap = document.getElementById('srchEnginesInfo');
+    ENGINES.forEach(eng => {
+        const t = document.createElement('span');
+        t.className = 'srch-footer-tag';
+        t.textContent = eng.label;
+        infoWrap.appendChild(t);
+    });
+
+    const chipsWrap = document.getElementById('srchQuickChips');
+    QUICK.forEach(q => {
+        const c = document.createElement('button');
+        c.type = 'button';
+        c.className = 'srch-chip';
+        c.textContent = q;
+        c.addEventListener('click', () => {
+            const input = document.getElementById('srchQueryInput');
+            const cur = input.value.trim();
+            input.value = cur ? `${cur} ${q}` : q;
+            input.focus();
+        });
+        chipsWrap.appendChild(c);
+    });
+
+    const advToggle = document.getElementById('srchAdvToggle');
+    const advPanel = document.getElementById('srchAdvPanel');
+    advToggle.addEventListener('click', () => {
+        advOpen = !advOpen;
+        advPanel.classList.toggle('open', advOpen);
+        advToggle.classList.toggle('open', advOpen);
+    });
+
+    function buildQuery() {
+        const parts = [];
+        const base = document.getElementById('srchQueryInput').value.trim();
+        if (base) parts.push(base);
+
+        const all = document.getElementById('srch_all').value.trim();
+        if (all) parts.push(all);
+
+        const exact = document.getElementById('srch_exact').value.trim();
+        if (exact) parts.push(`"${exact}"`);
+
+        const any = document.getElementById('srch_any').value.trim();
+        if (any) parts.push(`(${any.split(/\s+/).join(' OR ')})`);
+
+        const none = document.getElementById('srch_none').value.trim();
+        if (none) none.split(/\s+/).forEach(w => parts.push(`-${w.replace(/^-/, '')}`));
+
+        const site = document.getElementById('srch_site').value.trim();
+        if (site) parts.push(`site:${site.replace(/^site:/, '')}`);
+
+        const ft = document.getElementById('srch_filetype').value;
+        if (ft) parts.push(ft);
+
+        const safe = document.getElementById('srch_safe').value;
+        if (safe) parts.push(safe);
+
+        if (document.getElementById('srch_inurl').checked && base) parts[0] = `inurl:${base}`;
+        if (document.getElementById('srch_intitle').checked && base) parts[0] = `intitle:${base}`;
+        if (document.getElementById('srch_cache').checked && site) parts.push(`cache:${site.replace(/^site:/, '')}`);
+        if (document.getElementById('srch_related').checked && site) parts.push(`related:${site.replace(/^site:/, '')}`);
+
+        return parts.join(' ');
+    }
+
+    function doSearch() {
+        const q = buildQuery();
+        if (!q.trim()) { showToast('Enter something to search'); return; }
+
+        const eng = ENGINES.find(x => x.id === activeEngine) || ENGINES[0];
+        const encoded = encodeURIComponent(q);
+        let url = eng.url(encoded);
+
+        const time = document.getElementById('srch_time').value;
+        if (time && eng.time) url += eng.time(time);
+
+        const lang = document.getElementById('srch_lang').value;
+        if (lang && eng.id === 'google') url += `&lr=${lang}`;
+
+        const region = document.getElementById('srch_region').value;
+        if (region && eng.id === 'ddg') url += `&kl=${region}-${lang.replace('lang_', '') || 'en'}`;
+
+        const label = document.getElementById('srchQueryInput').value.trim() || q;
+        saveHistory(label, eng.id, eng.label);
+
+        window.open(url, '_blank', 'noopener');
+    }
+
+    document.getElementById('srchGoBtn').addEventListener('click', doSearch);
+    document.getElementById('srchQueryInput').addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); doSearch(); }
+    });
+
+    function saveHistory(query, engId, engLabel) {
+        history = history.filter(h => h.q !== query || h.id !== engId);
+        history.unshift({ q: query, id: engId, label: engLabel, ts: Date.now() });
+        if (history.length > 20) history = history.slice(0, 20);
+        localStorage.setItem('console_search_history', JSON.stringify(history));
+        renderHistory();
+    }
+
+    function renderHistory() {
+        const list = document.getElementById('srchHistoryList');
+        list.innerHTML = '';
+        if (!history.length) {
+            list.innerHTML = '<div class="srch-hist-empty">No recent searches yet.</div>';
+            return;
+        }
+        history.forEach((h, i) => {
+            const eng = ENGINES.find(x => x.id === h.id);
+            const color = eng ? eng.color : '#838a9b';
+            const item = document.createElement('div');
+            item.className = 'srch-hist-item';
+            item.innerHTML = `
+                <span class="srch-badge" style="color:${color}">${h.label}</span>
+                <span class="srch-q">${escHtml(h.q)}</span>
+                <button class="srch-del" data-i="${i}" title="Remove"><i class="fa-solid fa-xmark"></i></button>
+            `;
+            item.addEventListener('click', ev => {
+                if (ev.target.closest('.srch-del')) return;
+                document.getElementById('srchQueryInput').value = h.q;
+                activeEngine = h.id;
+                localStorage.setItem('console_search_engine', activeEngine);
+                document.querySelectorAll('.srch-eng-btn').forEach(b => b.classList.toggle('active', b.dataset.id === activeEngine));
+            });
+            item.querySelector('.srch-del').addEventListener('click', ev => {
+                ev.stopPropagation();
+                history.splice(i, 1);
+                localStorage.setItem('console_search_history', JSON.stringify(history));
+                renderHistory();
+            });
+            list.appendChild(item);
+        });
+    }
+
+    document.getElementById('srchClearHistory').addEventListener('click', () => {
+        history = [];
+        localStorage.setItem('console_search_history', JSON.stringify(history));
+        renderHistory();
+        showToast('History cleared');
+    });
+
+    renderHistory();
+
+    function showToast(msg) {
+        const t = document.getElementById('srch-toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    function escHtml(s) {
+        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    window.__pageFocus = window.__pageFocus || {};
+    window.__pageFocus.search = () => document.getElementById('srchQueryInput').focus();
+})();
+</script>

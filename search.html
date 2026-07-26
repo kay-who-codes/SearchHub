@@ -122,6 +122,11 @@
 
 .category-block {
     min-width: 0;
+    background-color: var(--category-color-bg);
+    border: 1px solid var(--category-color-border);
+    border-radius: 10px;
+    padding: 14px;
+    transition: background-color 0.2s ease;
 }
 
 .category-title {
@@ -129,7 +134,7 @@
     font-size: 0.68rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--text-faint);
+    color: var(--category-color);
     margin-bottom: 10px;
     padding-bottom: 6px;
     border-bottom: 1px solid var(--border);
@@ -178,6 +183,7 @@
 .search-option i {
     font-size: 1.15rem;
     transition: filter 0.15s ease;
+    color: var(--category-color);
 }
 
 .search-option:hover i {
@@ -231,90 +237,99 @@
 <script>
 (function () {
 
-    // Array of search options grouped by category - easily editable by developers
+    // Array of search options grouped by category - each category now has a 'color'
     const categories = [
         {
             name: "Search engines",
+            color: "#eab308",
             options: [
-                { name: "Google", icon: "fab fa-google", url: "https://www.google.com/search?q=", home: "https://www.google.com/", color: "#f9d347" },
-                { name: "DuckDuckGo", icon: "fas fa-search", url: "https://duckduckgo.com/?q=", home: "https://duckduckgo.com/", color: "#DE5833" },
-                { name: "Brave Search", icon: "fab fa-brave", url: "https://search.brave.com/search?q=", home: "https://search.brave.com/", color: "#FB542B" },
-                { name: "YouTube", icon: "fab fa-youtube", url: "https://www.youtube.com/results?search_query=", home: "https://www.youtube.com/", color: "#FF0000" },
-                { name: "Google Images", icon: "fab fa-google", url: "https://www.google.com/search?tbm=isch&q=", home: "https://images.google.com/", color: "#34A853" },
-                { name: "Thesaurus", icon: "fa-solid fa-book", url: "https://www.onelook.com/thesaurus/?s=", home: "https://www.onelook.com/thesaurus/", color: "#6495ED" },
-                { name: "RhymeZone", icon: "fa-solid fa-headphones", url: "https://www.rhymezone.com/r/rhyme.cgi?Word=", home: "https://www.rhymezone.com/", color: "#ecd13c" },
-                { name: "Etymology Online", icon: "fa-solid fa-language", url: "https://www.etymonline.com/search?q=", home: "https://www.etymonline.com/", color: "#8B6914" }
+                { name: "Google", icon: "fab fa-google", url: "https://www.google.com/search?q=", home: "https://www.google.com/" },
+                { name: "DuckDuckGo", icon: "fas fa-search", url: "https://duckduckgo.com/?q=", home: "https://duckduckgo.com/" },
+                { name: "Brave Search", icon: "fab fa-brave", url: "https://search.brave.com/search?q=", home: "https://search.brave.com/" },
+                { name: "YouTube", icon: "fab fa-youtube", url: "https://www.youtube.com/results?search_query=", home: "https://www.youtube.com/" },
+                { name: "Google Images", icon: "fab fa-google", url: "https://www.google.com/search?tbm=isch&q=", home: "https://images.google.com/" },
+                { name: "Thesaurus", icon: "fa-solid fa-book", url: "https://www.onelook.com/thesaurus/?s=", home: "https://www.onelook.com/thesaurus/" },
+                { name: "RhymeZone", icon: "fa-solid fa-headphones", url: "https://www.rhymezone.com/r/rhyme.cgi?Word=", home: "https://www.rhymezone.com/" },
+                { name: "Etymology Online", icon: "fa-solid fa-language", url: "https://www.etymonline.com/search?q=", home: "https://www.etymonline.com/" }
             ]
         },
         {
             name: "Gaming",
+            color: "#3b82f6",
             options: [
-                { name: "Steam DB", icon: "fa-brands fa-steam-symbol", url: "https://steamdb.info/search/?a=all&q=", home: "https://steamdb.info/", color: "#5a91d7" },
-                { name: "CD Keys", icon: "fa-solid fa-gamepad", url: "https://www.cdkeys.com/#q=", home: "https://www.cdkeys.com/", color: "#5a91d7" },
-                { name: "HowLongToBeat", icon: "fa-solid fa-clock", url: "https://howlongtobeat.com/?q=", home: "https://howlongtobeat.com/", color: "#F5A623" }
+                { name: "Steam DB", icon: "fa-brands fa-steam-symbol", url: "https://steamdb.info/search/?a=all&q=", home: "https://steamdb.info/" },
+                { name: "CD Keys", icon: "fa-solid fa-gamepad", url: "https://www.cdkeys.com/#q=", home: "https://www.cdkeys.com/" },
+                { name: "HowLongToBeat", icon: "fa-solid fa-clock", url: "https://howlongtobeat.com/?q=", home: "https://howlongtobeat.com/" }
             ]
         },
         {
             name: "Research and academia",
+            color: "#10b981",
             options: [
-                { name: "Google Scholar", icon: "fab fa-google", url: "https://scholar.google.com/scholar?q=", home: "https://scholar.google.com/", color: "#4285F4" },
-                { name: "PubMed", icon: "fa-solid fa-microscope", url: "https://pubmed.ncbi.nlm.nih.gov/?term=", home: "https://pubmed.ncbi.nlm.nih.gov/", color: "#326599" },
-                { name: "ResearchGate", icon: "fa-solid fa-flask", url: "https://www.researchgate.net/search?q=", home: "https://www.researchgate.net/", color: "#00CCBB" },
-                { name: "Semantic Scholar", icon: "fa-solid fa-atom", url: "https://www.semanticscholar.org/search?q=", home: "https://www.semanticscholar.org/", color: "#B31B1B" },
-                { name: "Internet Archive", icon: "fa-solid fa-box-archive", url: "https://archive.org/search?query=", home: "https://archive.org/", color: "#428BCA" }
+                { name: "Google Scholar", icon: "fab fa-google", url: "https://scholar.google.com/scholar?q=", home: "https://scholar.google.com/" },
+                { name: "PubMed", icon: "fa-solid fa-microscope", url: "https://pubmed.ncbi.nlm.nih.gov/?term=", home: "https://pubmed.ncbi.nlm.nih.gov/" },
+                { name: "ResearchGate", icon: "fa-solid fa-flask", url: "https://www.researchgate.net/search?q=", home: "https://www.researchgate.net/" },
+                { name: "Semantic Scholar", icon: "fa-solid fa-atom", url: "https://www.semanticscholar.org/search?q=", home: "https://www.semanticscholar.org/" },
+                { name: "Internet Archive", icon: "fa-solid fa-box-archive", url: "https://archive.org/search?query=", home: "https://archive.org/" }
             ]
         },
         {
             name: "Legal",
+            color: "#6366f1",
             options: [
-                { name: "Legislation.gov.uk", icon: "fa-solid fa-scale-balanced", url: "https://www.legislation.gov.uk/search?text=", home: "https://www.legislation.gov.uk/", color: "#003078" },
-                { name: "BAILII", icon: "fa-solid fa-gavel", url: "https://www.bailii.org/cgi-bin/lucy_search_engine.cgi?querytarget=all&querystring=", home: "https://www.bailii.org/", color: "#8B0000" },
-                { name: "Find Case Law", icon: "fa-solid fa-landmark", url: "https://caselaw.nationalarchives.gov.uk/search?query=", home: "https://caselaw.nationalarchives.gov.uk/", color: "#1d70b8" }
+                { name: "Legislation.gov.uk", icon: "fa-solid fa-scale-balanced", url: "https://www.legislation.gov.uk/search?text=", home: "https://www.legislation.gov.uk/" },
+                { name: "BAILII", icon: "fa-solid fa-gavel", url: "https://www.bailii.org/cgi-bin/lucy_search_engine.cgi?querytarget=all&querystring=", home: "https://www.bailii.org/" },
+                { name: "Find Case Law", icon: "fa-solid fa-landmark", url: "https://caselaw.nationalarchives.gov.uk/search?query=", home: "https://caselaw.nationalarchives.gov.uk/" }
             ]
         },
         {
             name: "Social media",
+            color: "#f43f5e",
             options: [
-                { name: "Twitter", icon: "fab fa-twitter", url: "https://twitter.com/search?q=", home: "https://twitter.com/", color: "#1DA1F2" },
-                { name: "Reddit", icon: "fa-brands fa-reddit-alien", url: "https://www.reddit.com/search/?q=", home: "https://www.reddit.com/", color: "#FF5700" },
-                { name: "Instagram Hashtag", icon: "fa-brands fa-instagram", url: "https://www.instagram.com/explore/tags/", home: "https://www.instagram.com/", color: "#C13584" },
-                { name: "LinkedIn", icon: "fab fa-linkedin", url: "https://www.linkedin.com/search/results/all/?keywords=", home: "https://www.linkedin.com/", color: "#0077B5" },
-                { name: "Pinterest", icon: "fab fa-pinterest", url: "https://www.pinterest.com/search/pins/?q=", home: "https://www.pinterest.com/", color: "#E60023" }
+                { name: "Twitter", icon: "fab fa-twitter", url: "https://twitter.com/search?q=", home: "https://twitter.com/" },
+                { name: "Reddit", icon: "fa-brands fa-reddit-alien", url: "https://www.reddit.com/search/?q=", home: "https://www.reddit.com/" },
+                { name: "Instagram Hashtag", icon: "fa-brands fa-instagram", url: "https://www.instagram.com/explore/tags/", home: "https://www.instagram.com/" },
+                { name: "LinkedIn", icon: "fab fa-linkedin", url: "https://www.linkedin.com/search/results/all/?keywords=", home: "https://www.linkedin.com/" },
+                { name: "Pinterest", icon: "fab fa-pinterest", url: "https://www.pinterest.com/search/pins/?q=", home: "https://www.pinterest.com/" }
             ]
         },
         {
             name: "Shopping",
+            color: "#f97316",
             options: [
-                { name: "Amazon", icon: "fab fa-amazon", url: "https://www.amazon.co.uk/s?k=", home: "https://www.amazon.co.uk/", color: "#FF9900" },
-                { name: "eBay", icon: "fab fa-ebay", url: "https://www.ebay.co.uk/sch/i.html?_nkw=", home: "https://www.ebay.co.uk/", color: "#E53238" },
-                { name: "Facebook Marketplace", icon: "fab fa-facebook", url: "https://www.facebook.com/marketplace/glasgow/search?query=", home: "https://www.facebook.com/marketplace/", color: "#1877F2" },
-                { name: "Vinted", icon: "fa-solid fa-shirt", url: "https://www.vinted.co.uk/catalog?search_text=", home: "https://www.vinted.co.uk/", color: "#217682" }
+                { name: "Amazon", icon: "fab fa-amazon", url: "https://www.amazon.co.uk/s?k=", home: "https://www.amazon.co.uk/" },
+                { name: "eBay", icon: "fab fa-ebay", url: "https://www.ebay.co.uk/sch/i.html?_nkw=", home: "https://www.ebay.co.uk/" },
+                { name: "Facebook Marketplace", icon: "fab fa-facebook", url: "https://www.facebook.com/marketplace/glasgow/search?query=", home: "https://www.facebook.com/marketplace/" },
+                { name: "Vinted", icon: "fa-solid fa-shirt", url: "https://www.vinted.co.uk/catalog?search_text=", home: "https://www.vinted.co.uk/" }
             ]
         },
         {
             name: "Entertainment",
+            color: "#8b5cf6",
             options: [
-                { name: "IMDb", icon: "fab fa-imdb", url: "https://www.imdb.com/find?q=", home: "https://www.imdb.com/", color: "#F5C518" },
-                { name: "Spotify", icon: "fab fa-spotify", url: "https://open.spotify.com/search/", home: "https://open.spotify.com/", color: "#1DB954" },
-                { name: "Soundcloud", icon: "fab fa-soundcloud", url: "https://soundcloud.com/search?q=", home: "https://soundcloud.com/", color: "#FF5500" }
+                { name: "IMDb", icon: "fab fa-imdb", url: "https://www.imdb.com/find?q=", home: "https://www.imdb.com/" },
+                { name: "Spotify", icon: "fab fa-spotify", url: "https://open.spotify.com/search/", home: "https://open.spotify.com/" },
+                { name: "Soundcloud", icon: "fab fa-soundcloud", url: "https://soundcloud.com/search?q=", home: "https://soundcloud.com/" }
             ]
         },
         {
             name: "Learning",
+            color: "#14b8a6",
             options: [
-                { name: "Google Maps", icon: "fas fa-map-marker-alt", url: "https://www.google.com/maps/search/", home: "https://www.google.com/maps/", color: "#34A853" },
-                { name: "Wikipedia", icon: "fab fa-wikipedia-w", url: "https://en.wikipedia.org/wiki/Special:Search?search=", home: "https://en.wikipedia.org/", color: "#FFFFFF" },
-                { name: "Google Arts and Culture", icon: "fas fa-paint-brush", url: "https://artsandculture.google.com/search?q=", home: "https://artsandculture.google.com/", color: "#34A853" },
-                { name: "Substack", icon: "fa-solid fa-bookmark", url: "https://substack.com/search/", home: "https://substack.com/", color: "#FF4500" },
-                { name: "Quora", icon: "fab fa-quora", url: "https://www.quora.com/search?q=", home: "https://www.quora.com/", color: "#B92B27" },
-                { name: "LessWrong", icon: "fa-solid fa-brain", url: "https://www.lesswrong.com/search?query=", home: "https://www.lesswrong.com/", color: "#ffffff" },
-                { name: "LibGen", icon: "fab fa-stack-overflow", url: "https://libgen.li/index.php?req=", home: "https://libgen.li/", color: "#1d3a87" }
+                { name: "Google Maps", icon: "fas fa-map-marker-alt", url: "https://www.google.com/maps/search/", home: "https://www.google.com/maps/" },
+                { name: "Wikipedia", icon: "fab fa-wikipedia-w", url: "https://en.wikipedia.org/wiki/Special:Search?search=", home: "https://en.wikipedia.org/" },
+                { name: "Google Arts and Culture", icon: "fas fa-paint-brush", url: "https://artsandculture.google.com/search?q=", home: "https://artsandculture.google.com/" },
+                { name: "Substack", icon: "fa-solid fa-bookmark", url: "https://substack.com/search/", home: "https://substack.com/" },
+                { name: "Quora", icon: "fab fa-quora", url: "https://www.quora.com/search?q=", home: "https://www.quora.com/" },
+                { name: "LessWrong", icon: "fa-solid fa-brain", url: "https://www.lesswrong.com/search?query=", home: "https://www.lesswrong.com/" },
+                { name: "LibGen", icon: "fab fa-stack-overflow", url: "https://libgen.li/index.php?req=", home: "https://libgen.li/" }
             ]
         },
         {
             name: "Programming",
+            color: "#a855f7",
             options: [
-                { name: "GitHub", icon: "fab fa-github", url: "https://github.com/search?q=", home: "https://github.com/", color: "#8B5CF6" }
+                { name: "GitHub", icon: "fab fa-github", url: "https://github.com/search?q=", home: "https://github.com/" }
             ]
         }
     ];
@@ -327,6 +342,17 @@
 
     let flatOptions = [];
 
+    function hexToRgba(hex, alpha) {
+        hex = hex.replace('#', '');
+        if (hex.length === 3) {
+            hex = hex.split('').map(c => c + c).join('');
+        }
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
     function renderCategories() {
         categoriesGrid.innerHTML = '';
         flatOptions = [];
@@ -335,6 +361,11 @@
             const block = document.createElement('div');
             block.className = 'category-block';
             block.dataset.category = catIndex;
+
+            const catColor = category.color || '#888888';
+            block.style.setProperty('--category-color', catColor);
+            block.style.setProperty('--category-color-bg', hexToRgba(catColor, 0.05));
+            block.style.setProperty('--category-color-border', hexToRgba(catColor, 0.18));
 
             const title = document.createElement('div');
             title.className = 'category-title';
@@ -350,9 +381,12 @@
                 optionElement.dataset.url = option.url;
                 optionElement.dataset.home = option.home || option.url;
                 optionElement.dataset.name = option.name.toLowerCase();
-                optionElement.style.setProperty('--option-color', option.color);
-                optionElement.innerHTML = `
-                    <i class="${option.icon}" style="color: ${option.color}"></i>
+
+                // Category colour drives the hover glow and icon tint
+                optionElement.style.setProperty('--option-color', catColor);
+
+                // Icon picks up category colour from CSS automatically                optionElement.innerHTML = `
+                    <i class="${option.icon}"></i>
                     <span class="name">${option.name}</span>
                 `;
                 grid.appendChild(optionElement);

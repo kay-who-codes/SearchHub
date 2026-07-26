@@ -1,0 +1,547 @@
+<style>
+    /* ── SubSearch page — inherits Console tokens (--bg, --surface, --accent, --accent2, --border, --text*, --font-*) ── */
+    .subs-eyebrow {
+        font-family: var(--font-mono);
+        font-size: 0.66rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--accent2);
+        margin-bottom: 6px;
+    }
+
+    .subs-title {
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: 2rem;
+        letter-spacing: -0.01em;
+        margin-bottom: 6px;
+    }
+
+    .subs-sub {
+        color: var(--text-dim);
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+    }
+
+    .subs-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        margin-bottom: 26px;
+    }
+
+    .subs-reveal {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.04em;
+        color: var(--text-dim);
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 6px 13px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+    .subs-reveal:hover {
+        border-color: var(--accent2);
+        color: var(--text);
+        background: var(--surface);
+    }
+    .subs-reveal i { font-size: 0.72rem; }
+
+    /* ── Engine section ── */
+    .subs-engine-section { margin-bottom: 40px; }
+
+    .subs-engine-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .subs-engine-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .subs-engine-icon svg { width: 17px; height: 17px; }
+
+    .subs-engine-meta { flex: 1; min-width: 0; }
+
+    .subs-engine-name {
+        font-family: var(--font-display);
+        font-size: 1.02rem;
+        font-weight: 600;
+    }
+
+    .subs-engine-url {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        color: var(--text-faint);
+        margin-top: 1px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .subs-engine-count {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        color: var(--text-faint);
+        flex-shrink: 0;
+    }
+
+    /* ── Cards ── */
+    .subs-cards { display: flex; flex-direction: column; gap: 9px; }
+
+    .subs-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 15px 17px;
+        display: flex;
+        flex-direction: column;
+        gap: 11px;
+        transition: border-color 0.15s, background 0.15s;
+    }
+
+    .subs-card:hover {
+        border-color: color-mix(in srgb, var(--text-faint) 60%, var(--border));
+        background: var(--surface-2);
+    }
+
+    .subs-card:focus-within { border-color: var(--accent2); }
+
+    .subs-card-top {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .subs-card-info { flex: 1; min-width: 0; }
+
+    .subs-card-title {
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: var(--text);
+        line-height: 1.4;
+    }
+
+    .subs-card-desc {
+        font-size: 0.8rem;
+        color: var(--text-dim);
+        line-height: 1.45;
+        margin-top: 2px;
+    }
+
+    .subs-card-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+    }
+
+    .subs-toggle,
+    .subs-launch {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text-faint);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.15s;
+        flex-shrink: 0;
+        text-decoration: none;
+    }
+
+    .subs-toggle:hover, .subs-launch:hover {
+        border-color: color-mix(in srgb, var(--text-faint) 60%, var(--border));
+        color: var(--text);
+    }
+
+    .subs-toggle[aria-expanded="true"] {
+        color: var(--accent2);
+        border-color: var(--accent2);
+        background: rgba(79, 176, 168, 0.1);
+    }
+
+    .subs-toggle i {
+        font-size: 0.68rem;
+        transition: transform 0.2s;
+    }
+    .subs-toggle[aria-expanded="true"] i { transform: rotate(180deg); }
+
+    .subs-launch:hover {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #1b1710;
+    }
+    .subs-launch i { font-size: 0.68rem; }
+
+    /* ── Collapsible query preview ── */
+    .subs-collapse {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 0.2s ease;
+    }
+    .subs-collapse.open { grid-template-rows: 1fr; }
+    .subs-collapse-inner { overflow: hidden; }
+
+    .subs-query {
+        background: var(--bg-rail);
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        padding: 11px 13px;
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        line-height: 1.8;
+        word-break: break-all;
+        overflow-wrap: anywhere;
+        margin-top: 2px;
+    }
+
+    /* Token colors, remapped onto the brass/teal palette */
+    .subs-tok-quoted   { color: #c96f5c; }
+    .subs-tok-site     { color: var(--accent2); font-weight: 600; }
+    .subs-tok-filetype { color: var(--accent);  font-weight: 600; }
+    .subs-tok-date     { color: #d9a441; font-weight: 600; }
+    .subs-tok-user     { color: #7a95c9; font-weight: 600; }
+    .subs-tok-metric   { color: #d9a441; font-weight: 600; }
+    .subs-tok-hashtag  { color: var(--accent2); font-weight: 600; }
+    .subs-tok-minus    { color: #c96f5c; }
+    .subs-tok-paren    { color: var(--text-faint); }
+    .subs-tok-or       { color: var(--accent); font-style: italic; }
+    .subs-tok-plain    { color: var(--text-dim); }
+
+    /* ── Footer of card ── */
+    .subs-card-footer {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .subs-tag {
+        font-family: var(--font-mono);
+        font-size: 0.6rem;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        padding: 3px 8px;
+        border-radius: 5px;
+        color: var(--text-faint);
+        background: var(--bg-rail);
+        border: 1px solid var(--border);
+    }
+
+    .subs-tag.brass { color: var(--accent);  background: var(--accent-soft); border-color: transparent; }
+    .subs-tag.teal  { color: var(--accent2); background: rgba(79,176,168,0.1); border-color: transparent; }
+
+    .subs-gap {
+        height: 1px;
+        background: var(--border);
+        margin: 0 0 40px;
+    }
+
+    /* ── Add-hint ── */
+    .subs-hint {
+        border: 1px dashed var(--border);
+        border-radius: 10px;
+        padding: 16px 18px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--text-faint);
+        font-size: 0.78rem;
+    }
+
+    .subs-hint-icon {
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
+        border: 1px dashed color-mix(in srgb, var(--text-faint) 50%, var(--border));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+        color: var(--text-faint);
+    }
+
+    .subs-hint code {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        color: var(--accent);
+        background: var(--accent-soft);
+        padding: 1px 5px;
+        border-radius: 3px;
+    }
+
+    @media (max-width: 600px) {
+        .subs-card { padding: 13px 14px; }
+        .subs-card-title { font-size: 0.86rem; }
+    }
+</style>
+
+<div class="subs-eyebrow">Channel 04</div>
+<div class="subs-title">SubSearch</div>
+<div class="subs-sub">Saved query presets, grouped by engine — one click to dispatch.</div>
+
+<div class="subs-topbar">
+    <button class="subs-reveal" id="subsRevealAll" type="button" aria-pressed="false">
+        <i class="fa-solid fa-eye"></i>
+        <span class="subs-reveal-label">Show all queries</span>
+    </button>
+</div>
+
+<div id="subsHubRoot"></div>
+
+<div class="subs-hint">
+    <div class="subs-hint-icon">+</div>
+    <span>Add more searches by editing the <code>SUBS_CONFIG</code> array in this page's script.</span>
+</div>
+
+<script>
+(function () {
+    const SUBS_CONFIG = [
+        {
+            name: "Google",
+            id: "google",
+            icon: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            </svg>`,
+            baseUrl: "https://www.google.com/search?q=",
+            searches: [
+                {
+                    title: "Google Advanced Operators Guide",
+                    desc: "Find official tips and guides for Google advanced search operators.",
+                    query: `"Google advanced operators" site:google.com (Tips OR Guide)`,
+                    tags: ["operators", "brass"]
+                },
+                {
+                    title: "Recent Cyber Attack PDFs",
+                    desc: "PDF reports on cyber attacks published after June 2026, excluding 'advanced'.",
+                    query: `"Cyber attack" after:2026-06-01 -advanced filetype:pdf`,
+                    tags: ["security", "teal"]
+                }
+            ]
+        },
+        {
+            name: "X (Twitter)",
+            id: "x",
+            icon: `<svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>`,
+            baseUrl: "https://x.com/search?q=",
+            searches: [
+                {
+                    title: "Advanced Computer Programming (HTML / Python)",
+                    desc: "Advanced programming discussions tagged with #HTML or #Python, excluding React.",
+                    query: `Advanced "Computer Programming" (HTML OR python) -react (#HTML OR #Python)`,
+                    tags: ["tech", "brass"]
+                },
+                {
+                    title: "BBC / CBS News (Engagement Filtered)",
+                    desc: "News from @bbc or @cbs with minimum engagement since Jan 2026.",
+                    query: `News (from:@bbc) (@cbs) min_replies:1 min_faves:2 min_retweets:3 since:2026-01-01`,
+                    tags: ["news", "teal"]
+                }
+            ]
+        },
+        {
+            name: "YouTube",
+            id: "youtube",
+            icon: `<svg viewBox="0 0 24 24" fill="#FF0000"><path d="M21.8 8s-.2-1.4-.8-2c-.8-.8-1.6-.8-2-.9C16.8 5 12 5 12 5s-4.8 0-7 .1c-.4.1-1.2.1-2 .9-.6.6-.8 2-.8 2S2 9.6 2 11.2v1.5c0 1.6.2 3.2.2 3.2s.2 1.4.8 2c.8.8 1.8.8 2.2.9C6.8 19 12 19 12 19s4.8 0 7-.1c.4-.1 1.2-.1 2-.9.6-.6.8-2 .8-2s.2-1.6.2-3.2v-1.5C22 9.6 21.8 8 21.8 8zM9.7 14.5V9l5.4 2.8-5.4 2.7z"/></svg>`,
+            baseUrl: "https://www.youtube.com/results?search_query=",
+            searches: [
+                {
+                    title: "Music Video (Past Day)",
+                    desc: "YouTube results for Music Video, filtered to uploads from the last 24 hours.",
+                    query: `Music Video`,
+                    extraParams: `&sp=EgIIAg%253D%253D`,
+                    tags: ["video", "brass"]
+                },
+                {
+                    title: "Beats — Free for Commercial Use",
+                    desc: "Free-to-use beats.",
+                    query: `(rap OR hiphop OR 'hip hop' OR hip-hop OR freestyle) (beat OR instrumental) ("free for commercial" OR "for profit) -"not free"`,
+                    extraParams: `&sp=EgIIBA%253D%253D`,
+                    tags: ["video", "rap", "beats", "creative"]
+                }
+            ]
+        },
+        {
+            name: "BAILII",
+            id: "bailii",
+            icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M4 8l4-4 4 4M4 8v9a2 2 0 002 2h4M20 8l-4-4-4 4M20 8v9a2 2 0 01-2 2h-4"/></svg>`,
+            baseUrl: "https://www.bailii.org/cgi-bin/lucy_search_1.cgi?query=",
+            searches: [
+                {
+                    title: "Song Copyright (UK)",
+                    desc: "BAILII case search for Song Copyright, ranked, highlighted, scoped to UK jurisdictions.",
+                    query: `Song Copyright`,
+                    extraParams: `&datelow=&datehigh=&sort=rank&highlight=1&mask_path=uk%2Fcases+scot%2Fcases+w%2Fcases+je%2Fcases+sh%2Fcases+ie%2Fcases+nie%2Fcases+qa%2Fcases+ky%2Fcases+eu%2Fcases&mask_path=uk&mask_path=ew+wales&mask_path=scot`,
+                    tags: ["legal", "teal"]
+                }
+            ]
+        },
+        {
+            name: "Substack",
+            id: "substack",
+            icon: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 6.6H2V4.4h20v2.2zM2 9.7v10.9l10-5.5 10 5.5V9.7H2zM22 3H2v-.5A2.5 2.5 0 014.5 0h15A2.5 2.5 0 0122 2.5V3z"/></svg>`,
+            baseUrl: "https://substack.com/search/",
+            searches: [
+                {
+                    title: "Consciousness Universe",
+                    desc: "Substack search across all posts for Consciousness Universe.",
+                    query: `Consciousness%20Universe`,
+                    extraParams: `?searching=all_posts`,
+                    tags: ["writing", "brass"]
+                }
+            ]
+        },
+        {
+            name: "Spotify",
+            id: "spotify",
+            icon: `<svg viewBox="0 0 24 24" fill="#1DB954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.161-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.24 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.6.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.301.421-1.021.599-1.56.3z"/></svg>`,
+            baseUrl: "https://open.spotify.com/search/",
+            searches: [
+                {
+                    title: "Drum and Bass Playlists",
+                    desc: "Spotify playlist search for Drum and Bass.",
+                    query: `Drum%20and%20Bass`,
+                    extraParams: `/playlists`,
+                    tags: ["music", "teal"]
+                }
+            ]
+        }
+    ];
+
+    function esc(s) {
+        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function tokenize(query) {
+        const tokens = [];
+        const re = /"[^"]*"|(?:site|filetype|after|before|since|from|min_replies|min_faves|min_retweets):[^\s]+|[()#@]|OR|\S+/g;
+        let match;
+        while ((match = re.exec(query)) !== null) tokens.push(match[0]);
+
+        return tokens.map(tok => {
+            if (/^".*"$/.test(tok)) return `<span class="subs-tok-quoted">${esc(tok)}</span>`;
+            if (/^site:/i.test(tok)) { const [op, val] = tok.split(/:(.+)/); return `<span class="subs-tok-site">${esc(op)}:</span><span class="subs-tok-plain">${esc(val)}</span>`; }
+            if (/^filetype:/i.test(tok)) { const [op, val] = tok.split(/:(.+)/); return `<span class="subs-tok-filetype">${esc(op)}:</span><span class="subs-tok-plain">${esc(val)}</span>`; }
+            if (/^(after|before|since):/i.test(tok)) { const [op, val] = tok.split(/:(.+)/); return `<span class="subs-tok-date">${esc(op)}:</span><span class="subs-tok-plain">${esc(val)}</span>`; }
+            if (/^from:/i.test(tok)) { const [op, val] = tok.split(/:(.+)/); return `<span class="subs-tok-user">${esc(op)}:</span><span class="subs-tok-user">${esc(val)}</span>`; }
+            if (/^(min_replies|min_faves|min_retweets):/i.test(tok)) { const [op, val] = tok.split(/:(.+)/); return `<span class="subs-tok-metric">${esc(op)}:</span><span class="subs-tok-plain">${esc(val)}</span>`; }
+            if (/^-\S/.test(tok)) return `<span class="subs-tok-minus">${esc(tok)}</span>`;
+            if (/^#\S+/.test(tok)) return `<span class="subs-tok-hashtag">${esc(tok)}</span>`;
+            if (/^@\S+/.test(tok)) return `<span class="subs-tok-user">${esc(tok)}</span>`;
+            if (tok === 'OR') return `<span class="subs-tok-or">${esc(tok)}</span>`;
+            if (tok === '(' || tok === ')') return `<span class="subs-tok-paren">${esc(tok)}</span>`;
+            return `<span class="subs-tok-plain">${esc(tok)}</span>`;
+        }).join(' ');
+    }
+
+    function buildURL(engine, search) {
+        let url = engine.baseUrl + encodeURIComponent(search.query);
+        if (search.extraParams) url += search.extraParams;
+        return url;
+    }
+
+    function renderCard(engine, search, i, cardId) {
+        const url = buildURL(engine, search);
+        const knownColors = ['brass', 'teal'];
+        const colorTag = (search.tags || []).find(t => knownColors.includes(t)) || 'brass';
+        const otherTags = (search.tags || []).filter(t => !knownColors.includes(t));
+        const tagHTML = otherTags.map(t => `<span class="subs-tag">${esc(t)}</span>`).join('');
+        const colorLabel = colorTag === 'teal' ? 'filetype/date' : 'operators';
+
+        return `
+          <div class="subs-card">
+            <div class="subs-card-top">
+              <div class="subs-card-info">
+                <div class="subs-card-title">${esc(search.title)}</div>
+                <div class="subs-card-desc">${esc(search.desc)}</div>
+              </div>
+              <div class="subs-card-actions">
+                <button class="subs-toggle" type="button" aria-expanded="false" aria-controls="${cardId}" aria-label="Toggle query preview">
+                  <i class="fa-solid fa-chevron-down"></i>
+                </button>
+                <a class="subs-launch" href="${url}" target="_blank" rel="noopener noreferrer" aria-label="Open search: ${esc(search.title)}">
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+              </div>
+            </div>
+            <div class="subs-collapse" id="${cardId}">
+              <div class="subs-collapse-inner">
+                <div class="subs-query">${tokenize(search.query)}</div>
+              </div>
+            </div>
+            <div class="subs-card-footer">
+              <span class="subs-tag ${colorTag}">${colorLabel}</span>
+              ${tagHTML}
+            </div>
+          </div>`;
+    }
+
+    function renderEngine(engine, idx) {
+        const isLast = idx === SUBS_CONFIG.length - 1;
+        const cardsHTML = engine.searches.map((s, i) => renderCard(engine, s, i, `subs-${engine.id}-q-${i}`)).join('\n');
+        return `
+          <section class="subs-engine-section">
+            <div class="subs-engine-header">
+              <div class="subs-engine-icon">${engine.icon}</div>
+              <div class="subs-engine-meta">
+                <div class="subs-engine-name">${esc(engine.name)}</div>
+                <div class="subs-engine-url">${esc(engine.baseUrl)}</div>
+              </div>
+              <span class="subs-engine-count">${engine.searches.length} search${engine.searches.length !== 1 ? 'es' : ''}</span>
+            </div>
+            <div class="subs-cards">${cardsHTML}</div>
+          </section>
+          ${!isLast ? '<div class="subs-gap"></div>' : ''}`;
+    }
+
+    document.getElementById('subsHubRoot').innerHTML =
+        SUBS_CONFIG.map((engine, idx) => renderEngine(engine, idx)).join('\n');
+
+    document.querySelectorAll('.subs-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetId = btn.getAttribute('aria-controls');
+            const collapse = document.getElementById(targetId);
+            const isOpen = btn.getAttribute('aria-expanded') === 'true';
+            btn.setAttribute('aria-expanded', String(!isOpen));
+            collapse.classList.toggle('open', !isOpen);
+        });
+    });
+
+    const revealBtn = document.getElementById('subsRevealAll');
+    let allOpen = false;
+    revealBtn.addEventListener('click', () => {
+        allOpen = !allOpen;
+        revealBtn.setAttribute('aria-pressed', String(allOpen));
+        revealBtn.querySelector('.subs-reveal-label').textContent = allOpen ? 'Hide all queries' : 'Show all queries';
+        document.querySelectorAll('.subs-toggle').forEach(btn => {
+            btn.setAttribute('aria-expanded', String(allOpen));
+            document.getElementById(btn.getAttribute('aria-controls')).classList.toggle('open', allOpen);
+        });
+    });
+})();
+</script>

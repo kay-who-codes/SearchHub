@@ -322,12 +322,9 @@
         const PAGES = [
             { id: 'bookmarks', label: 'Bookmarks', icon: 'fa-solid fa-star',      file: 'bookmarks.html' },
             { id: 'search',    label: 'Search',    icon: 'fa-solid fa-magnifying-glass', file: 'search.html' },
-          { id: 'advanced',    label: 'Advanced',    icon: 'fa-solid fa-microscope, file: 'advanced.html' },
+            { id: 'advanced',  label: 'Advanced',  icon: 'fa-solid fa-cogs', file: 'advanced.html' },
             { id: 'subsearch', label: 'SubSearch', icon: 'fa-solid fa-layer-group', file: 'subsearch.html' },
- { id: 'lexsearch', label: 'LexSearch', icon: 'fa-solid fa-scale-balanced', file: 'lexsearch.html' }
-
-            
-            // { id: 'notes', label: 'Notes', icon: 'fa-solid fa-note-sticky', file: 'notes.html' },
+            { id: 'lexsearch', label: 'LexSearch', icon: 'fa-solid fa-scale-balanced', file: 'lexsearch.html' }
         ];
 
         const navList = document.getElementById('nav-list');
@@ -375,35 +372,44 @@
         // Fetches an HTML fragment (its own <style>/markup/<script>) and
         // mounts it into the given container, executing its script.
         async function loadFragment(url, containerId) {
-            const container = document.getElementById(containerId);
-            try {
-                const res = await fetch(url);
-                if (!res.ok) throw new Error(`${res.status}`);
-                const html = await res.text();
-                const doc = new DOMParser().parseFromString(html, 'text/html');
+    const container = document.getElementById(containerId);
+    try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`${res.status}`);
+        const html = await res.text();
 
-                doc.querySelectorAll('style').forEach(style => {
-                    document.head.appendChild(style.cloneNode(true));
-                });
-
-                const scripts = Array.from(doc.querySelectorAll('script'));
-                scripts.forEach(s => s.remove());
-
-                container.innerHTML = doc.body.innerHTML;
-
-                scripts.forEach(oldScript => {
-                    const newScript = document.createElement('script');
-                    if (oldScript.src) {
-                        newScript.src = oldScript.src;
-                    } else {
-                        newScript.textContent = oldScript.textContent;
-                    }
-                    document.body.appendChild(newScript);
-                });
-            } catch (err) {
-                container.innerHTML = `<p class="panel-loading">Couldn't load this page (${err.message}). If you're opening this file directly from disk, serve it over a local web server instead.</p>`;
-            }
+        // Extract <style> blocks directly from raw text (regex, not DOMParser —
+        // DOMParser's HTML parsing gets confused by <svg> markup nested inside
+        // <script> template literals and ends script parsing early).
+        const styleRe = /<style[^>]*>([\s\S]*?)<\/style>/gi;
+        let m;
+        while ((m = styleRe.exec(html)) !== null) {
+            const styleEl = document.createElement('style');
+            styleEl.textContent = m[1];
+            document.head.appendChild(styleEl);
         }
+
+        // Extract <script> blocks the same way.
+        const scriptRe = /<script[^>]*>([\s\S]*?)<\/script>/gi;
+        const scripts = [];
+        while ((m = scriptRe.exec(html)) !== null) {
+            scripts.push(m[1]);
+        }
+
+        // Whatever's left after stripping style/script tags is the markup.
+        const markup = html.replace(styleRe, '').replace(scriptRe, '');
+        container.innerHTML = markup;
+
+        // Re-create and append each script so it actually executes.
+        scripts.forEach(code => {
+            const s = document.createElement('script');
+            s.textContent = code;
+            document.body.appendChild(s);
+        });
+    } catch (err) {
+        container.innerHTML = `<p class="panel-loading">Couldn't load this page (${err.message}). If you're opening this file directly from disk, serve it over a local web server instead.</p>`;
+    }
+}
 
         function tickClock() {
             const el = document.getElementById('clock');

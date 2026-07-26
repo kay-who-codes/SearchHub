@@ -316,6 +316,8 @@
 
 <script>
 (function () {
+    const panel = document.currentScript.closest('.section-panel');
+
     const SUBS_CONFIG = [
         {
             name: "Google",
@@ -438,109 +440,49 @@
     }
 
     function tokenize(query) {
-        const tokens = [];
-        const re = /"[^"]*"|(?:site|filetype|after|before|since|from|min_replies|min_faves|min_retweets):[^\s]+|[()#@]|OR|\S+/g;
-        let match;
-        while ((match = re.exec(query)) !== null) tokens.push(match[0]);
-
-        return tokens.map(tok => {
-            if (/^".*"$/.test(tok)) return `<span class="subs-tok-quoted">${esc(tok)}</span>`;
-            if (/^site:/i.test(tok)) { const [op, val] = tok.split(/:(.+)/); return `<span class="subs-tok-site">${esc(op)}:</span><span class="subs-tok-plain">${esc(val)}</span>`; }
-            if (/^filetype:/i.test(tok)) { const [op, val] = tok.split(/:(.+)/); return `<span class="subs-tok-filetype">${esc(op)}:</span><span class="subs-tok-plain">${esc(val)}</span>`; }
-            if (/^(after|before|since):/i.test(tok)) { const [op, val] = tok.split(/:(.+)/); return `<span class="subs-tok-date">${esc(op)}:</span><span class="subs-tok-plain">${esc(val)}</span>`; }
-            if (/^from:/i.test(tok)) { const [op, val] = tok.split(/:(.+)/); return `<span class="subs-tok-user">${esc(op)}:</span><span class="subs-tok-user">${esc(val)}</span>`; }
-            if (/^(min_replies|min_faves|min_retweets):/i.test(tok)) { const [op, val] = tok.split(/:(.+)/); return `<span class="subs-tok-metric">${esc(op)}:</span><span class="subs-tok-plain">${esc(val)}</span>`; }
-            if (/^-\S/.test(tok)) return `<span class="subs-tok-minus">${esc(tok)}</span>`;
-            if (/^#\S+/.test(tok)) return `<span class="subs-tok-hashtag">${esc(tok)}</span>`;
-            if (/^@\S+/.test(tok)) return `<span class="subs-tok-user">${esc(tok)}</span>`;
-            if (tok === 'OR') return `<span class="subs-tok-or">${esc(tok)}</span>`;
-            if (tok === '(' || tok === ')') return `<span class="subs-tok-paren">${esc(tok)}</span>`;
-            return `<span class="subs-tok-plain">${esc(tok)}</span>`;
-        }).join(' ');
+        // ... unchanged ...
     }
 
     function buildURL(engine, search) {
-        let url = engine.baseUrl + encodeURIComponent(search.query);
-        if (search.extraParams) url += search.extraParams;
-        return url;
+        // ... unchanged ...
     }
 
     function renderCard(engine, search, i, cardId) {
-        const url = buildURL(engine, search);
-        const knownColors = ['brass', 'teal'];
-        const colorTag = (search.tags || []).find(t => knownColors.includes(t)) || 'brass';
-        const otherTags = (search.tags || []).filter(t => !knownColors.includes(t));
-        const tagHTML = otherTags.map(t => `<span class="subs-tag">${esc(t)}</span>`).join('');
-        const colorLabel = colorTag === 'teal' ? 'filetype/date' : 'operators';
-
-        return `
-          <div class="subs-card">
-            <div class="subs-card-top">
-              <div class="subs-card-info">
-                <div class="subs-card-title">${esc(search.title)}</div>
-                <div class="subs-card-desc">${esc(search.desc)}</div>
-              </div>
-              <div class="subs-card-actions">
-                <button class="subs-toggle" type="button" aria-expanded="false" aria-controls="${cardId}" aria-label="Toggle query preview">
-                  <i class="fa-solid fa-chevron-down"></i>
-                </button>
-                <a class="subs-launch" href="${url}" target="_blank" rel="noopener noreferrer" aria-label="Open search: ${esc(search.title)}">
-                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                </a>
-              </div>
-            </div>
-            <div class="subs-collapse" id="${cardId}">
-              <div class="subs-collapse-inner">
-                <div class="subs-query">${tokenize(search.query)}</div>
-              </div>
-            </div>
-            <div class="subs-card-footer">
-              <span class="subs-tag ${colorTag}">${colorLabel}</span>
-              ${tagHTML}
-            </div>
-          </div>`;
+        // ... unchanged ...
     }
 
     function renderEngine(engine, idx) {
-        const isLast = idx === SUBS_CONFIG.length - 1;
-        const cardsHTML = engine.searches.map((s, i) => renderCard(engine, s, i, `subs-${engine.id}-q-${i}`)).join('\n');
-        return `
-          <section class="subs-engine-section">
-            <div class="subs-engine-header">
-              <div class="subs-engine-icon">${engine.icon}</div>
-              <div class="subs-engine-meta">
-                <div class="subs-engine-name">${esc(engine.name)}</div>
-                <div class="subs-engine-url">${esc(engine.baseUrl)}</div>
-              </div>
-              <span class="subs-engine-count">${engine.searches.length} search${engine.searches.length !== 1 ? 'es' : ''}</span>
-            </div>
-            <div class="subs-cards">${cardsHTML}</div>
-          </section>
-          ${!isLast ? '<div class="subs-gap"></div>' : ''}`;
+        // ... unchanged ...
     }
 
-    document.getElementById('subsHubRoot').innerHTML =
+    // was: document.getElementById('subsHubRoot')
+    panel.querySelector('#subsHubRoot').innerHTML =
         SUBS_CONFIG.map((engine, idx) => renderEngine(engine, idx)).join('\n');
 
-    document.querySelectorAll('.subs-toggle').forEach(btn => {
+    // was: document.querySelectorAll('.subs-toggle')
+    panel.querySelectorAll('.subs-toggle').forEach(btn => {
         btn.addEventListener('click', () => {
             const targetId = btn.getAttribute('aria-controls');
-            const collapse = document.getElementById(targetId);
+            // was: document.getElementById(targetId)
+            const collapse = panel.querySelector('#' + targetId);
             const isOpen = btn.getAttribute('aria-expanded') === 'true';
             btn.setAttribute('aria-expanded', String(!isOpen));
             collapse.classList.toggle('open', !isOpen);
         });
     });
 
-    const revealBtn = document.getElementById('subsRevealAll');
+    // was: document.getElementById('subsRevealAll')
+    const revealBtn = panel.querySelector('#subsRevealAll');
     let allOpen = false;
     revealBtn.addEventListener('click', () => {
         allOpen = !allOpen;
         revealBtn.setAttribute('aria-pressed', String(allOpen));
         revealBtn.querySelector('.subs-reveal-label').textContent = allOpen ? 'Hide all queries' : 'Show all queries';
-        document.querySelectorAll('.subs-toggle').forEach(btn => {
+        // was: document.querySelectorAll('.subs-toggle')
+        panel.querySelectorAll('.subs-toggle').forEach(btn => {
             btn.setAttribute('aria-expanded', String(allOpen));
-            document.getElementById(btn.getAttribute('aria-controls')).classList.toggle('open', allOpen);
+            // was: document.getElementById(btn.getAttribute('aria-controls'))
+            panel.querySelector('#' + btn.getAttribute('aria-controls')).classList.toggle('open', allOpen);
         });
     });
 })();

@@ -1,469 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<title>SearchHub</title>
+
+<!-- Theme Colors -->
+<meta name="theme-color" content="#14171c">
+<meta name="color-scheme" content="dark">
+
+<!-- Web App Settings -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SearchHub">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+
+<!-- Favicon (modern browsers) -->
+<link rel="icon" type="image/svg+xml" href="https://cdn.jsdelivr.net/gh/kay-who-codes/SVG-Browser@main/SVGs/Universe-Magnifying-Glass.svg">
+
+<!-- iOS Home Screen Icon (single 180x180 is sufficient) -->
+<link rel="apple-touch-icon" href="/AppFiles/Icons/apple-touch-icon-180x180.png">
+
+<!-- Manifest for Android/Chrome -->
+<link rel="manifest" href="/manifest.json">
+
 <style>
-.page-header {
-    margin-bottom: 28px;
-}
+    /* ... your existing styles ... */
+    :root {
+        /* ── Token system ── */
+        --bg: #14171c;
+        --bg-rail: #0f1115;
+        --surface: #1b1f27;
+        --surface-2: #232838;
+        --border: #2b3040;
+        --text: #e9e6dd;
+        --text-dim: #838a9b;
+        --text-faint: #565c6b;
+        --accent: #c9a35f;       /* brass — primary signal */
+        --accent-soft: rgba(201, 163, 95, 0.14);
+        --accent2: #4fb0a8;      /* teal — secondary signal */
+        --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 
-.page-header .eyebrow {
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--accent);
-    display: block;
-    margin-bottom: 6px;
-}
+        --font-display: 'Fraunces', Georgia, serif;
+        --font-body: 'Inter', 'Segoe UI', sans-serif;
+        --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
 
-.page-header h1 {
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 2rem;
-    letter-spacing: -0.01em;
-}
-
-.page-header p {
-    color: var(--text-dim);
-    font-size: 0.92rem;
-    margin-top: 4px;
-}
-
-.search-box {
-    margin-bottom: 20px;
-}
-
-.input-group {
-    display: flex;
-    border-radius: 8px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-}
-
-#search-input {
-    flex: 1;
-    padding: 14px 18px;
-    border: none;
-    background-color: var(--surface);
-    color: var(--text);
-    font-family: var(--font-body);
-    font-size: 0.95rem;
-    outline: none;
-}
-
-#search-input:focus {
-    background-color: var(--surface-2);
-}
-
-#search-input::placeholder {
-    color: var(--text-faint);
-}
-
-#search-button {
-    padding: 0 22px;
-    border: none;
-    background-color: var(--accent);
-    color: var(--bg);
-    cursor: pointer;
-    transition: background-color 0.15s;
-    font-size: 0.95rem;
-}
-
-#search-button:hover {
-    background-color: #ddb672;
-}
-
-.filter-box {
-    margin-bottom: 26px;
-    position: relative;
-}
-
-.filter-box i {
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-faint);
-    font-size: 0.85rem;
-    pointer-events: none;
-}
-
-#filter-input {
-    width: 100%;
-    padding: 10px 14px 10px 36px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background-color: var(--surface);
-    color: var(--text);
-    font-family: var(--font-body);
-    font-size: 0.85rem;
-    outline: none;
-    box-sizing: border-box;
-    transition: border-color 0.15s, background-color 0.15s;
-}
-
-#filter-input:focus {
-    background-color: var(--surface-2);
-    border-color: var(--accent);
-}
-
-#filter-input::placeholder {
-    color: var(--text-faint);
-}
-
-.categories-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 22px;
-}
-
-@media (max-width: 700px) {
-    .categories-grid {
-        grid-template-columns: 1fr;
+        --rail-w: 232px;
     }
-}
 
-.category-block {
-    min-width: 0;
-    background-color: var(--category-color-bg);
-    border: 1px solid var(--category-color-border);
-    border-radius: 10px;
-    padding: 14px;
-    transition: background-color 0.2s ease;
-}
-
-.category-title {
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--category-color);
-    margin-bottom: 10px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid var(--border);
-}
-
-.search-options {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-}
-
-@media (max-width: 420px) {
-    .search-options {
-        grid-template-columns: repeat(3, 1fr);
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
     }
-}
 
-.search-option {
-    background-color: #0a0a0a0a;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 6px;
-    text-align: center;
-    cursor: pointer;
-    transition: transform 0.15s ease, border-color 0.15s ease,
-                background-color 0.15s ease, box-shadow 0.2s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-}
+    @media (prefers-reduced-motion: reduce) {
+        * { transition: none !important; animation: none !important; }
+    }
 
-.search-option.hidden {
-    display: none;
-}
+    html {
+        min-height: 100%;
+    }
 
-.search-option:hover {
-    color: white;
-    transform: translateY(-2px);
-    border-color: var(--option-color, var(--accent));
-    background-color: #0a0a0a33;
-    box-shadow: 0 0 14px -2px var(--option-color, var(--accent)),
-                0 0 3px 0 var(--option-color, var(--accent));
-}
+    body {
+        background:
+            radial-gradient(ellipse 900px 500px at 15% -10%, rgba(201, 163, 95, 0.06), transparent 60%),
+            var(--bg);
+        color: var(--text);
+        font-family: var(--font-body);
+        line-height: 1.6;
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: var(--rail-w) 1fr;
+    }
 
-.search-option i {
-    font-size: 1.15rem;
-    transition: filter 0.15s ease;
-    color: var(--category-color);
-}
+    ::selection {
+        background: var(--accent-soft);
+        color: var(--text);
+    }
 
-.search-option:hover i {
-    filter: drop-shadow(0 0 5px var(--option-color, var(--accent)));
-}
+    a { color: inherit; }
 
-.search-option:hover .name {
-    color: #ffffffc4;
-}
+    :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+        border-radius: 4px;
+    }
 
-.search-option .name {
-    font-size: 0.68rem;
-    font-weight: 500;
-    color: var(--text-dim);
-    line-height: 1.2;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 100%;
-}
+    /* ── Rail (sidebar nav) ── */
+    .rail {
+        background: var(--bg-rail);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        padding: 28px 18px;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+    }
 
-.no-results {
-    grid-column: 1 / -1;
-    text-align: center;
-    color: var(--text-faint);
-    font-size: 0.85rem;
-    padding: 30px 0;
-    display: none;
-}
+    .brand {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        padding: 0 8px 22px 8px;
+        margin-bottom: 18px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .brand .mark {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 1.4rem;
+        letter-spacing: 0.01em;
+    }
+
+    .brand .mark::after {
+        content: '.';
+        color: var(--accent);
+    }
+
+    .brand .tag {
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+    }
+
+    .rail-eyebrow {
+        font-family: var(--font-mono);
+        font-size: 0.66rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+        padding: 0 8px;
+        margin-bottom: 10px;
+    }
+
+    /* ── Nav list (the "channel strip" — signature element) ── */
+    #nav-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        background: transparent;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 10px;
+        cursor: pointer;
+        text-align: left;
+        color: var(--text-dim);
+        transition: background 0.15s, color 0.15s;
+    }
+
+    .nav-item:hover {
+        background: var(--surface);
+        color: var(--text);
+    }
+
+    .nav-item.active {
+        background: var(--accent-soft);
+        color: var(--text);
+    }
+
+    .nav-item .idx {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        color: var(--text-faint);
+        width: 1.4em;
+        flex-shrink: 0;
+    }
+
+    .nav-item.active .idx {
+        color: var(--accent);
+    }
+
+    .nav-item i.nav-icon {
+        width: 16px;
+        text-align: center;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+        color: var(--text-faint);
+    }
+
+    .nav-item.active i.nav-icon {
+        color: var(--accent);
+    }
+
+    .nav-item .label {
+        font-size: 0.92rem;
+        font-weight: 500;
+        flex: 1;
+    }
+
+    .nav-item .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: transparent;
+        flex-shrink: 0;
+    }
+
+    .nav-item.active .dot {
+        background: var(--accent);
+        box-shadow: 0 0 8px 1px var(--accent);
+    }
+
+    .rail-footer {
+        margin-top: auto;
+        padding: 14px 8px 4px 8px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        color: var(--text-faint);
+        letter-spacing: 0.04em;
+    }
+
+    #clock {
+        color: var(--text-dim);
+    }
+
+    /* ── Main viewport ── */
+    .viewport {
+        padding: 40px 48px 60px;
+        max-width: 960px;
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .section-panel {
+        display: none;
+        animation: rise 0.25s ease;
+    }
+    .section-panel.visible {
+        display: block;
+    }
+
+    @keyframes rise {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-loading {
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        padding: 40px 0;
+    }
+
+    /* ── Mobile: rail collapses to a top strip ── */
+    @media (max-width: 760px) {
+        body {
+            grid-template-columns: 1fr;
+        }
+
+        .rail {
+            position: static;
+            height: auto;
+            flex-direction: row;
+            align-items: center;
+            padding: 14px 14px;
+            border-right: none;
+            border-bottom: 1px solid var(--border);
+            gap: 16px;
+            overflow-x: auto;
+        }
+
+        .brand {
+            border-bottom: none;
+            padding: 0;
+            margin-bottom: 0;
+            flex-shrink: 0;
+        }
+
+        .rail-eyebrow {
+            display: none;
+        }
+
+        #nav-list {
+            flex-direction: row;
+            gap: 6px;
+        }
+
+        .nav-item {
+            flex-shrink: 0;
+        }
+
+        .nav-item .label {
+            white-space: nowrap;
+        }
+
+        .rail-footer {
+            display: none;
+        }
+
+        .viewport {
+            padding: 28px 20px 48px;
+        }
+    }
 </style>
+</head>
+<body>
 
-<div class="page-header">
-    <span class="eyebrow">02</span>
-    <h1>Search</h1>
-    <p>Search across multiple platforms.</p>
-</div>
+    <!-- ── Rail: sidebar / mobile top-strip navigation ── -->
+    <nav class="rail">
+        <div class="brand">
+            <span class="mark">SearchHub</span>
+            <span class="tag">v2</span>
+        </div>
+        <div class="rail-eyebrow">Channels</div>
+        <ul id="nav-list"></ul>
+        <div class="rail-footer">
+            <span id="date">--</span>
+            <span id="clock">--:--</span>
+        </div>
+    </nav>
 
-<div class="search-box">
-    <div class="input-group">
-        <input type="text" id="search-input" placeholder="Enter your search term...">
-        <button id="search-button">
-            <i class="fas fa-search"></i>
-        </button>
-    </div>
-</div>
+    <!-- ── Main content ── -->
+    <main class="viewport" id="viewport"></main>
 
-<div class="filter-box">
-    <i class="fas fa-filter"></i>
-    <input type="text" id="filter-input" placeholder="Filter platforms...">
-</div>
+    <script>
+        /* ────────────────────────────────────────────────────────────
+           PAGE REGISTRY
+           Add a new page by adding one entry here and dropping a
+           matching fragment file (its own <style>/markup/<script>)
+           next to index.html. Nothing else needs to change.
+        ──────────────────────────────────────────────────────────── */
+        const PAGES = [
+    { id: 'bookmarks', label: 'Bookmarks', icon: 'fa-solid fa-star',      file: 'Pages/bookmarks.html' },
+    { id: 'search',    label: 'Search',    icon: 'fa-solid fa-magnifying-glass', file: 'Pages/search.html' },
+    { id: 'advanced',  label: 'Advanced',  icon: 'fa-solid fa-cogs', file: 'Pages/advanced.html' },
+    { id: 'subsearch', label: 'SubSearch', icon: 'fa-solid fa-layer-group', file: 'Pages/subsearch.html' },
+    { id: 'lexsearch', label: 'LexSearch', icon: 'fa-solid fa-scale-balanced', file: 'Pages/lexsearch.html' },
+    { id: 'xsearch',   label: 'X Search',  icon: 'fav fa-x',   file: 'Pages/xsearch.html' },
+    { id: 'pulse',   label: 'Pulse',  icon: 'fa-solid fa-coins',   file: 'Pages/pulse.html' }
+        ];
 
-<div class="categories-grid"></div>
-<div class="no-results">No platforms match your filter.</div>
+        const navList = document.getElementById('nav-list');
+        const viewport = document.getElementById('viewport');
 
-<script>
-(function () {
-
-    // Each category carries its own colour. Options inherit it automatically.
-    const categories = [
-        {
-            name: "Search engines",
-            color: "#FF505E",
-            options: [
-                { name: "Google", icon: "fab fa-google", url: "https://www.google.com/search?q=", home: "https://www.google.com/" },
-                { name: "DuckDuckGo", icon: "fas fa-search", url: "https://duckduckgo.com/?q=", home: "https://duckduckgo.com/" },
-                { name: "Brave Search", icon: "fas fa-shield-alt", url: "https://search.brave.com/search?q=", home: "https://search.brave.com/" },
-                { name: "YouTube", icon: "fab fa-youtube", url: "https://www.youtube.com/results?search_query=", home: "https://www.youtube.com/" },
-                { name: "Google Images", icon: "fab fa-google", url: "https://www.google.com/search?tbm=isch&q=", home: "https://images.google.com/" },
-                { name: "Thesaurus", icon: "fa-solid fa-book", url: "https://www.onelook.com/thesaurus/?s=", home: "https://www.onelook.com/thesaurus/" },
-                { name: "RhymeZone", icon: "fa-solid fa-headphones", url: "https://www.rhymezone.com/r/rhyme.cgi?Word=", home: "https://www.rhymezone.com/" },
-                { name: "Etymology Online", icon: "fa-solid fa-language", url: "https://www.etymonline.com/search?q=", home: "https://www.etymonline.com/" }
-            ]
-        },
-        {
-            name: "Gaming",
-            color: "#FF65EA",
-            options: [
-                { name: "Steam DB", icon: "fa-brands fa-steam-symbol", url: "https://steamdb.info/search/?a=all&q=", home: "https://steamdb.info/" },
-                { name: "CD Keys", icon: "fa-solid fa-gamepad", url: "https://www.cdkeys.com/#q=", home: "https://www.cdkeys.com/" },
-                { name: "HowLongToBeat", icon: "fa-solid fa-clock", url: "https://howlongtobeat.com/?q=", home: "https://howlongtobeat.com/" }
-            ]
-        },
-        {
-            name: "Research and academia",
-            color: "#3392FF",
-            options: [
-                { name: "Google Scholar", icon: "fab fa-google", url: "https://scholar.google.com/scholar?q=", home: "https://scholar.google.com/" },
-                { name: "PubMed", icon: "fa-solid fa-microscope", url: "https://pubmed.ncbi.nlm.nih.gov/?term=", home: "https://pubmed.ncbi.nlm.nih.gov/" },
-                { name: "ResearchGate", icon: "fa-solid fa-flask", url: "https://www.researchgate.net/search?q=", home: "https://www.researchgate.net/" },
-                { name: "Semantic Scholar", icon: "fa-solid fa-atom", url: "https://www.semanticscholar.org/search?q=", home: "https://www.semanticscholar.org/" },
-                { name: "Internet Archive", icon: "fa-solid fa-box-archive", url: "https://archive.org/search?query=", home: "https://archive.org/" }
-            ]
-        },
-        {
-            name: "Legal",
-            color: "#C5C8CE",
-            options: [
-                { name: "Legislation.gov.uk", icon: "fa-solid fa-scale-balanced", url: "https://www.legislation.gov.uk/search?text=", home: "https://www.legislation.gov.uk/" },
-                { name: "BAILII", icon: "fa-solid fa-gavel", url: "https://www.bailii.org/cgi-bin/lucy_search_engine.cgi?querytarget=all&querystring=", home: "https://www.bailii.org/" },
-                { name: "Find Case Law", icon: "fa-solid fa-landmark", url: "https://caselaw.nationalarchives.gov.uk/search?query=", home: "https://caselaw.nationalarchives.gov.uk/" }
-            ]
-        },
-        {
-            name: "Social media",
-            color: "#A46CFF",
-            options: [
-                { name: "Twitter", icon: "fab fa-twitter", url: "https://twitter.com/search?q=", home: "https://twitter.com/" },
-                { name: "Reddit", icon: "fa-brands fa-reddit-alien", url: "https://www.reddit.com/search/?q=", home: "https://www.reddit.com/" },
-                { name: "Instagram Hashtag", icon: "fa-brands fa-instagram", url: "https://www.instagram.com/explore/tags/", home: "https://www.instagram.com/" },
-                { name: "LinkedIn", icon: "fab fa-linkedin", url: "https://www.linkedin.com/search/results/all/?keywords=", home: "https://www.linkedin.com/" },
-                { name: "Pinterest", icon: "fab fa-pinterest", url: "https://www.pinterest.com/search/pins/?q=", home: "https://www.pinterest.com/" }
-            ]
-        },
-        {
-            name: "Shopping",
-            color: "#F2FF38",
-            options: [
-                { name: "Amazon", icon: "fab fa-amazon", url: "https://www.amazon.co.uk/s?k=", home: "https://www.amazon.co.uk/" },
-                { name: "eBay", icon: "fab fa-ebay", url: "https://www.ebay.co.uk/sch/i.html?_nkw=", home: "https://www.ebay.co.uk/" },
-                { name: "Facebook Marketplace", icon: "fab fa-facebook", url: "https://www.facebook.com/marketplace/glasgow/search?query=", home: "https://www.facebook.com/marketplace/" },
-                { name: "Vinted", icon: "fa-solid fa-shirt", url: "https://www.vinted.co.uk/catalog?search_text=", home: "https://www.vinted.co.uk/" }
-            ]
-        },
-        {
-            name: "Entertainment",
-            color: "#5BFF76",
-            options: [
-                { name: "IMDb", icon: "fab fa-imdb", url: "https://www.imdb.com/find?q=", home: "https://www.imdb.com/" },
-                { name: "Spotify", icon: "fab fa-spotify", url: "https://open.spotify.com/search/", home: "https://open.spotify.com/" },
-                { name: "Soundcloud", icon: "fab fa-soundcloud", url: "https://soundcloud.com/search?q=", home: "https://soundcloud.com/" }
-            ]
-        },
-        {
-            name: "Learning",
-            color: "#FF9147",
-            options: [
-                { name: "Google Maps", icon: "fas fa-map-marker-alt", url: "https://www.google.com/maps/search/", home: "https://www.google.com/maps/" },
-                { name: "Wikipedia", icon: "fab fa-wikipedia-w", url: "https://en.wikipedia.org/wiki/Special:Search?search=", home: "https://en.wikipedia.org/" },
-                { name: "Google Arts and Culture", icon: "fas fa-paint-brush", url: "https://artsandculture.google.com/search?q=", home: "https://artsandculture.google.com/" },
-                { name: "Substack", icon: "fa-solid fa-bookmark", url: "https://substack.com/search/", home: "https://substack.com/" },
-                { name: "Quora", icon: "fab fa-quora", url: "https://www.quora.com/search?q=", home: "https://www.quora.com/" },
-                { name: "LessWrong", icon: "fa-solid fa-brain", url: "https://www.lesswrong.com/search?query=", home: "https://www.lesswrong.com/" },
-                { name: "LibGen", icon: "fab fa-stack-overflow", url: "https://libgen.li/index.php?req=", home: "https://libgen.li/" }
-            ]
-        },
-        {
-            name: "Programming",
-            color: "#00E426",
-            options: [
-                { name: "GitHub", icon: "fab fa-github", url: "https://github.com/search?q=", home: "https://github.com/" }
-            ]
-        }
-    ];
-
-    const searchInput = document.getElementById('search-input');
-    const searchButton = document.getElementById('search-button');
-    const filterInput = document.getElementById('filter-input');
-    const categoriesGrid = document.querySelector('.categories-grid');
-    const noResults = document.querySelector('.no-results');
-
-    let flatOptions = [];
-
-    function hexToRgba(hex, alpha) {
-        hex = hex.replace('#', '');
-        if (hex.length === 3) {
-            hex = hex.split('').map(c => c + c).join('');
-        }
-        const r = parseInt(hex.substring(0, 2), 16);
-        const g = parseInt(hex.substring(2, 4), 16);
-        const b = parseInt(hex.substring(4, 6), 16);
-        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-    }
-
-    function renderCategories() {
-        categoriesGrid.innerHTML = '';
-        flatOptions = [];
-
-        categories.forEach((category, catIndex) => {
-            const block = document.createElement('div');
-            block.className = 'category-block';
-            block.dataset.category = catIndex;
-
-            const catColor = category.color || '#888888';
-            block.style.setProperty('--category-color', catColor);
-            block.style.setProperty('--category-color-bg', hexToRgba(catColor, 0.05));
-            block.style.setProperty('--category-color-border', hexToRgba(catColor, 0.18));
-
-            const title = document.createElement('div');
-            title.className = 'category-title';
-            title.textContent = category.name;
-            block.appendChild(title);
-
-            const grid = document.createElement('div');
-            grid.className = 'search-options';
-
-            category.options.forEach(option => {
-                const optionElement = document.createElement('div');
-                optionElement.className = 'search-option';
-                optionElement.dataset.url = option.url;
-                optionElement.dataset.home = option.home || option.url;
-                optionElement.dataset.name = option.name.toLowerCase();
-
-                // Category colour drives the hover glow and icon tint
-                optionElement.style.setProperty('--option-color', catColor);
-
-                // Icon picks up category colour from CSS automatically
-                optionElement.innerHTML = `
-                    <i class="${option.icon}"></i>
-                    <span class="name">${option.name}</span>
+        function buildNav() {
+            PAGES.forEach((page, i) => {
+                const li = document.createElement('li');
+                const btn = document.createElement('button');
+                btn.className = 'nav-item' + (i === 0 ? ' active' : '');
+                btn.id = 'nav-' + page.id;
+                btn.addEventListener('click', () => showSection(page.id));
+                btn.innerHTML = `
+                    <span class="idx">${String(i + 1).padStart(2, '0')}</span>
+                    <i class="nav-icon ${page.icon}"></i>
+                    <span class="label">${page.label}</span>
+                    <span class="dot"></span>
                 `;
-
-                grid.appendChild(optionElement);
-                flatOptions.push({ element: optionElement, block: block, name: option.name.toLowerCase() });
+                li.appendChild(btn);
+                navList.appendChild(li);
             });
-
-            block.appendChild(grid);
-            categoriesGrid.appendChild(block);
-        });
-    }
-
-    function performSearch() {
-        const searchTerm = searchInput.value.trim();
-        if (!searchTerm) {
-            searchInput.focus();
-            return;
         }
-        window.open(categories[0].options[0].url + encodeURIComponent(searchTerm), '_blank');
-    }
 
-    function applyFilter() {
-        const term = filterInput.value.trim().toLowerCase();
-        let anyVisible = false;
-
-        document.querySelectorAll('.category-block').forEach(block => {
-            let blockHasVisible = false;
-            block.querySelectorAll('.search-option').forEach(el => {
-                const matches = !term || el.dataset.name.includes(term);
-                el.classList.toggle('hidden', !matches);
-                if (matches) {
-                    blockHasVisible = true;
-                    anyVisible = true;
-                }
+        function buildPanels() {
+            PAGES.forEach((page, i) => {
+                const panel = document.createElement('div');
+                panel.className = 'section-panel' + (i === 0 ? ' visible' : '');
+                panel.id = 'panel-' + page.id;
+                panel.innerHTML = '<p class="panel-loading">Loading…</p>';
+                viewport.appendChild(panel);
             });
-            block.style.display = blockHasVisible ? '' : 'none';
-        });
+        }
 
-        noResults.style.display = anyVisible ? 'none' : 'block';
+        function showSection(id) {
+            PAGES.forEach(page => {
+                document.getElementById('panel-' + page.id).classList.toggle('visible', page.id === id);
+                document.getElementById('nav-' + page.id).classList.toggle('active', page.id === id);
+            });
+            const focusFn = window.__pageFocus && window.__pageFocus[id];
+            if (typeof focusFn === 'function') focusFn();
+        }
+        window.showSection = showSection;
+
+        // ── Generic fragment loader ──
+        // Fetches an HTML fragment (its own <style>/markup/<script>) and
+        // mounts it into the given container, executing its script.
+        async function loadFragment(url, containerId) {
+    const container = document.getElementById(containerId);
+    try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`${res.status}`);
+        const html = await res.text();
+
+        // Extract <style> blocks directly from raw text (regex, not DOMParser —
+        // DOMParser's HTML parsing gets confused by <svg> markup nested inside
+        // <script> template literals and ends script parsing early).
+        const styleRe = /<style[^>]*>([\s\S]*?)<\/style>/gi;
+        let m;
+        while ((m = styleRe.exec(html)) !== null) {
+            const styleEl = document.createElement('style');
+            styleEl.textContent = m[1];
+            document.head.appendChild(styleEl);
+        }
+
+        // Extract <script> blocks the same way.
+        const scriptRe = /<script[^>]*>([\s\S]*?)<\/script>/gi;
+        const scripts = [];
+        while ((m = scriptRe.exec(html)) !== null) {
+            scripts.push(m[1]);
+        }
+
+        // Whatever's left after stripping style/script tags is the markup.
+        const markup = html.replace(styleRe, '').replace(scriptRe, '');
+        container.innerHTML = markup;
+
+        // Re-create and append each script so it actually executes.
+        scripts.forEach(code => {
+            const s = document.createElement('script');
+            s.textContent = code;
+            document.body.appendChild(s);
+        });
+    } catch (err) {
+        container.innerHTML = `<p class="panel-loading">Couldn't load this page (${err.message}). If you're opening this file directly from disk, serve it over a local web server instead.</p>`;
     }
+}
 
-    function init() {
-        renderCategories();
+        function ordinal(n) {
+            const s = ['th', 'st', 'nd', 'rd'];
+            const v = n % 100;
+            return n + (s[(v - 20) % 10] || s[v] || s[0]);
+        }
 
-        searchButton.addEventListener('click', performSearch);
+        function tickClock() {
+            const now = new Date();
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const months = ['January', 'February', 'March', 'April', 'May', 'June',
+                            'July', 'August', 'September', 'October', 'November', 'December'];
 
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') performSearch();
+            // Update date (e.g. "Sun, 26th July")
+            const dateEl = document.getElementById('date');
+            dateEl.textContent = `${days[now.getDay()]}, ${(now.getDate())} ${months[now.getMonth()]}`;
+
+            // Update time
+            const clockEl = document.getElementById('clock');
+            clockEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            buildNav();
+            buildPanels();
+            PAGES.forEach(page => loadFragment(page.file, 'panel-' + page.id));
+            tickClock();
+            setInterval(tickClock, 15000);
         });
-
-        filterInput.addEventListener('input', applyFilter);
-
-        categoriesGrid.addEventListener('click', function (e) {
-            const option = e.target.closest('.search-option');
-            if (!option) return;
-            const searchTerm = searchInput.value.trim();
-            if (!searchTerm) {
-                window.open(option.dataset.home, '_blank');
-            } else {
-                window.open(option.dataset.url + encodeURIComponent(searchTerm), '_blank');
-            }
-        });
-    }
-
-    init();
-
-    // Hook for the shell to focus this page's search field
-    window.__pageFocus = window.__pageFocus || {};
-    window.__pageFocus.search = function () {
-        setTimeout(() => searchInput.focus(), 50);
-    };
-
-})();
-</script>
+    </script>
+</body>
+</html>

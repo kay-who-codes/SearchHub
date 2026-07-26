@@ -1,0 +1,403 @@
+<style>
+  .subs-hub {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* ── Search bar ── */
+  .subs-search-wrap {
+    position: relative;
+    margin-bottom: 4px;
+  }
+  .subs-search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-faint, #565c6b);
+    font-size: 0.85rem;
+    pointer-events: none;
+  }
+  .subs-search {
+    width: 100%;
+    background: var(--surface, #1b1f27);
+    border: 1px solid var(--border, #2b3040);
+    border-radius: 10px;
+    padding: 11px 14px 11px 38px;
+    font-family: var(--font-body, sans-serif);
+    font-size: 0.9rem;
+    color: var(--text, #e9e6dd);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .subs-search::placeholder { color: var(--text-faint, #565c6b); }
+  .subs-search:focus {
+    border-color: var(--accent, #c9a35f);
+    box-shadow: 0 0 0 3px var(--accent-soft, rgba(201,163,95,0.14));
+  }
+
+  /* ── Engine group ── */
+  .subs-engine {
+    --glow: var(--accent, #c9a35f);
+    background: var(--surface, #1b1f27);
+    border: 1px solid var(--border, #2b3040);
+    border-radius: 12px;
+    overflow: hidden;
+    opacity: 0;
+    animation: subsFadeDown 0.5s ease forwards;
+  }
+  .subs-engine[data-engine="youtube"]  { --glow: #ff3b3b; }
+  .subs-engine[data-engine="x"]        { --glow: #d9d9d9; }
+  .subs-engine[data-engine="google"]   { --glow: #4fb0a8; }
+  .subs-engine[data-engine="bailii"]   { --glow: #8f7de0; }
+  .subs-engine[data-engine="substack"] { --glow: #ff8a4c; }
+  .subs-engine[data-engine="spotify"]  { --glow: #1DB954; }
+
+  .subs-engine:nth-of-type(1) { animation-delay: 0.05s; }
+  .subs-engine:nth-of-type(2) { animation-delay: 0.12s; }
+  .subs-engine:nth-of-type(3) { animation-delay: 0.19s; }
+  .subs-engine:nth-of-type(4) { animation-delay: 0.26s; }
+  .subs-engine:nth-of-type(5) { animation-delay: 0.33s; }
+  .subs-engine:nth-of-type(6) { animation-delay: 0.40s; }
+
+  @keyframes subsFadeDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .subs-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 16px;
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-body, sans-serif);
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text, #e9e6dd);
+    transition: background 0.15s;
+  }
+  .subs-toggle:hover { background: var(--surface-2, #232838); }
+  .subs-toggle::-webkit-details-marker { display: none; }
+  .subs-toggle::before {
+    content: '';
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--glow);
+    box-shadow: 0 0 8px 1px var(--glow);
+    flex-shrink: 0;
+  }
+  .subs-engine-icon svg { width: 18px; height: 18px; display: block; }
+  .subs-engine-name { flex: 1; }
+  .subs-toggle .subs-chevron {
+    font-size: 0.7rem;
+    color: var(--text-faint, #565c6b);
+    transition: transform 0.2s;
+  }
+  .subs-engine[open] .subs-chevron { transform: rotate(90deg); }
+  .subs-engine-count {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.68rem;
+    color: var(--text-faint, #565c6b);
+  }
+
+  .subs-collapse {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 2px 16px 16px;
+    border-top: 1px solid var(--border, #2b3040);
+    padding-top: 12px;
+  }
+
+  .subs-card {
+    display: block;
+    text-decoration: none;
+    background: var(--surface-2, #232838);
+    border: 1px solid var(--border, #2b3040);
+    border-radius: 9px;
+    padding: 11px 13px;
+    color: var(--text, #e9e6dd);
+    transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+  }
+  .subs-card:hover {
+    border-color: var(--glow);
+    box-shadow: 0 0 0 1px var(--glow), 0 0 18px -4px var(--glow);
+    transform: translateY(-1px);
+  }
+  .subs-card-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 3px; }
+  .subs-card-desc { font-size: 0.8rem; color: var(--text-dim, #838a9b); margin-bottom: 7px; }
+  .subs-card-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .subs-tag {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.64rem;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--glow) 16%, transparent);
+    color: var(--glow);
+  }
+
+  .subs-empty {
+    display: none;
+    padding: 24px 8px;
+    text-align: center;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.78rem;
+    color: var(--text-faint, #565c6b);
+  }
+
+  /* ── Page header (matches the site-wide header pattern) ── */
+  .page-header {
+    margin-bottom: 28px;
+  }
+  .page-header .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 6px;
+  }
+  .page-header h1 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 2rem;
+    letter-spacing: -0.01em;
+  }
+  .page-header p {
+    color: var(--text-dim);
+    font-size: 0.92rem;
+    margin-top: 4px;
+  }
+</style>
+
+<!--
+  SubSearch — static markup + a small filter script.
+  - All engines start collapsed (no `open` attribute on <details>).
+  - Typing in the search bar filters cards by title/description/tags,
+    auto-expanding engines that have a match and hiding empty ones.
+  - No dynamic DOM building — every card/URL is hard-coded HTML, so
+    nothing depends on script execution to render correctly.
+-->
+
+<div class="subs-hub">
+
+  <div class="page-header">
+    <span class="eyebrow">04</span>
+    <h1>SubSearch</h1>
+    <p>Saved query presets, grouped by engine — one click to dispatch.</p>
+  </div>
+
+  <div class="subs-search-wrap">
+    <i class="fa-solid fa-magnifying-glass subs-search-icon"></i>
+    <input type="text" class="subs-search" id="subsSearch" placeholder="Filter searches…" autocomplete="off">
+  </div>
+
+  <details class="subs-engine" data-engine="google">
+    <summary class="subs-toggle">
+      <span class="subs-engine-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+      </span>
+      <span class="subs-engine-name">Google</span>
+      <span class="subs-engine-count">2</span>
+      <i class="fa-solid fa-chevron-right subs-chevron"></i>
+    </summary>
+    <div class="subs-collapse">
+      <a class="subs-card" href="https://www.google.com/search?q=%22Google%20advanced%20operators%22%20site%3Agoogle.com%20(Tips%20OR%20Guide)" target="_blank" rel="noopener noreferrer">
+        <div class="subs-card-title">Google Advanced Operators Guide</div>
+        <div class="subs-card-desc">Find official tips and guides for Google advanced search operators.</div>
+        <div class="subs-card-tags">
+          <span class="subs-tag">operators</span>
+          <span class="subs-tag">brass</span>
+        </div>
+      </a>
+      <a class="subs-card" href="https://www.google.com/search?q=%22Cyber%20attack%22%20after%3A2026-06-01%20-advanced%20filetype%3Apdf" target="_blank" rel="noopener noreferrer">
+        <div class="subs-card-title">Recent Cyber Attack PDFs</div>
+        <div class="subs-card-desc">PDF reports on cyber attacks published after June 2026, excluding "advanced".</div>
+        <div class="subs-card-tags">
+          <span class="subs-tag">security</span>
+          <span class="subs-tag">teal</span>
+        </div>
+      </a>
+    </div>
+  </details>
+
+  <details class="subs-engine" data-engine="x">
+    <summary class="subs-toggle">
+      <span class="subs-engine-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+      </span>
+      <span class="subs-engine-name">X (Twitter)</span>
+      <span class="subs-engine-count">2</span>
+      <i class="fa-solid fa-chevron-right subs-chevron"></i>
+    </summary>
+    <div class="subs-collapse">
+      <a class="subs-card" href="https://x.com/search?q=Advanced%20%22Computer%20Programming%22%20(HTML%20OR%20python)%20-react%20(%23HTML%20OR%20%23Python)" target="_blank" rel="noopener noreferrer">
+        <div class="subs-card-title">Advanced Computer Programming (HTML / Python)</div>
+        <div class="subs-card-desc">Advanced programming discussions tagged with #HTML or #Python, excluding React.</div>
+        <div class="subs-card-tags">
+          <span class="subs-tag">tech</span>
+          <span class="subs-tag">brass</span>
+        </div>
+      </a>
+      <a class="subs-card" href="https://x.com/search?q=News%20(from%3A%40bbc)%20(%40cbs)%20min_replies%3A1%20min_faves%3A2%20min_retweets%3A3%20since%3A2026-01-01" target="_blank" rel="noopener noreferrer">
+        <div class="subs-card-title">BBC / CBS News (Engagement Filtered)</div>
+        <div class="subs-card-desc">News from @bbc or @cbs with minimum engagement since Jan 2026.</div>
+        <div class="subs-card-tags">
+          <span class="subs-tag">news</span>
+          <span class="subs-tag">teal</span>
+        </div>
+      </a>
+    </div>
+  </details>
+
+  <details class="subs-engine" data-engine="youtube">
+    <summary class="subs-toggle">
+      <span class="subs-engine-icon">
+        <svg viewBox="0 0 24 24" fill="#FF0000"><path d="M21.8 8s-.2-1.4-.8-2c-.8-.8-1.6-.8-2-.9C16.8 5 12 5 12 5s-4.8 0-7 .1c-.4.1-1.2.1-2 .9-.6.6-.8 2-.8 2S2 9.6 2 11.2v1.5c0 1.6.2 3.2.2 3.2s.2 1.4.8 2c.8.8 1.8.8 2.2.9C6.8 19 12 19 12 19s4.8 0 7-.1c.4-.1 1.2-.1 2-.9.6-.6.8-2 .8-2s.2-1.6.2-3.2v-1.5C22 9.6 21.8 8 21.8 8zM9.7 14.5V9l5.4 2.8-5.4 2.7z"/></svg>
+      </span>
+      <span class="subs-engine-name">YouTube</span>
+      <span class="subs-engine-count">2</span>
+      <i class="fa-solid fa-chevron-right subs-chevron"></i>
+    </summary>
+    <div class="subs-collapse">
+      <a class="subs-card" href="https://www.youtube.com/results?search_query=Music%20Video&sp=EgIIAg%253D%253D" target="_blank" rel="noopener noreferrer">
+        <div class="subs-card-title">Music Video (Past Day)</div>
+        <div class="subs-card-desc">YouTube results for Music Video, filtered to uploads from the last 24 hours.</div>
+        <div class="subs-card-tags">
+          <span class="subs-tag">video</span>
+          <span class="subs-tag">brass</span>
+        </div>
+      </a>
+      <a class="subs-card" href="https://www.youtube.com/results?search_query=(rap%20OR%20hiphop%20OR%20'hip%20hop'%20OR%20hip-hop%20OR%20freestyle)%20(beat%20OR%20instrumental)%20(%22free%20for%20commercial%22%20OR%20%22for%20profit)%20-%22not%20free%22&sp=EgIIBA%253D%253D" target="_blank" rel="noopener noreferrer">
+        <div class="subs-card-title">Beats — Free for Commercial Use</div>
+        <div class="subs-card-desc">Free-to-use beats.</div>
+        <div class="subs-card-tags">
+          <span class="subs-tag">video</span>
+          <span class="subs-tag">rap</span>
+          <span class="subs-tag">beats</span>
+          <span class="subs-tag">creative</span>
+        </div>
+      </a>
+    </div>
+  </details>
+
+  <details class="subs-engine" data-engine="bailii">
+    <summary class="subs-toggle">
+      <span class="subs-engine-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M4 8l4-4 4 4M4 8v9a2 2 0 002 2h4M20 8l-4-4-4 4M20 8v9a2 2 0 01-2 2h-4"/></svg>
+      </span>
+      <span class="subs-engine-name">BAILII</span>
+      <span class="subs-engine-count">1</span>
+      <i class="fa-solid fa-chevron-right subs-chevron"></i>
+    </summary>
+    <div class="subs-collapse">
+      <a class="subs-card" href="https://www.bailii.org/cgi-bin/lucy_search_1.cgi?query=Song%20Copyright&datelow=&datehigh=&sort=rank&highlight=1&mask_path=uk%2Fcases+scot%2Fcases+w%2Fcases+je%2Fcases+sh%2Fcases+ie%2Fcases+nie%2Fcases+qa%2Fcases+ky%2Fcases+eu%2Fcases&mask_path=uk&mask_path=ew+wales&mask_path=scot" target="_blank" rel="noopener noreferrer">
+        <div class="subs-card-title">Song Copyright (UK)</div>
+        <div class="subs-card-desc">BAILII case search for Song Copyright, ranked, highlighted, scoped to UK jurisdictions.</div>
+        <div class="subs-card-tags">
+          <span class="subs-tag">legal</span>
+          <span class="subs-tag">teal</span>
+        </div>
+      </a>
+    </div>
+  </details>
+
+  <details class="subs-engine" data-engine="substack">
+    <summary class="subs-toggle">
+      <span class="subs-engine-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 6.6H2V4.4h20v2.2zM2 9.7v10.9l10-5.5 10 5.5V9.7H2zM22 3H2v-.5A2.5 2.5 0 014.5 0h15A2.5 2.5 0 0122 2.5V3z"/></svg>
+      </span>
+      <span class="subs-engine-name">Substack</span>
+      <span class="subs-engine-count">1</span>
+      <i class="fa-solid fa-chevron-right subs-chevron"></i>
+    </summary>
+    <div class="subs-collapse">
+      <a class="subs-card" href="https://substack.com/search/Consciousness%20Universe?searching=all_posts" target="_blank" rel="noopener noreferrer">
+        <div class="subs-card-title">Consciousness Universe</div>
+        <div class="subs-card-desc">Substack search across all posts for Consciousness Universe.</div>
+        <div class="subs-card-tags">
+          <span class="subs-tag">writing</span>
+          <span class="subs-tag">brass</span>
+        </div>
+      </a>
+    </div>
+  </details>
+
+  <details class="subs-engine" data-engine="spotify">
+    <summary class="subs-toggle">
+      <span class="subs-engine-icon">
+        <svg viewBox="0 0 24 24" fill="#1DB954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.161-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.24 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.6.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.301.421-1.021.599-1.56.3z"/></svg>
+      </span>
+      <span class="subs-engine-name">Spotify</span>
+      <span class="subs-engine-count">1</span>
+      <i class="fa-solid fa-chevron-right subs-chevron"></i>
+    </summary>
+    <div class="subs-collapse">
+      <a class="subs-card" href="https://open.spotify.com/search/Drum%20and%20Bass/playlists" target="_blank" rel="noopener noreferrer">
+        <div class="subs-card-title">Drum and Bass Playlists</div>
+        <div class="subs-card-desc">Spotify playlist search for Drum and Bass.</div>
+        <div class="subs-card-tags">
+          <span class="subs-tag">music</span>
+          <span class="subs-tag">teal</span>
+        </div>
+      </a>
+    </div>
+  </details>
+
+  <div class="subs-empty" id="subsEmpty">No saved searches match "<span id="subsEmptyQuery"></span>".</div>
+
+</div>
+
+<script>
+(function () {
+    // Scope to this fragment's own container so it works whether it's
+    // mounted directly or inside a wrapping panel element.
+    const root = document.currentScript.previousElementSibling.matches('.subs-hub')
+        ? document.currentScript.previousElementSibling
+        : document.currentScript.closest('.subs-hub') || document;
+
+    const input = root.querySelector ? root.querySelector('#subsSearch') : document.getElementById('subsSearch');
+    const engines = (root.querySelectorAll ? root : document).querySelectorAll('.subs-engine');
+    const emptyState = document.getElementById('subsEmpty');
+    const emptyQuery = document.getElementById('subsEmptyQuery');
+    if (!input) return;
+
+    input.addEventListener('input', () => {
+        const q = input.value.trim().toLowerCase();
+        let anyVisible = false;
+
+        engines.forEach(engine => {
+            let engineHasMatch = false;
+            engine.querySelectorAll('.subs-card').forEach(card => {
+                const haystack = card.textContent.toLowerCase();
+                const match = q === '' || haystack.includes(q);
+                card.style.display = match ? '' : 'none';
+                if (match) engineHasMatch = true;
+            });
+
+            if (q === '') {
+                engine.style.display = '';
+                engine.open = false;
+            } else {
+                engine.style.display = engineHasMatch ? '' : 'none';
+                engine.open = engineHasMatch;
+            }
+            if (engineHasMatch) anyVisible = true;
+        });
+
+        emptyState.style.display = (q !== '' && !anyVisible) ? 'block' : 'none';
+        if (emptyQuery) emptyQuery.textContent = input.value.trim();
+    });
+})();
+</script>

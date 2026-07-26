@@ -1,0 +1,935 @@
+<style>
+/* ============================= Page 06 · Pulse ============================= */
+.pulse-page .page-header { margin-bottom: 24px; }
+
+.pulse-top {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+.pulse-status {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-faint);
+    letter-spacing: 0.04em;
+}
+.pulse-status .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #33D6A0;
+    box-shadow: 0 0 8px #33D6A0;
+    display: inline-block;
+    margin-right: 6px;
+    animation: pulse-blink 2s infinite;
+}
+.pulse-status .dot.off { background: #FF5C6C; box-shadow: 0 0 8px #FF5C6C; animation: none; }
+@keyframes pulse-blink { 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+.pulse-btns { display: flex; gap: 8px; margin-left: auto; }
+
+.pulse-btn {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 9px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+.pulse-btn:hover { background: var(--surface-2); border-color: var(--accent); color: var(--text); }
+.pulse-btn.primary { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 600; }
+.pulse-btn.primary:hover { background: #ddb672; }
+
+.pulse-tape {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 18px;
+    background: #131313;
+}
+
+.pulse-banner {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: rgba(255,92,108,0.08);
+    border: 1px solid rgba(255,92,108,0.35);
+    color: #FF9CA6;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    margin-bottom: 18px;
+}
+
+.pulse-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+.pulse-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: 8px;
+    padding: 0 12px;
+    min-width: 230px;
+    flex: 1;
+    transition: border-color 0.15s, background-color 0.15s;
+}
+.pulse-search:focus-within { background: var(--surface-2); border-color: var(--accent); }
+.pulse-search svg { color: var(--text-faint); flex-shrink: 0; }
+.pulse-search input {
+    border: none;
+    background: transparent;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    padding: 10px 0;
+    outline: none;
+    width: 100%;
+}
+.pulse-search input::placeholder { color: var(--text-faint); }
+
+.pulse-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.pulse-chip {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 7px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+.pulse-chip:hover { border-color: var(--accent); color: var(--text); }
+.pulse-chip.active { border-color: var(--accent); color: var(--accent); background: var(--surface-2); }
+
+.pulse-select {
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-dim);
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    outline: none;
+    cursor: pointer;
+}
+.pulse-select:focus { border-color: var(--accent); }
+
+.pulse-table-shell {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    overflow: hidden;
+}
+.pulse-scroll-x { overflow-x: auto; }
+.pulse-table { width: 100%; border-collapse: collapse; min-width: 920px; }
+.pulse-table thead th {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    text-align: left;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+}
+.pulse-table thead th.num { text-align: right; }
+.pulse-table thead th.nosort { cursor: default; }
+.pulse-table thead th:hover { color: var(--text); }
+.pulse-table thead th.sorted { color: var(--accent); }
+.pulse-table thead th .arrow { margin-left: 4px; font-size: 0.6rem; opacity: 0.7; }
+.pulse-table tbody td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+    color: var(--text);
+    vertical-align: middle;
+}
+.pulse-table tbody tr:last-child td { border-bottom: none; }
+.pulse-table tbody tr { cursor: pointer; transition: background-color 0.12s ease; }
+.pulse-table tbody tr:hover { background: var(--surface-2); }
+.pulse-table td.num { text-align: right; }
+.pulse-mono { font-family: var(--font-mono); }
+
+.pulse-sym-cell { display: flex; align-items: center; gap: 10px; position: relative; }
+.pulse-heat { width: 3px; height: 26px; border-radius: 2px; flex-shrink: 0; }
+.pulse-sym-name { display: flex; flex-direction: column; line-height: 1.25; }
+.pulse-sym-name b { font-family: var(--font-mono); font-size: 0.88rem; font-weight: 700; letter-spacing: 0.02em; }
+.pulse-sym-name span { font-size: 0.7rem; color: var(--text-faint); }
+
+.pulse-sector-pill {
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 4px 9px;
+    border-radius: 999px;
+    border: 1px solid;
+    white-space: nowrap;
+}
+
+.pulse-chg-badge {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+.pulse-chg-badge.pos { color: #33D6A0; background: rgba(51,214,160,0.1); }
+.pulse-chg-badge.neg { color: #FF5C6C; background: rgba(255,92,108,0.1); }
+
+.pulse-row-actions { display: flex; gap: 6px; justify-content: flex-end; }
+.pulse-icon-btn {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 5px 7px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-faint);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.pulse-icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.pulse-empty {
+    display: none;
+    text-align: center;
+    color: var(--text-faint);
+    font-size: 0.85rem;
+    padding: 40px 0;
+}
+.pulse-foot-note {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: var(--text-faint);
+    margin-top: 12px;
+    font-family: var(--font-mono);
+    letter-spacing: 0.02em;
+}
+
+/* Overlay / side panel */
+.pulse-overlay {
+    position: fixed; inset: 0;
+    background: rgba(10,12,18,0.6);
+    backdrop-filter: blur(2px);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 200;
+}
+.pulse-overlay.open { opacity: 1; pointer-events: auto; }
+
+.pulse-panel {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: min(560px, 94vw);
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    transform: translateX(100%);
+    transition: transform 0.25s ease;
+    z-index: 201;
+    overflow-y: auto;
+    padding: 22px 24px 32px;
+}
+.pulse-panel.open { transform: translateX(0); }
+.pulse-panel-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 18px; }
+.pulse-panel-head h2 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; }
+.pulse-panel-head p { color: var(--text-faint); font-size: 0.8rem; margin-top: 2px; }
+.pulse-close-x {
+    background: none; border: none; color: var(--text-faint);
+    font-size: 1rem; cursor: pointer; padding: 4px;
+    transition: color 0.15s;
+}
+.pulse-close-x:hover { color: var(--text); }
+
+.pulse-panel-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 18px;
+}
+.pulse-panel-stats > div {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+}
+.pulse-panel-stats .label {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 4px;
+}
+.pulse-panel-stats .val { font-family: var(--font-mono); font-size: 1rem; font-weight: 700; }
+
+.pulse-panel-docs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.pulse-panel-docs a.pulse-btn { text-decoration: none; }
+
+.pulse-panel-chart {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    min-height: 420px;
+    background: var(--bg);
+}
+
+/* Modals */
+.pulse-modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(10,12,18,0.65);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 300;
+}
+.pulse-modal-overlay.open { opacity: 1; pointer-events: auto; }
+.pulse-modal {
+    width: min(420px, 92vw);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px;
+}
+.pulse-modal h3 { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; margin-bottom: 16px; }
+.pulse-field { margin-bottom: 14px; }
+.pulse-field label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 6px;
+}
+.pulse-field input, .pulse-field select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    outline: none;
+}
+.pulse-field input:focus, .pulse-field select:focus { border-color: var(--accent); }
+.pulse-modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px; }
+
+@media (max-width: 700px) {
+    .pulse-panel-stats { grid-template-columns: repeat(2, 1fr); }
+    .pulse-btns { margin-left: 0; }
+}
+</style>
+
+<div class="pulse-page">
+<div class="page-header">
+    <span class="eyebrow">07</span>
+    <h1>Pulse</h1>
+    <p>Live watchlist &amp; fundamentals, powered by TradingView and Finnhub.</p>
+</div>
+
+<div class="pulse-top">
+    <div class="pulse-status">
+        <span><span class="dot" id="pulseLiveDot"></span><span id="pulseLiveLabel">Live</span></span>
+        <span id="pulseClock">--:--:--</span>
+        <span>Updated <span id="pulseLastUpdated">—</span></span>
+    </div>
+    <div class="pulse-btns">
+        <button class="pulse-btn" id="pulseKeyBtn">🔑 API Key</button>
+        <button class="pulse-btn" id="pulseRefreshBtn">↻ Refresh</button>
+        <button class="pulse-btn primary" id="pulseAddBtn">+ Add Symbol</button>
+    </div>
+</div>
+
+<div class="pulse-tape">
+    <div class="tradingview-widget-container" id="pulseTapeContainer" style="height:46px;"></div>
+</div>
+
+<div id="pulseErrorBanner" class="pulse-banner">
+    <span id="pulseErrorText">Live data feed unavailable.</span>
+    <button class="pulse-btn" id="pulseBannerRetry">Retry</button>
+</div>
+
+<div class="pulse-toolbar">
+    <div class="pulse-search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="pulseSearchInput" placeholder="Search symbol or company…">
+    </div>
+    <div class="pulse-chips" id="pulseSectorChips"></div>
+    <select class="pulse-select" id="pulseTargetFilter">
+        <option value="all">All stocks</option>
+        <option value="above">Above target</option>
+        <option value="below">Below target</option>
+        <option value="near">Within 3% of target</option>
+    </select>
+</div>
+
+<div class="pulse-table-shell">
+    <div class="pulse-scroll-x">
+        <table class="pulse-table">
+            <thead>
+                <tr>
+                    <th data-key="symbol">Symbol<span class="arrow">▾</span></th>
+                    <th data-key="sector">Sector<span class="arrow">▾</span></th>
+                    <th class="num" data-key="price">Price<span class="arrow">▾</span></th>
+                    <th class="num" data-key="changePct">Chg %<span class="arrow">▾</span></th>
+                    <th class="num" data-key="pe">P/E<span class="arrow">▾</span></th>
+                    <th class="num" data-key="eps">EPS<span class="arrow">▾</span></th>
+                    <th class="num" data-key="marketCap">Mkt Cap<span class="arrow">▾</span></th>
+                    <th class="num" data-key="target">Target<span class="arrow">▾</span></th>
+                    <th class="num" data-key="desirability">Desirability<span class="arrow">▾</span></th>
+                    <th class="nosort">Links</th>
+                    <th class="nosort"></th>
+                </tr>
+            </thead>
+            <tbody id="pulseTbody"></tbody>
+        </table>
+    </div>
+    <div id="pulseEmptyState" class="pulse-empty">No stocks match your filters.</div>
+</div>
+<div class="pulse-foot-note">
+    <span>Fundamentals &amp; quotes via TradingView scanner endpoint · charts via TradingView widgets</span>
+    <span id="pulseRowCount">0 symbols</span>
+</div>
+</div>
+
+<div class="pulse-overlay" id="pulseOverlay"></div>
+<div class="pulse-panel" id="pulsePanel">
+    <div class="pulse-panel-head">
+        <div>
+            <h2 id="pulsePanelSymbol">—</h2>
+            <p id="pulsePanelName">—</p>
+        </div>
+        <button class="pulse-close-x" id="pulsePanelClose">✕</button>
+    </div>
+    <div class="pulse-panel-stats" id="pulsePanelStats"></div>
+    <div class="pulse-panel-docs" id="pulsePanelDocs"></div>
+    <div class="pulse-panel-chart">
+        <div class="tradingview-widget-container" id="pulseChartContainer" style="height:100%;min-height:420px;"></div>
+    </div>
+</div>
+
+<div class="pulse-modal-overlay" id="pulseModalOverlay">
+    <div class="pulse-modal">
+        <h3>Add symbol to watchlist</h3>
+        <div class="pulse-field">
+            <label for="pulseInSymbol">Ticker</label>
+            <input type="text" id="pulseInSymbol" placeholder="e.g. AAPL">
+        </div>
+        <div class="pulse-field">
+            <label for="pulseInExchange">Exchange</label>
+            <select id="pulseInExchange">
+                <option value="NASDAQ">NASDAQ</option>
+                <option value="NYSE">NYSE</option>
+                <option value="AMEX">AMEX</option>
+            </select>
+        </div>
+        <div class="pulse-field">
+            <label for="pulseInSector">Sector (label)</label>
+            <input type="text" id="pulseInSector" placeholder="e.g. Technology">
+        </div>
+        <div class="pulse-field">
+            <label for="pulseInTarget">Target price</label>
+            <input type="number" id="pulseInTarget" placeholder="e.g. 250" step="0.01">
+        </div>
+        <div class="pulse-modal-actions">
+            <button class="pulse-btn" id="pulseModalCancel">Cancel</button>
+            <button class="pulse-btn primary" id="pulseModalSave">Add</button>
+        </div>
+    </div>
+</div>
+
+<div class="pulse-modal-overlay" id="pulseKeyModalOverlay">
+    <div class="pulse-modal">
+        <h3>Finnhub API key</h3>
+        <p style="color:var(--text-faint);font-size:0.78rem;margin-top:-8px;margin-bottom:14px;">
+            Quotes, P/E, EPS and market cap are pulled live from Finnhub (free tier).
+            Get a free key at <span class="pulse-mono" style="color:var(--accent);">finnhub.io</span> — it's kept in memory only for this session, never saved to disk.
+        </p>
+        <div class="pulse-field">
+            <label for="pulseInApiKey">API key</label>
+            <input type="text" id="pulseInApiKey" placeholder="paste your Finnhub API key">
+        </div>
+        <div class="pulse-modal-actions">
+            <button class="pulse-btn" id="pulseKeyModalCancel">Cancel</button>
+            <button class="pulse-btn primary" id="pulseKeyModalSave">Save &amp; Connect</button>
+        </div>
+    </div>
+</div>
+
+<script>
+(function(){
+/* =========================================================================
+   🔧 DEVELOPER CONFIG — replace this with your own watchlist.
+   ========================================================================= */
+let WATCHLIST = [
+  { tv: "NYSE:BP", sector: "Energy", target: 25 },
+  { tv: "Bitstamp:BTCUSD", sector: "Crypto", target: 55000 },
+  { tv: "NYSE:DNA",  sector: "Biotech",  target: 1.7 },
+  { tv: "OTC:INPOY",     sector: "Logistics",       target: 2 },
+  { tv: "NYSE:UBER",     sector: "Transportation",       target: 15 }
+];
+const REFRESH_MS = 300000;
+const WORKER_BASE = "https://pulse.kaywhocreates.workers.dev";
+
+function tvSlug(tv){ return tv.replace(":", "-"); }
+function tvDocLinks(tv){
+  const slug = tvSlug(tv);
+  const base = `https://www.tradingview.com/symbols/${slug}`;
+  return {
+    sec:     `${base}/documents/`,
+    stats:   `${base}/financials-statistics-and-ratios/`,
+    fcf:     `${base}/financials-cash-flow/`,
+    balance: `${base}/financials-balance-sheet/`
+  };
+}
+function openDocLink(tv, kind){
+  const links = tvDocLinks(tv);
+  const url = links[kind];
+  if(url) window.open(url, "_blank", "noopener");
+}
+
+let stocks = [];
+let sortKey = "symbol", sortDir = 1;
+let activeSector = "all";
+let searchTerm = "";
+let targetFilter = "all";
+let fetchTimer = null;
+
+const tbody = document.getElementById("pulseTbody");
+const emptyState = document.getElementById("pulseEmptyState");
+const rowCount = document.getElementById("pulseRowCount");
+
+function fmtCap(n){
+  if(n==null || isNaN(n)) return "—";
+  const abs = Math.abs(n);
+  if(abs>=1e12) return "$"+(n/1e12).toFixed(2)+"T";
+  if(abs>=1e9)  return "$"+(n/1e9).toFixed(2)+"B";
+  if(abs>=1e6)  return "$"+(n/1e6).toFixed(2)+"M";
+  return "$"+n.toFixed(0);
+}
+function fmtNum(n,d=2){ return (n==null||isNaN(n)) ? "—" : n.toFixed(d); }
+function fmtPrice(n){ return (n==null||isNaN(n)) ? "—" : "$"+n.toFixed(2); }
+function baseSymbol(tv){ return tv.split(":")[1]; }
+function exchangeOf(tv){ return tv.split(":")[0]; }
+
+const C_GREEN = [51, 214, 160];
+const C_YELLOW = [245, 200, 40];
+const C_RED = [255, 92, 108];
+const C_NEUTRAL = [137, 147, 168];
+function lerp(a, b, t){ return a + (b - a) * t; }
+function lerpColor(c1, c2, t){
+  t = Math.max(0, Math.min(1, t));
+  return [ lerp(c1[0],c2[0],t), lerp(c1[1],c2[1],t), lerp(c1[2],c2[2],t) ];
+}
+function rgbStr(c){ return `rgb(${Math.round(c[0])}, ${Math.round(c[1])}, ${Math.round(c[2])})`; }
+
+function peColor(pe){
+  if(pe==null || isNaN(pe)) return null;
+  if(pe<=6) return rgbStr(C_GREEN);
+  if(pe>=24) return rgbStr(C_RED);
+  if(pe<=13){ return rgbStr(lerpColor(C_GREEN, C_YELLOW, (pe-6)/(13-6))); }
+  return rgbStr(lerpColor(C_YELLOW, C_RED, (pe-13)/(24-13)));
+}
+function makeEpsColorFn(values){
+  const valid = values.filter(v=>v!=null && !isNaN(v));
+  if(!valid.length) return ()=>null;
+  const min = Math.min(...valid);
+  const max = Math.max(...valid);
+  const mean = valid.reduce((a,b)=>a+b,0) / valid.length;
+  return function(eps){
+    if(eps==null || isNaN(eps)) return null;
+    if(eps<=min) return rgbStr(C_RED);
+    if(eps>=max) return rgbStr(C_GREEN);
+    if(eps<=mean){
+      if(mean===min) return rgbStr(C_YELLOW);
+      return rgbStr(lerpColor(C_RED, C_YELLOW, (eps-min)/(mean-min)));
+    }
+    if(max===mean) return rgbStr(C_YELLOW);
+    return rgbStr(lerpColor(C_YELLOW, C_GREEN, (eps-mean)/(max-mean)));
+  };
+}
+function desirabilityBandFactor(absDesirability){
+  if(absDesirability<=5) return 0.5;
+  if(absDesirability<=18) return 0.75;
+  return 1;
+}
+function desirabilityColor(desirability){
+  if(desirability==null || isNaN(desirability)) return null;
+  const base = desirability>=0 ? C_GREEN : C_RED;
+  const factor = desirabilityBandFactor(Math.abs(desirability));
+  return rgbStr(lerpColor(C_NEUTRAL, base, factor));
+}
+const SECTOR_PALETTE = ["#3572FF", "#31FFBA", "#FF4355", "#F5A623", "#BA60FF", "#31C4FF", "#FF4DBB", "#6AFF40"];
+function sectorColor(sector){
+  let hash = 0;
+  for(let i=0;i<sector.length;i++){ hash = (hash*31 + sector.charCodeAt(i)) >>> 0; }
+  return SECTOR_PALETTE[hash % SECTOR_PALETTE.length];
+}
+
+async function fetchLiveData(){
+  const entries = await Promise.all(WATCHLIST.map(async cfg=>{
+    const sym = baseSymbol(cfg.tv);
+    const [quoteRes, metricRes] = await Promise.all([
+      fetch(`${WORKER_BASE}/quote?symbol=${encodeURIComponent(sym)}`),
+      fetch(`${WORKER_BASE}/metric?symbol=${encodeURIComponent(sym)}`)
+    ]);
+    if(quoteRes.status===401 || metricRes.status===401) throw new Error("unauthorized");
+    if(quoteRes.status===429 || metricRes.status===429) throw new Error("rate-limited");
+    const quote = quoteRes.ok ? await quoteRes.json() : {};
+    const metricJson = metricRes.ok ? await metricRes.json() : {};
+    const m = metricJson.metric || {};
+    return [cfg.tv, {
+      name: sym,
+      close: typeof quote.c === "number" && quote.c !== 0 ? quote.c : null,
+      change: typeof quote.dp === "number" ? quote.dp : null,
+      pe: m.peBasicExclExtraItemsTTM ?? m.peExclExtraTTM ?? null,
+      eps: m.epsBasicExclExtraItemsTTM ?? m.epsExclExtraItemsTTM ?? null,
+      marketCap: typeof m.marketCapitalization === "number" ? m.marketCapitalization * 1e6 : null
+    }];
+  }));
+  const map = {};
+  entries.forEach(([tv,data])=>{ map[tv] = data; });
+  return map;
+}
+
+async function refresh(manual=false){
+  setLive(true, manual ? "Refreshing…" : undefined);
+  try{
+    const map = await fetchLiveData();
+    stocks = WATCHLIST.map(cfg=>{
+      const d = map[cfg.tv] || {};
+      const price = d.close ?? null;
+      const desirability = (price && cfg.target) ? ((cfg.target - price)/price*100) : null;
+      return {
+        tv: cfg.tv,
+        symbol: baseSymbol(cfg.tv),
+        exchange: exchangeOf(cfg.tv),
+        name: d.name || baseSymbol(cfg.tv),
+        sector: cfg.sector || "—",
+        price,
+        changePct: d.change ?? null,
+        pe: d.pe ?? null,
+        eps: d.eps ?? null,
+        marketCap: d.marketCap ?? null,
+        target: cfg.target ?? null,
+        desirability
+      };
+    });
+    document.getElementById("pulseErrorBanner").style.display = "none";
+    document.getElementById("pulseBannerRetry").textContent = "Retry";
+    document.getElementById("pulseLastUpdated").textContent = new Date().toLocaleTimeString();
+    setLive(true, "Live");
+    buildSectorChips();
+    render();
+  }catch(err){
+    console.error(err);
+    setLive(false, "Disconnected");
+    const banner = document.getElementById("pulseErrorBanner");
+    document.getElementById("pulseBannerRetry").textContent = "Retry";
+    if(err.message==="unauthorized"){
+      document.getElementById("pulseErrorText").textContent = "Finnhub rejected that API key. Double-check it via the API Key button.";
+    } else if(err.message==="rate-limited"){
+      document.getElementById("pulseErrorText").textContent = "Hit Finnhub's rate limit — try increasing REFRESH_MS or wait a moment.";
+    } else {
+      document.getElementById("pulseErrorText").textContent = "Couldn't reach the live data feed (network issue). Try Retry.";
+    }
+    banner.style.display = "flex";
+    if(stocks.length===0){
+      stocks = WATCHLIST.map(cfg=>({
+        tv:cfg.tv, symbol:baseSymbol(cfg.tv), exchange:exchangeOf(cfg.tv), name:baseSymbol(cfg.tv),
+        sector:cfg.sector||"—", price:null, changePct:null, pe:null, eps:null, marketCap:null,
+        target:cfg.target??null, desirability:null
+      }));
+      buildSectorChips();
+      render();
+    }
+  }
+}
+function setLive(ok,label){
+  document.getElementById("pulseLiveDot").classList.toggle("off", !ok);
+  document.getElementById("pulseLiveLabel").textContent = label ?? (ok?"Live":"Disconnected");
+}
+
+function buildSectorChips(){
+  const el = document.getElementById("pulseSectorChips");
+  const sectors = ["all", ...new Set(stocks.map(s=>s.sector))];
+  el.innerHTML = "";
+  sectors.forEach(sec=>{
+    const chip = document.createElement("div");
+    chip.className = "pulse-chip" + (sec===activeSector ? " active":"");
+    chip.textContent = sec==="all" ? "All sectors" : sec;
+    if(sec!=="all" && sec===activeSector){
+      const c = sectorColor(sec);
+      chip.style.background = c + "26";
+      chip.style.borderColor = c;
+      chip.style.color = c;
+    }
+    chip.onclick = ()=>{ activeSector = sec; buildSectorChips(); render(); };
+    el.appendChild(chip);
+  });
+}
+
+document.querySelectorAll("#pulseTbody").forEach(()=>{});
+document.querySelectorAll(".pulse-table thead th[data-key]").forEach(th=>{
+  th.addEventListener("click", ()=>{
+    const key = th.dataset.key;
+    if(sortKey===key){ sortDir *= -1; } else { sortKey = key; sortDir = 1; }
+    document.querySelectorAll(".pulse-table thead th").forEach(h=>h.classList.remove("sorted"));
+    th.classList.add("sorted");
+    th.querySelector(".arrow").textContent = sortDir===1 ? "▾" : "▴";
+    render();
+  });
+});
+document.getElementById("pulseSearchInput").addEventListener("input", e=>{
+  searchTerm = e.target.value.trim().toLowerCase();
+  render();
+});
+document.getElementById("pulseTargetFilter").addEventListener("change", e=>{
+  targetFilter = e.target.value;
+  render();
+});
+function passesFilters(s){
+  if(activeSector!=="all" && s.sector!==activeSector) return false;
+  if(searchTerm && !(s.symbol.toLowerCase().includes(searchTerm) || s.name.toLowerCase().includes(searchTerm))) return false;
+  if(targetFilter==="above" && !(s.desirability!=null && s.desirability<0)) return false;
+  if(targetFilter==="below" && !(s.desirability!=null && s.desirability>0)) return false;
+  if(targetFilter==="near" && !(s.desirability!=null && Math.abs(s.desirability)<=3)) return false;
+  return true;
+}
+function render(){
+  let list = stocks.filter(passesFilters);
+  list.sort((a,b)=>{
+    let av = a[sortKey], bv = b[sortKey];
+    if(typeof av === "string") av = av.toLowerCase();
+    if(typeof bv === "string") bv = bv.toLowerCase();
+    if(av==null) return 1;
+    if(bv==null) return -1;
+    if(av<bv) return -1*sortDir;
+    if(av>bv) return 1*sortDir;
+    return 0;
+  });
+  tbody.innerHTML = "";
+  emptyState.style.display = list.length ? "none" : "block";
+  rowCount.textContent = list.length + " symbol" + (list.length===1?"":"s");
+  const epsColorFn = makeEpsColorFn(list.map(s=>s.eps));
+  list.forEach(s=>{
+    const tr = document.createElement("tr");
+    const chgClass = s.changePct==null ? "" : (s.changePct>=0 ? "pos":"neg");
+    const heatColor = s.changePct==null ? "transparent" : (s.changePct>=0 ? "#33D6A0" : "#FF5C6C");
+    const heatOpacity = s.changePct==null ? 0 : Math.min(1, Math.abs(s.changePct)/5);
+    const nearTarget = s.desirability!=null && Math.abs(s.desirability)<=3;
+    const peC = peColor(s.pe);
+    const epsC = epsColorFn(s.eps);
+    const upC = desirabilityColor(s.desirability);
+    const secC = sectorColor(s.sector);
+    tr.innerHTML = `
+      <td>
+        <div class="pulse-sym-cell">
+          <div class="pulse-heat" style="background:${heatColor};opacity:${heatOpacity}"></div>
+          <div class="pulse-sym-name">
+            <b>${s.symbol}</b>
+            <span>${s.name}</span>
+          </div>
+        </div>
+      </td>
+      <td><span class="pulse-sector-pill" style="background:${secC}26;border-color:${secC}80;color:${secC};">${s.sector}</span></td>
+      <td class="num pulse-mono">${fmtPrice(s.price)}</td>
+      <td class="num"><span class="pulse-chg-badge ${chgClass}">${s.changePct==null?"—":(s.changePct>=0?"▲":"▼")+" "+Math.abs(s.changePct).toFixed(2)+"%"}</span></td>
+      <td class="num pulse-mono" style="${peC?`color:${peC};`:''}">${fmtNum(s.pe)}</td>
+      <td class="num pulse-mono" style="${epsC?`color:${epsC};`:''}">${fmtNum(s.eps)}</td>
+      <td class="num pulse-mono">${fmtCap(s.marketCap)}</td>
+      <td class="num pulse-mono">${fmtPrice(s.target)}</td>
+      <td class="num pulse-mono" style="${upC?`color:${upC};`:''}${nearTarget?'font-weight:700;':''}">${s.desirability==null?"—":(s.desirability>=0?"+":"")+s.desirability.toFixed(1)+"%"}</td>
+      <td>
+        <div class="pulse-row-actions">
+          <button class="pulse-icon-btn" data-doc="sec" data-tv="${s.tv}" title="SEC Filings on TradingView">SEC</button>
+          <button class="pulse-icon-btn" data-doc="stats" data-tv="${s.tv}" title="Statistics on TradingView">STA</button>
+          <button class="pulse-icon-btn" data-doc="fcf" data-tv="${s.tv}" title="Free Cash Flow on TradingView">FCF</button>
+          <button class="pulse-icon-btn" data-doc="balance" data-tv="${s.tv}" title="Assets &amp; Liabilities on TradingView">A/L</button>
+        </div>
+      </td>
+      <td>
+        <div class="pulse-row-actions">
+          <button class="pulse-icon-btn" title="Remove from watchlist" data-remove="${s.tv}">✕</button>
+        </div>
+      </td>
+    `;
+    tr.addEventListener("click", (e)=>{
+      if(e.target.closest("[data-remove]") || e.target.closest("[data-doc]")) return;
+      openPanel(s);
+    });
+    tr.querySelectorAll("[data-doc]").forEach(btn=>{
+      btn.addEventListener("click",(e)=>{
+        e.stopPropagation();
+        openDocLink(btn.dataset.tv, btn.dataset.doc);
+      });
+    });
+    tr.querySelector("[data-remove]").addEventListener("click",(e)=>{
+      e.stopPropagation();
+      WATCHLIST = WATCHLIST.filter(w=>w.tv!==s.tv);
+      stocks = stocks.filter(x=>x.tv!==s.tv);
+      buildSectorChips();
+      render();
+    });
+    tbody.appendChild(tr);
+  });
+}
+
+const overlay = document.getElementById("pulseOverlay");
+const panel = document.getElementById("pulsePanel");
+function openPanel(s){
+  document.getElementById("pulsePanelSymbol").textContent = s.symbol;
+  document.getElementById("pulsePanelName").textContent = s.name + " · " + s.exchange;
+  const upC = desirabilityColor(s.desirability);
+  document.getElementById("pulsePanelStats").innerHTML = `
+    <div><div class="label">Price</div><div class="val">${fmtPrice(s.price)}</div></div>
+    <div><div class="label">P/E</div><div class="val">${fmtNum(s.pe)}</div></div>
+    <div><div class="label">EPS</div><div class="val">${fmtNum(s.eps)}</div></div>
+    <div><div class="label">Market Cap</div><div class="val">${fmtCap(s.marketCap)}</div></div>
+    <div><div class="label">Target</div><div class="val">${fmtPrice(s.target)}</div></div>
+    <div><div class="label">Desirability</div><div class="val" style="${upC?`color:${upC};`:''}">${s.desirability==null?"—":(s.desirability>=0?"+":"")+s.desirability.toFixed(1)+"%"}</div></div>
+  `;
+  const links = tvDocLinks(s.tv);
+  document.getElementById("pulsePanelDocs").innerHTML = `
+    <a class="pulse-btn" href="${links.sec}" target="_blank" rel="noopener">📄 SEC Filings</a>
+    <a class="pulse-btn" href="${links.stats}" target="_blank" rel="noopener">📊 Stats</a>
+    <a class="pulse-btn" href="${links.fcf}" target="_blank" rel="noopener">💵 Free Cash Flow</a>
+    <a class="pulse-btn" href="${links.balance}" target="_blank" rel="noopener">🏦 Assets &amp; Liabilities</a>
+  `;
+  const chartEl = document.getElementById("pulseChartContainer");
+  chartEl.innerHTML = "";
+  const script = document.createElement("script");
+  script.type = "text/javascript";
+  script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+  script.async = true;
+  script.innerHTML = JSON.stringify({
+    autosize: true,
+    symbol: s.tv,
+    interval: "D",
+    timezone: "Etc/UTC",
+    theme: "dark",
+    style: "1",
+    locale: "en",
+    backgroundColor: "rgba(15,20,32,1)",
+    gridColor: "rgba(35,42,58,0.5)",
+    hide_top_toolbar: false,
+    hide_legend: false,
+    allow_symbol_change: false,
+    support_host: "https://www.tradingview.com"
+  });
+  chartEl.appendChild(script);
+  overlay.classList.add("open");
+  panel.classList.add("open");
+}
+function closePanel(){
+  overlay.classList.remove("open");
+  panel.classList.remove("open");
+}
+overlay.addEventListener("click", closePanel);
+document.getElementById("pulsePanelClose").addEventListener("click", closePanel);
+document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ closePanel(); closeModal(); closeKeyModal(); } });
+
+function buildTape(){
+  const el = document.getElementById("pulseTapeContainer");
+  el.innerHTML = "";
+  const script = document.createElement("script");
+  script.type = "text/javascript";
+  script.src = "https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js";
+  script.async = true;
+  script.innerHTML = JSON.stringify({
+    symbols: WATCHLIST.map(w=>({ proName: w.tv, title: baseSymbol(w.tv) })),
+    showSymbolLogo: true,
+    colorTheme: "dark",
+    isTransparent: true,
+    displayMode: "compact",
+    locale: "en"
+  });
+  el.appendChild(script);
+}
+
+const modalOverlay = document.getElementById("pulseModalOverlay");
+function openModal(){ modalOverlay.classList.add("open"); }
+function closeModal(){ modalOverlay.classList.remove("open"); }
+document.getElementById("pulseAddBtn").addEventListener("click", openModal);
+document.getElementById("pulseModalCancel").addEventListener("click", closeModal);
+modalOverlay.addEventListener("click", e=>{ if(e.target===modalOverlay) closeModal(); });
+document.getElementById("pulseModalSave").addEventListener("click", ()=>{
+  const sym = document.getElementById("pulseInSymbol").value.trim().toUpperCase();
+  const exch = document.getElementById("pulseInExchange").value;
+  const sector = document.getElementById("pulseInSector").value.trim() || "Uncategorized";
+  const target = parseFloat(document.getElementById("pulseInTarget").value);
+  if(!sym) return;
+  const tv = exch + ":" + sym;
+  if(WATCHLIST.some(w=>w.tv===tv)){ closeModal(); return; }
+  WATCHLIST.push({ tv, sector, target: isNaN(target)?null:target });
+  document.getElementById("pulseInSymbol").value = "";
+  document.getElementById("pulseInSector").value = "";
+  document.getElementById("pulseInTarget").value = "";
+  closeModal();
+  buildTape();
+  refresh();
+});
+
+const keyModalOverlay = document.getElementById("pulseKeyModalOverlay");
+function openKeyModal(){ keyModalOverlay.classList.add("open"); }
+function closeKeyModal(){ keyModalOverlay.classList.remove("open"); }
+document.getElementById("pulseKeyBtn").addEventListener("click", openKeyModal);
+document.getElementById("pulseKeyModalCancel").addEventListener("click", closeKeyModal);
+keyModalOverlay.addEventListener("click", e=>{ if(e.target===keyModalOverlay) closeKeyModal(); });
+document.getElementById("pulseKeyModalSave").addEventListener("click", ()=>{
+  closeKeyModal();
+  refresh(true);
+});
+
+document.getElementById("pulseRefreshBtn").addEventListener("click", ()=>refresh(true));
+document.getElementById("pulseBannerRetry").addEventListener("click", ()=>refresh(true));
+
+function tickClock(){
+  document.getElementById("pulseClock").textContent = new Date().toLocaleTimeString();
+}
+setInterval(tickClock, 1000);
+tickClock();
+function startPolling(){
+  if(fetchTimer) clearInterval(fetchTimer);
+  fetchTimer = setInterval(()=>refresh(false), REFRESH_MS);
+}
+
+buildTape();
+refresh();
+startPolling();
+
+window.__pageFocus = window.__pageFocus || {};
+window.__pageFocus.pulse = function () {
+  setTimeout(() => document.getElementById("pulseSearchInput").focus(), 50);
+};
+})();
+</script>

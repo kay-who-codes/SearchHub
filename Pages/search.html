@@ -1,0 +1,469 @@
+<style>
+.page-header {
+    margin-bottom: 28px;
+}
+
+.page-header .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 6px;
+}
+
+.page-header h1 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 2rem;
+    letter-spacing: -0.01em;
+}
+
+.page-header p {
+    color: var(--text-dim);
+    font-size: 0.92rem;
+    margin-top: 4px;
+}
+
+.search-box {
+    margin-bottom: 20px;
+}
+
+.input-group {
+    display: flex;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+#search-input {
+    flex: 1;
+    padding: 14px 18px;
+    border: none;
+    background-color: var(--surface);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    outline: none;
+}
+
+#search-input:focus {
+    background-color: var(--surface-2);
+}
+
+#search-input::placeholder {
+    color: var(--text-faint);
+}
+
+#search-button {
+    padding: 0 22px;
+    border: none;
+    background-color: var(--accent);
+    color: var(--bg);
+    cursor: pointer;
+    transition: background-color 0.15s;
+    font-size: 0.95rem;
+}
+
+#search-button:hover {
+    background-color: #ddb672;
+}
+
+.filter-box {
+    margin-bottom: 26px;
+    position: relative;
+}
+
+.filter-box i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-faint);
+    font-size: 0.85rem;
+    pointer-events: none;
+}
+
+#filter-input {
+    width: 100%;
+    padding: 10px 14px 10px 36px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background-color: var(--surface);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.15s, background-color 0.15s;
+}
+
+#filter-input:focus {
+    background-color: var(--surface-2);
+    border-color: var(--accent);
+}
+
+#filter-input::placeholder {
+    color: var(--text-faint);
+}
+
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px;
+}
+
+@media (max-width: 700px) {
+    .categories-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.category-block {
+    min-width: 0;
+    background-color: var(--category-color-bg);
+    border: 1px solid var(--category-color-border);
+    border-radius: 10px;
+    padding: 14px;
+    transition: background-color 0.2s ease;
+}
+
+.category-title {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--category-color);
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+}
+
+.search-options {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+@media (max-width: 420px) {
+    .search-options {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.search-option {
+    background-color: #0a0a0a0a;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 6px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease,
+                background-color 0.15s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.search-option.hidden {
+    display: none;
+}
+
+.search-option:hover {
+    color: white;
+    transform: translateY(-2px);
+    border-color: var(--option-color, var(--accent));
+    background-color: #0a0a0a33;
+    box-shadow: 0 0 14px -2px var(--option-color, var(--accent)),
+                0 0 3px 0 var(--option-color, var(--accent));
+}
+
+.search-option i {
+    font-size: 1.15rem;
+    transition: filter 0.15s ease;
+    color: var(--category-color);
+}
+
+.search-option:hover i {
+    filter: drop-shadow(0 0 5px var(--option-color, var(--accent)));
+}
+
+.search-option:hover .name {
+    color: #ffffffc4;
+}
+
+.search-option .name {
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+.no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--text-faint);
+    font-size: 0.85rem;
+    padding: 30px 0;
+    display: none;
+}
+</style>
+
+<div class="page-header">
+    <span class="eyebrow">02</span>
+    <h1>Search</h1>
+    <p>Search across multiple platforms.</p>
+</div>
+
+<div class="search-box">
+    <div class="input-group">
+        <input type="text" id="search-input" placeholder="Enter your search term...">
+        <button id="search-button">
+            <i class="fas fa-search"></i>
+        </button>
+    </div>
+</div>
+
+<div class="filter-box">
+    <i class="fas fa-filter"></i>
+    <input type="text" id="filter-input" placeholder="Filter platforms...">
+</div>
+
+<div class="categories-grid"></div>
+<div class="no-results">No platforms match your filter.</div>
+
+<script>
+(function () {
+
+    // Each category carries its own colour. Options inherit it automatically.
+    const categories = [
+        {
+            name: "Search engines",
+            color: "#FF505E",
+            options: [
+                { name: "Google", icon: "fab fa-google", url: "https://www.google.com/search?q=", home: "https://www.google.com/" },
+                { name: "DuckDuckGo", icon: "fas fa-search", url: "https://duckduckgo.com/?q=", home: "https://duckduckgo.com/" },
+                { name: "Brave Search", icon: "fas fa-shield-alt", url: "https://search.brave.com/search?q=", home: "https://search.brave.com/" },
+                { name: "YouTube", icon: "fab fa-youtube", url: "https://www.youtube.com/results?search_query=", home: "https://www.youtube.com/" },
+                { name: "Google Images", icon: "fab fa-google", url: "https://www.google.com/search?tbm=isch&q=", home: "https://images.google.com/" },
+                { name: "Thesaurus", icon: "fa-solid fa-book", url: "https://www.onelook.com/thesaurus/?s=", home: "https://www.onelook.com/thesaurus/" },
+                { name: "RhymeZone", icon: "fa-solid fa-headphones", url: "https://www.rhymezone.com/r/rhyme.cgi?Word=", home: "https://www.rhymezone.com/" },
+                { name: "Etymology Online", icon: "fa-solid fa-language", url: "https://www.etymonline.com/search?q=", home: "https://www.etymonline.com/" }
+            ]
+        },
+        {
+            name: "Gaming",
+            color: "#FF65EA",
+            options: [
+                { name: "Steam DB", icon: "fa-brands fa-steam-symbol", url: "https://steamdb.info/search/?a=all&q=", home: "https://steamdb.info/" },
+                { name: "CD Keys", icon: "fa-solid fa-gamepad", url: "https://www.cdkeys.com/#q=", home: "https://www.cdkeys.com/" },
+                { name: "HowLongToBeat", icon: "fa-solid fa-clock", url: "https://howlongtobeat.com/?q=", home: "https://howlongtobeat.com/" }
+            ]
+        },
+        {
+            name: "Research and academia",
+            color: "#3392FF",
+            options: [
+                { name: "Google Scholar", icon: "fab fa-google", url: "https://scholar.google.com/scholar?q=", home: "https://scholar.google.com/" },
+                { name: "PubMed", icon: "fa-solid fa-microscope", url: "https://pubmed.ncbi.nlm.nih.gov/?term=", home: "https://pubmed.ncbi.nlm.nih.gov/" },
+                { name: "ResearchGate", icon: "fa-solid fa-flask", url: "https://www.researchgate.net/search?q=", home: "https://www.researchgate.net/" },
+                { name: "Semantic Scholar", icon: "fa-solid fa-atom", url: "https://www.semanticscholar.org/search?q=", home: "https://www.semanticscholar.org/" },
+                { name: "Internet Archive", icon: "fa-solid fa-box-archive", url: "https://archive.org/search?query=", home: "https://archive.org/" }
+            ]
+        },
+        {
+            name: "Legal",
+            color: "#C5C8CE",
+            options: [
+                { name: "Legislation.gov.uk", icon: "fa-solid fa-scale-balanced", url: "https://www.legislation.gov.uk/search?text=", home: "https://www.legislation.gov.uk/" },
+                { name: "BAILII", icon: "fa-solid fa-gavel", url: "https://www.bailii.org/cgi-bin/lucy_search_engine.cgi?querytarget=all&querystring=", home: "https://www.bailii.org/" },
+                { name: "Find Case Law", icon: "fa-solid fa-landmark", url: "https://caselaw.nationalarchives.gov.uk/search?query=", home: "https://caselaw.nationalarchives.gov.uk/" }
+            ]
+        },
+        {
+            name: "Social media",
+            color: "#A46CFF",
+            options: [
+                { name: "Twitter", icon: "fab fa-twitter", url: "https://twitter.com/search?q=", home: "https://twitter.com/" },
+                { name: "Reddit", icon: "fa-brands fa-reddit-alien", url: "https://www.reddit.com/search/?q=", home: "https://www.reddit.com/" },
+                { name: "Instagram Hashtag", icon: "fa-brands fa-instagram", url: "https://www.instagram.com/explore/tags/", home: "https://www.instagram.com/" },
+                { name: "LinkedIn", icon: "fab fa-linkedin", url: "https://www.linkedin.com/search/results/all/?keywords=", home: "https://www.linkedin.com/" },
+                { name: "Pinterest", icon: "fab fa-pinterest", url: "https://www.pinterest.com/search/pins/?q=", home: "https://www.pinterest.com/" }
+            ]
+        },
+        {
+            name: "Shopping",
+            color: "#F2FF38",
+            options: [
+                { name: "Amazon", icon: "fab fa-amazon", url: "https://www.amazon.co.uk/s?k=", home: "https://www.amazon.co.uk/" },
+                { name: "eBay", icon: "fab fa-ebay", url: "https://www.ebay.co.uk/sch/i.html?_nkw=", home: "https://www.ebay.co.uk/" },
+                { name: "Facebook Marketplace", icon: "fab fa-facebook", url: "https://www.facebook.com/marketplace/glasgow/search?query=", home: "https://www.facebook.com/marketplace/" },
+                { name: "Vinted", icon: "fa-solid fa-shirt", url: "https://www.vinted.co.uk/catalog?search_text=", home: "https://www.vinted.co.uk/" }
+            ]
+        },
+        {
+            name: "Entertainment",
+            color: "#5BFF76",
+            options: [
+                { name: "IMDb", icon: "fab fa-imdb", url: "https://www.imdb.com/find?q=", home: "https://www.imdb.com/" },
+                { name: "Spotify", icon: "fab fa-spotify", url: "https://open.spotify.com/search/", home: "https://open.spotify.com/" },
+                { name: "Soundcloud", icon: "fab fa-soundcloud", url: "https://soundcloud.com/search?q=", home: "https://soundcloud.com/" }
+            ]
+        },
+        {
+            name: "Learning",
+            color: "#FF9147",
+            options: [
+                { name: "Google Maps", icon: "fas fa-map-marker-alt", url: "https://www.google.com/maps/search/", home: "https://www.google.com/maps/" },
+                { name: "Wikipedia", icon: "fab fa-wikipedia-w", url: "https://en.wikipedia.org/wiki/Special:Search?search=", home: "https://en.wikipedia.org/" },
+                { name: "Google Arts and Culture", icon: "fas fa-paint-brush", url: "https://artsandculture.google.com/search?q=", home: "https://artsandculture.google.com/" },
+                { name: "Substack", icon: "fa-solid fa-bookmark", url: "https://substack.com/search/", home: "https://substack.com/" },
+                { name: "Quora", icon: "fab fa-quora", url: "https://www.quora.com/search?q=", home: "https://www.quora.com/" },
+                { name: "LessWrong", icon: "fa-solid fa-brain", url: "https://www.lesswrong.com/search?query=", home: "https://www.lesswrong.com/" },
+                { name: "LibGen", icon: "fab fa-stack-overflow", url: "https://libgen.li/index.php?req=", home: "https://libgen.li/" }
+            ]
+        },
+        {
+            name: "Programming",
+            color: "#00E426",
+            options: [
+                { name: "GitHub", icon: "fab fa-github", url: "https://github.com/search?q=", home: "https://github.com/" }
+            ]
+        }
+    ];
+
+    const searchInput = document.getElementById('search-input');
+    const searchButton = document.getElementById('search-button');
+    const filterInput = document.getElementById('filter-input');
+    const categoriesGrid = document.querySelector('.categories-grid');
+    const noResults = document.querySelector('.no-results');
+
+    let flatOptions = [];
+
+    function hexToRgba(hex, alpha) {
+        hex = hex.replace('#', '');
+        if (hex.length === 3) {
+            hex = hex.split('').map(c => c + c).join('');
+        }
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    function renderCategories() {
+        categoriesGrid.innerHTML = '';
+        flatOptions = [];
+
+        categories.forEach((category, catIndex) => {
+            const block = document.createElement('div');
+            block.className = 'category-block';
+            block.dataset.category = catIndex;
+
+            const catColor = category.color || '#888888';
+            block.style.setProperty('--category-color', catColor);
+            block.style.setProperty('--category-color-bg', hexToRgba(catColor, 0.05));
+            block.style.setProperty('--category-color-border', hexToRgba(catColor, 0.18));
+
+            const title = document.createElement('div');
+            title.className = 'category-title';
+            title.textContent = category.name;
+            block.appendChild(title);
+
+            const grid = document.createElement('div');
+            grid.className = 'search-options';
+
+            category.options.forEach(option => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'search-option';
+                optionElement.dataset.url = option.url;
+                optionElement.dataset.home = option.home || option.url;
+                optionElement.dataset.name = option.name.toLowerCase();
+
+                // Category colour drives the hover glow and icon tint
+                optionElement.style.setProperty('--option-color', catColor);
+
+                // Icon picks up category colour from CSS automatically
+                optionElement.innerHTML = `
+                    <i class="${option.icon}"></i>
+                    <span class="name">${option.name}</span>
+                `;
+
+                grid.appendChild(optionElement);
+                flatOptions.push({ element: optionElement, block: block, name: option.name.toLowerCase() });
+            });
+
+            block.appendChild(grid);
+            categoriesGrid.appendChild(block);
+        });
+    }
+
+    function performSearch() {
+        const searchTerm = searchInput.value.trim();
+        if (!searchTerm) {
+            searchInput.focus();
+            return;
+        }
+        window.open(categories[0].options[0].url + encodeURIComponent(searchTerm), '_blank');
+    }
+
+    function applyFilter() {
+        const term = filterInput.value.trim().toLowerCase();
+        let anyVisible = false;
+
+        document.querySelectorAll('.category-block').forEach(block => {
+            let blockHasVisible = false;
+            block.querySelectorAll('.search-option').forEach(el => {
+                const matches = !term || el.dataset.name.includes(term);
+                el.classList.toggle('hidden', !matches);
+                if (matches) {
+                    blockHasVisible = true;
+                    anyVisible = true;
+                }
+            });
+            block.style.display = blockHasVisible ? '' : 'none';
+        });
+
+        noResults.style.display = anyVisible ? 'none' : 'block';
+    }
+
+    function init() {
+        renderCategories();
+
+        searchButton.addEventListener('click', performSearch);
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') performSearch();
+        });
+
+        filterInput.addEventListener('input', applyFilter);
+
+        categoriesGrid.addEventListener('click', function (e) {
+            const option = e.target.closest('.search-option');
+            if (!option) return;
+            const searchTerm = searchInput.value.trim();
+            if (!searchTerm) {
+                window.open(option.dataset.home, '_blank');
+            } else {
+                window.open(option.dataset.url + encodeURIComponent(searchTerm), '_blank');
+            }
+        });
+    }
+
+    init();
+
+    // Hook for the shell to focus this page's search field
+    window.__pageFocus = window.__pageFocus || {};
+    window.__pageFocus.search = function () {
+        setTimeout(() => searchInput.focus(), 50);
+    };
+
+})();
+</script>

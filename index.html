@@ -2,17 +2,39 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
 <title>Console — Personal Web Deck</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Theme Colors -->
+<meta name="theme-color" content="#14171c">
+<meta name="color-scheme" content="dark">
+
+<!-- Web App Settings -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Console">
+
+<!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+
+<!-- Favicon (modern browsers) -->
 <link rel="icon" type="image/svg+xml" href="https://cdn.jsdelivr.net/gh/kay-who-codes/SVG-Browser@main/SVGs/Universe-Magnifying-Glass.svg">
-<link rel="apple-touch-icon" href="https://cdn.jsdelivr.net/gh/kay-who-codes/SVG-Browser@main/SVGs/Universe-Magnifying-Glass.svg">
+
+<!-- iOS Home Screen Icon (single 180x180 is sufficient) -->
+<link rel="apple-touch-icon" href="/AppFiles/Icons/apple-touch-icon-180x180.png">
+
+<!-- Manifest for Android/Chrome -->
 <link rel="manifest" href="/manifest.json">
 
 <style>
+    /* ... your existing styles ... */
     :root {
         /* ── Token system ── */
         --bg: #14171c;
@@ -325,12 +347,13 @@
            next to index.html. Nothing else needs to change.
         ──────────────────────────────────────────────────────────── */
         const PAGES = [
-            { id: 'bookmarks', label: 'Bookmarks', icon: 'fa-solid fa-star',      file: 'bookmarks.html' },
-            { id: 'search',    label: 'Search',    icon: 'fa-solid fa-magnifying-glass', file: 'search.html' },
-            { id: 'advanced',  label: 'Advanced',  icon: 'fa-solid fa-cogs', file: 'advanced.html' },
-            { id: 'subsearch', label: 'SubSearch', icon: 'fa-solid fa-layer-group', file: 'subsearch.html' },
-            { id: 'lexsearch', label: 'LexSearch', icon: 'fa-solid fa-scale-balanced', file: 'lexsearch.html' }
-        ];
+    { id: 'bookmarks', label: 'Bookmarks', icon: 'fa-solid fa-star',      file: 'bookmarks.html' },
+    { id: 'search',    label: 'Search',    icon: 'fa-solid fa-magnifying-glass', file: 'search.html' },
+    { id: 'advanced',  label: 'Advanced',  icon: 'fa-solid fa-cogs', file: 'advanced.html' },
+    { id: 'subsearch', label: 'SubSearch', icon: 'fa-solid fa-layer-group', file: 'subsearch.html' },
+    { id: 'lexsearch', label: 'LexSearch', icon: 'fa-solid fa-scale-balanced', file: 'lexsearch.html' },
+    { id: 'xsearch',   label: 'X Search',  icon: 'fav fa-x',   file: 'xsearch.html' }
+];
 
         const navList = document.getElementById('nav-list');
         const viewport = document.getElementById('viewport');

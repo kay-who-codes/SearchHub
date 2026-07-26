@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-<title>Console — Personal Web Deck</title>
+<title>SearchHub</title>
 
 <!-- Theme Colors -->
 <meta name="theme-color" content="#14171c">
@@ -14,7 +14,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Console">
+<meta name="apple-mobile-web-app-title" content="SearchHub">
 
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -325,13 +325,13 @@
     <!-- ── Rail: sidebar / mobile top-strip navigation ── -->
     <nav class="rail">
         <div class="brand">
-            <span class="mark">Console</span>
+            <span class="mark">SearchHub</span>
             <span class="tag">v2</span>
         </div>
         <div class="rail-eyebrow">Channels</div>
         <ul id="nav-list"></ul>
         <div class="rail-footer">
-            <span>DECK</span>
+            <span id="date">--</span>
             <span id="clock">--:--</span>
         </div>
     </nav>
@@ -440,10 +440,25 @@
     }
 }
 
+        function ordinal(n) {
+            const s = ['th', 'st', 'nd', 'rd'];
+            const v = n % 100;
+            return n + (s[(v - 20) % 10] || s[v] || s[0]);
+        }
+
         function tickClock() {
-            const el = document.getElementById('clock');
             const now = new Date();
-            el.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const months = ['January', 'February', 'March', 'April', 'May', 'June',
+                            'July', 'August', 'September', 'October', 'November', 'December'];
+
+            // Update date (e.g. "Sun, 26th July")
+            const dateEl = document.getElementById('date');
+            dateEl.textContent = `${days[now.getDay()]}, ${(now.getDate())} ${months[now.getMonth()]}`;
+
+            // Update time
+            const clockEl = document.getElementById('clock');
+            clockEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
         document.addEventListener('DOMContentLoaded', () => {

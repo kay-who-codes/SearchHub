@@ -52,7 +52,7 @@
     border-radius: 8px;
     overflow: hidden;
     margin-bottom: 18px;
-    background: var(--surface);
+    background: #131313;
 }
 
 .pulse-banner {
@@ -351,7 +351,7 @@
 
 <div class="pulse-page">
 <div class="page-header">
-    <span class="eyebrow">06</span>
+    <span class="eyebrow">07</span>
     <h1>Pulse</h1>
     <p>Live watchlist &amp; fundamentals, powered by TradingView and Finnhub.</p>
 </div>
@@ -491,11 +491,11 @@
    🔧 DEVELOPER CONFIG — replace this with your own watchlist.
    ========================================================================= */
 let WATCHLIST = [
-  { tv: "NASDAQ:AAPL",  sector: "Technology",  target: 250 },
-  { tv: "NASDAQ:AMZN",  sector: "Consumer",    target: 230 },
-  { tv: "NASDAQ:GOOGL", sector: "Technology",  target: 200 },
-  { tv: "NYSE:JPM",     sector: "Financials",  target: 220 },
-  { tv: "NYSE:DIS",     sector: "Media",       target: 115 }
+  { tv: "NYSE:BP", sector: "Energy", target: 25 },
+  { tv: "Bitstamp:BTCUSD", sector: "Crypto", target: 55000 },
+  { tv: "NYSE:DNA",  sector: "Biotech",  target: 1.7 },
+  { tv: "OTC:INPOY",     sector: "Logistics",       target: 2 },
+  { tv: "NYSE:UBER",     sector: "Transportation",       target: 15 }
 ];
 const REFRESH_MS = 300000;
 const WORKER_BASE = "https://pulse.kaywhocreates.workers.dev";
@@ -588,7 +588,7 @@ function desirabilityColor(desirability){
   const factor = desirabilityBandFactor(Math.abs(desirability));
   return rgbStr(lerpColor(C_NEUTRAL, base, factor));
 }
-const SECTOR_PALETTE = ["#5B8CFF", "#33D6A0", "#FF5C6C", "#F5A623", "#C77DFF", "#31C4FF", "#FF6EC7", "#8CFF6B"];
+const SECTOR_PALETTE = ["#3572FF", "#31FFBA", "#FF4355", "#F5A623", "#BA60FF", "#31C4FF", "#FF4DBB", "#6AFF40"];
 function sectorColor(sector){
   let hash = 0;
   for(let i=0;i<sector.length;i++){ hash = (hash*31 + sector.charCodeAt(i)) >>> 0; }

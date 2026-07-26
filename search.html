@@ -83,22 +83,31 @@
     padding: 16px 12px;
     text-align: center;
     cursor: pointer;
-    transition: transform 0.15s, border-color 0.15s, background-color 0.15s;
+    transition: transform 0.15s ease, border-color 0.15s ease,
+                background-color 0.15s ease, box-shadow 0.2s ease;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 10px;
+    /* --option-color is set per-element inline via JS */
 }
 
 .search-option:hover {
     transform: translateY(-2px);
-    border-color: var(--accent);
+    border-color: var(--option-color, var(--accent));
     background-color: var(--surface-2);
+    box-shadow: 0 0 18px -2px var(--option-color, var(--accent)),
+                0 0 4px 0 var(--option-color, var(--accent));
 }
 
 .search-option i {
     font-size: 1.5rem;
+    transition: filter 0.15s ease;
+}
+
+.search-option:hover i {
+    filter: drop-shadow(0 0 6px var(--option-color, var(--accent)));
 }
 
 .search-option .name {
@@ -206,6 +215,9 @@
             optionElement.className = 'search-option';
             optionElement.dataset.url = option.url;
             optionElement.dataset.home = option.home || option.url;
+            // Set the icon's color as a CSS variable so the hover
+            // border/glow can pick it up per-option.
+            optionElement.style.setProperty('--option-color', option.color);
             optionElement.innerHTML = `
                 <i class="${option.icon}" style="color: ${option.color}"></i>
                 <span class="name">${option.name}</span>

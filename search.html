@@ -237,7 +237,7 @@
 <script>
 (function () {
 
-    // Array of search options grouped by category - each category now has a 'color'
+    // Each category carries its own colour. Options inherit it automatically.
     const categories = [
         {
             name: "Search engines",
@@ -385,10 +385,12 @@
                 // Category colour drives the hover glow and icon tint
                 optionElement.style.setProperty('--option-color', catColor);
 
-                // Icon picks up category colour from CSS automatically                optionElement.innerHTML = `
+                // Icon picks up category colour from CSS automatically
+                optionElement.innerHTML = `
                     <i class="${option.icon}"></i>
                     <span class="name">${option.name}</span>
                 `;
+
                 grid.appendChild(optionElement);
                 flatOptions.push({ element: optionElement, block: block, name: option.name.toLowerCase() });
             });
@@ -430,7 +432,7 @@
     function init() {
         renderCategories();
 
-        searchButton.addEventListener('click', () => performSearch());
+        searchButton.addEventListener('click', performSearch);
 
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') performSearch();
@@ -452,7 +454,7 @@
 
     init();
 
-    // Register this page's focus handler with the shell (generic hook, keyed by page id)
+    // Hook for the shell to focus this page's search field
     window.__pageFocus = window.__pageFocus || {};
     window.__pageFocus.search = function () {
         setTimeout(() => searchInput.focus(), 50);

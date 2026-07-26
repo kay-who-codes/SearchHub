@@ -1,0 +1,766 @@
+<style>
+    /* ── LexSearch page — inherits Console tokens ── */
+    .lex-eyebrow {
+        font-family: var(--font-mono);
+        font-size: 0.66rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--accent2);
+        margin-bottom: 6px;
+    }
+
+    .lex-title {
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: 2rem;
+        letter-spacing: -0.01em;
+        margin-bottom: 6px;
+    }
+
+    .lex-title em { font-style: normal; color: var(--accent); }
+
+    .lex-sub {
+        color: var(--text-dim);
+        font-size: 0.9rem;
+        margin-bottom: 26px;
+    }
+
+    /* ── Tab bar ── */
+    .lex-tabs {
+        display: flex;
+        background: var(--bg-rail);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 4px;
+        gap: 4px;
+        margin-bottom: 22px;
+    }
+
+    .lex-tab {
+        flex: 1;
+        padding: 11px 14px;
+        border: none;
+        border-radius: 9px;
+        background: transparent;
+        color: var(--text-dim);
+        font-family: var(--font-body);
+        font-size: 0.86rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.18s, color 0.18s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        white-space: nowrap;
+    }
+
+    .lex-tab:hover { color: var(--text); background: var(--surface); }
+
+    .lex-tab.active {
+        background: var(--accent-soft);
+        color: var(--accent);
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
+    }
+
+    .lex-tab i { font-size: 0.86rem; }
+
+    /* ── Panels ── */
+    .lex-panel { display: none; }
+    .lex-panel.active { display: block; animation: rise 0.22s ease; }
+
+    /* ── Callout ── */
+    .lex-callout {
+        background: rgba(79, 176, 168, 0.06);
+        border: 1px solid rgba(79, 176, 168, 0.2);
+        border-left: 3px solid var(--accent2);
+        border-radius: 8px;
+        padding: 12px 16px;
+        font-size: 0.82rem;
+        color: var(--text-dim);
+        margin-bottom: 18px;
+    }
+    .lex-callout strong { color: var(--accent2); }
+
+    /* ── Card ── */
+    .lex-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 22px;
+        margin-bottom: 14px;
+    }
+
+    .lex-card-header {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        margin-bottom: 18px;
+    }
+
+    .lex-card-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: var(--accent-soft);
+        border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+        color: var(--accent);
+    }
+
+    .lex-card-title {
+        font-family: var(--font-display);
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    .lex-card-desc {
+        font-size: 0.72rem;
+        color: var(--text-faint);
+        margin-top: 1px;
+    }
+
+    /* ── Form elements ── */
+    .lex-field { margin-bottom: 14px; }
+    .lex-field:last-child { margin-bottom: 0; }
+
+    .lex-field label {
+        display: block;
+        font-family: var(--font-mono);
+        font-size: 0.66rem;
+        font-weight: 500;
+        color: var(--text-faint);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 7px;
+    }
+
+    .lex-field input[type="text"],
+    .lex-field input[type="number"],
+    .lex-field select {
+        width: 100%;
+        background: var(--bg-rail);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 0.9rem;
+        padding: 11px 14px;
+        transition: border-color 0.18s, box-shadow 0.18s;
+        outline: none;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+    .lex-field input:focus, .lex-field select:focus {
+        border-color: var(--accent2);
+        box-shadow: 0 0 0 3px rgba(79, 176, 168, 0.14);
+    }
+
+    .lex-field input::placeholder { color: var(--text-faint); }
+
+    .lex-field select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23565c6b'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 32px;
+        cursor: pointer;
+    }
+
+    .lex-field select option { background: var(--surface); color: var(--text); }
+
+    .lex-help {
+        font-size: 0.7rem;
+        color: var(--text-faint);
+        margin-top: 5px;
+    }
+
+    /* ── Row grids ── */
+    .lex-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .lex-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+    @media (max-width: 580px) {
+        .lex-row-2, .lex-row-3 { grid-template-columns: 1fr; }
+    }
+
+    /* ── Checkbox pills ── */
+    .lex-checks { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .lex-pill {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        background: var(--bg-rail);
+        border: 1px solid var(--border);
+        border-radius: 50px;
+        padding: 7px 13px;
+        cursor: pointer;
+        font-size: 0.78rem;
+        color: var(--text-dim);
+        transition: border-color 0.18s, color 0.18s, background 0.18s;
+        user-select: none;
+    }
+
+    .lex-pill input { display: none; }
+    .lex-pill:hover { border-color: var(--accent2); color: var(--text); }
+
+    .lex-pill:has(input:checked) {
+        border-color: var(--accent2);
+        background: rgba(79, 176, 168, 0.1);
+        color: var(--accent2);
+    }
+
+    .lex-pill .lex-dot {
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+        opacity: 0.5;
+        transition: opacity 0.18s;
+    }
+    .lex-pill:has(input:checked) .lex-dot { opacity: 1; }
+
+    /* ── URL preview ── */
+    .lex-url-preview {
+        background: var(--bg-rail);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 11px 15px;
+        margin-top: 18px;
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        color: var(--text-faint);
+        word-break: break-all;
+        line-height: 1.6;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        transition: border-color 0.18s;
+    }
+
+    .lex-url-preview.has-url { border-color: color-mix(in srgb, var(--accent2) 45%, var(--border)); color: var(--accent2); }
+
+    .lex-url-label {
+        font-size: 0.6rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-faint);
+        flex-shrink: 0;
+        padding-top: 1px;
+    }
+
+    /* ── Actions ── */
+    .lex-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+    }
+
+    .lex-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: none;
+        border-radius: 8px;
+        font-family: var(--font-body);
+        font-weight: 500;
+        font-size: 0.84rem;
+        cursor: pointer;
+        transition: all 0.18s;
+        padding: 11px 20px;
+    }
+
+    .lex-btn-primary {
+        background: var(--accent);
+        color: #1b1710;
+        font-weight: 600;
+    }
+    .lex-btn-primary:hover { background: #dab873; }
+
+    .lex-btn-secondary {
+        background: var(--bg-rail);
+        color: var(--text-dim);
+        border: 1px solid var(--border);
+    }
+    .lex-btn-secondary:hover { color: var(--text); border-color: var(--accent2); }
+
+    .lex-btn-ghost {
+        background: transparent;
+        color: var(--text-faint);
+        border: 1px solid transparent;
+    }
+    .lex-btn-ghost:hover { color: #c96f5c; border-color: var(--border); }
+
+    @media (max-width: 480px) {
+        .lex-actions { flex-direction: column; }
+        .lex-btn { width: 100%; }
+        .lex-tab .lex-tab-label { display: none; }
+    }
+</style>
+
+<div class="lex-eyebrow">Channel 05</div>
+<div class="lex-title">UK Legal <em>Research</em></div>
+<div class="lex-sub">Query builder for BAILII case law and Legislation.gov.uk statutes.</div>
+
+<div class="lex-tabs" role="tablist">
+    <button class="lex-tab active" role="tab" data-tab="bailii" id="lex-tabbtn-bailii">
+        <i class="fa-solid fa-landmark"></i>
+        <span class="lex-tab-label">BAILII Case Law</span>
+    </button>
+    <button class="lex-tab" role="tab" data-tab="legislation" id="lex-tabbtn-legislation">
+        <i class="fa-solid fa-scroll"></i>
+        <span class="lex-tab-label">Legislation.gov.uk</span>
+    </button>
+</div>
+
+<!-- PANEL: BAILII -->
+<div class="lex-panel active" id="lex-panel-bailii">
+
+    <div class="lex-callout">
+        <strong>BAILII</strong> — British and Irish Legal Information Institute. Search case law from courts across England &amp; Wales, Scotland, Northern Ireland, and Ireland.
+    </div>
+
+    <div class="lex-card">
+        <div class="lex-card-header">
+            <div class="lex-card-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+            <div>
+                <div class="lex-card-title">Keywords &amp; Phrases</div>
+                <div class="lex-card-desc">Full-text search terms</div>
+            </div>
+        </div>
+
+        <div class="lex-field">
+            <label>All of these words</label>
+            <input type="text" id="lex-b-all" placeholder="e.g. negligence duty care">
+            <div class="lex-help">All words must appear in the judgment</div>
+        </div>
+
+        <div class="lex-row-2">
+            <div class="lex-field">
+                <label>Exact phrase</label>
+                <input type="text" id="lex-b-phrase" placeholder="e.g. reasonable man">
+            </div>
+            <div class="lex-field">
+                <label>Any of these words</label>
+                <input type="text" id="lex-b-any" placeholder="e.g. claimant appellant">
+            </div>
+        </div>
+
+        <div class="lex-field">
+            <label>Exclude these words</label>
+            <input type="text" id="lex-b-exclude" placeholder="e.g. contract employment">
+        </div>
+    </div>
+
+    <div class="lex-card">
+        <div class="lex-card-header">
+            <div class="lex-card-icon"><i class="fa-solid fa-user"></i></div>
+            <div>
+                <div class="lex-card-title">Parties &amp; Citation</div>
+                <div class="lex-card-desc">Filter by case name or neutral citation</div>
+            </div>
+        </div>
+
+        <div class="lex-row-2">
+            <div class="lex-field">
+                <label>Party name contains</label>
+                <input type="text" id="lex-b-party" placeholder="e.g. Smith">
+            </div>
+            <div class="lex-field">
+                <label>Neutral citation</label>
+                <input type="text" id="lex-b-citation" placeholder="e.g. [2022] EWCA Civ">
+            </div>
+        </div>
+    </div>
+
+    <div class="lex-card">
+        <div class="lex-card-header">
+            <div class="lex-card-icon"><i class="fa-solid fa-building-columns"></i></div>
+            <div>
+                <div class="lex-card-title">Court &amp; Date Range</div>
+                <div class="lex-card-desc">Narrow by jurisdiction and time period</div>
+            </div>
+        </div>
+
+        <div class="lex-field">
+            <label>Jurisdiction / Database</label>
+            <select id="lex-b-db">
+                <option value="">— All jurisdictions —</option>
+                <optgroup label="England &amp; Wales">
+                    <option value="EWCA/Civ">Court of Appeal (Civil)</option>
+                    <option value="EWCA/Crim">Court of Appeal (Criminal)</option>
+                    <option value="EWHC/Admin">High Court (Admin)</option>
+                    <option value="EWHC/Ch">High Court (Chancery)</option>
+                    <option value="EWHC/Comm">High Court (Commercial)</option>
+                    <option value="EWHC/Fam">High Court (Family)</option>
+                    <option value="EWHC/KB">High Court (King's Bench)</option>
+                    <option value="EWHC/Pat">High Court (Patents)</option>
+                    <option value="EWHC/TCC">High Court (TCC)</option>
+                    <option value="UKSC">UK Supreme Court</option>
+                    <option value="UKHL">House of Lords</option>
+                    <option value="UKUT">Upper Tribunal</option>
+                    <option value="EAT">Employment Appeal Tribunal</option>
+                </optgroup>
+                <optgroup label="Scotland">
+                    <option value="ScotCS/CSOH">Court of Session (Outer House)</option>
+                    <option value="ScotCS/CSIH">Court of Session (Inner House)</option>
+                    <option value="ScotHC/HCJ">High Court of Justiciary</option>
+                </optgroup>
+                <optgroup label="Northern Ireland">
+                    <option value="NIQB">NI High Court</option>
+                    <option value="NICA">NI Court of Appeal</option>
+                </optgroup>
+                <optgroup label="Ireland">
+                    <option value="IEHC">Irish High Court</option>
+                    <option value="IECA">Irish Court of Appeal</option>
+                    <option value="IESC">Irish Supreme Court</option>
+                </optgroup>
+                <optgroup label="European">
+                    <option value="EUECJ">Court of Justice (CJEU)</option>
+                </optgroup>
+            </select>
+        </div>
+
+        <div class="lex-row-2">
+            <div class="lex-field">
+                <label>Year from</label>
+                <input type="number" id="lex-b-yr-from" placeholder="e.g. 2010" min="1800" max="2026">
+            </div>
+            <div class="lex-field">
+                <label>Year to</label>
+                <input type="number" id="lex-b-yr-to" placeholder="e.g. 2024" min="1800" max="2026">
+            </div>
+        </div>
+    </div>
+
+    <div class="lex-card">
+        <div class="lex-card-header">
+            <div class="lex-card-icon"><i class="fa-solid fa-gear"></i></div>
+            <div><div class="lex-card-title">Display Options</div></div>
+        </div>
+        <div class="lex-row-2">
+            <div class="lex-field">
+                <label>Sort by</label>
+                <select id="lex-b-sort">
+                    <option value="">Relevance (default)</option>
+                    <option value="date">Date (newest first)</option>
+                    <option value="date_asc">Date (oldest first)</option>
+                </select>
+            </div>
+            <div class="lex-field">
+                <label>Results per page</label>
+                <select id="lex-b-results">
+                    <option value="">10 (default)</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="lex-url-preview" id="lex-b-preview">
+        <span class="lex-url-label">URL</span>
+        <span id="lex-b-preview-text">Fill in the fields above to generate your search URL…</span>
+    </div>
+
+    <div class="lex-actions">
+        <button class="lex-btn lex-btn-primary" id="lex-b-launch"><i class="fa-solid fa-magnifying-glass"></i> Search BAILII</button>
+        <button class="lex-btn lex-btn-secondary" id="lex-b-copy"><i class="fa-regular fa-clipboard"></i> Copy URL</button>
+        <button class="lex-btn lex-btn-ghost" id="lex-b-clear"><i class="fa-solid fa-xmark"></i> Clear</button>
+    </div>
+
+</div><!-- /lex-panel-bailii -->
+
+<!-- PANEL: LEGISLATION -->
+<div class="lex-panel" id="lex-panel-legislation">
+
+    <div class="lex-callout">
+        <strong>Legislation.gov.uk</strong> — The official UK statute database. Search Acts of Parliament, Statutory Instruments, Scottish Parliament legislation, and more.
+    </div>
+
+    <div class="lex-card">
+        <div class="lex-card-header">
+            <div class="lex-card-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+            <div><div class="lex-card-title">Keywords &amp; Title</div></div>
+        </div>
+
+        <div class="lex-field">
+            <label>Search terms</label>
+            <input type="text" id="lex-l-query" placeholder="e.g. housing benefit local authority">
+            <div class="lex-help">Searches within the text of legislation</div>
+        </div>
+
+        <div class="lex-field">
+            <label>Title contains</label>
+            <input type="text" id="lex-l-title" placeholder="e.g. Companies Act">
+        </div>
+    </div>
+
+    <div class="lex-card">
+        <div class="lex-card-header">
+            <div class="lex-card-icon"><i class="fa-solid fa-folder-open"></i></div>
+            <div>
+                <div class="lex-card-title">Legislation Type</div>
+                <div class="lex-card-desc">Select one or more types</div>
+            </div>
+        </div>
+
+        <div class="lex-field">
+            <label>Primary type</label>
+            <select id="lex-l-type">
+                <option value="">— All types —</option>
+                <option value="ukpga">UK Public General Act</option>
+                <option value="ukla">UK Local Act</option>
+                <option value="ukppa">UK Private and Personal Act</option>
+                <option value="uksi">UK Statutory Instrument</option>
+                <option value="ukdsi">UK Draft Statutory Instrument</option>
+                <option value="ukmd">UK Ministerial Direction</option>
+                <option value="ukmo">UK Ministerial Order</option>
+                <option value="nia">Northern Ireland Act</option>
+                <option value="nisr">NI Statutory Rule</option>
+                <option value="asp">Act of the Scottish Parliament</option>
+                <option value="ssi">Scottish Statutory Instrument</option>
+                <option value="asc">Act of Senedd Cymru</option>
+                <option value="wsi">Wales Statutory Instrument</option>
+                <option value="mwa">Measure of the National Assembly for Wales</option>
+                <option value="eudn">EU Decision</option>
+                <option value="eudr">EU Directive</option>
+                <option value="eur">EU Regulation</option>
+            </select>
+        </div>
+
+        <div class="lex-field">
+            <label>Jurisdiction</label>
+            <div class="lex-checks" id="lex-l-jurisdiction">
+                <label class="lex-pill"><input type="checkbox" value="england"><span class="lex-dot"></span> England</label>
+                <label class="lex-pill"><input type="checkbox" value="wales"><span class="lex-dot"></span> Wales</label>
+                <label class="lex-pill"><input type="checkbox" value="scotland"><span class="lex-dot"></span> Scotland</label>
+                <label class="lex-pill"><input type="checkbox" value="ni"><span class="lex-dot"></span> N. Ireland</label>
+                <label class="lex-pill"><input type="checkbox" value="eu"><span class="lex-dot"></span> EU (retained)</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="lex-card">
+        <div class="lex-card-header">
+            <div class="lex-card-icon"><i class="fa-solid fa-calendar"></i></div>
+            <div><div class="lex-card-title">Year &amp; Number</div></div>
+        </div>
+
+        <div class="lex-row-3">
+            <div class="lex-field">
+                <label>Year from</label>
+                <input type="number" id="lex-l-yr-from" placeholder="e.g. 1990" min="1200" max="2026">
+            </div>
+            <div class="lex-field">
+                <label>Year to</label>
+                <input type="number" id="lex-l-yr-to" placeholder="e.g. 2024" min="1200" max="2026">
+            </div>
+            <div class="lex-field">
+                <label>Specific number</label>
+                <input type="number" id="lex-l-number" placeholder="e.g. 12" min="1">
+            </div>
+        </div>
+    </div>
+
+    <div class="lex-card">
+        <div class="lex-card-header">
+            <div class="lex-card-icon"><i class="fa-solid fa-rotate"></i></div>
+            <div><div class="lex-card-title">Version &amp; Status</div></div>
+        </div>
+        <div class="lex-row-2">
+            <div class="lex-field">
+                <label>Version</label>
+                <select id="lex-l-version">
+                    <option value="">Current version (default)</option>
+                    <option value="enacted">As enacted / made</option>
+                    <option value="prospective">Including prospective amendments</option>
+                </select>
+            </div>
+            <div class="lex-field">
+                <label>Sort by</label>
+                <select id="lex-l-sort">
+                    <option value="">Relevance</option>
+                    <option value="title">Title A–Z</option>
+                    <option value="year-asc">Year (oldest first)</option>
+                    <option value="year-desc">Year (newest first)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="lex-url-preview" id="lex-l-preview">
+        <span class="lex-url-label">URL</span>
+        <span id="lex-l-preview-text">Fill in the fields above to generate your search URL…</span>
+    </div>
+
+    <div class="lex-actions">
+        <button class="lex-btn lex-btn-primary" id="lex-l-launch"><i class="fa-solid fa-magnifying-glass"></i> Search Legislation</button>
+        <button class="lex-btn lex-btn-secondary" id="lex-l-copy"><i class="fa-regular fa-clipboard"></i> Copy URL</button>
+        <button class="lex-btn lex-btn-ghost" id="lex-l-clear"><i class="fa-solid fa-xmark"></i> Clear</button>
+    </div>
+
+</div><!-- /lex-panel-legislation -->
+
+<div class="srch-footer-tags" style="margin-top:30px;padding-top:18px;border-top:1px solid var(--border);font-family:var(--font-mono);font-size:0.68rem;color:var(--text-faint)">
+    LexSearch is an independent search helper. Data is retrieved from
+    <a href="https://www.bailii.org" target="_blank" rel="noopener" style="color:var(--accent2)">BAILII</a>
+    and
+    <a href="https://www.legislation.gov.uk" target="_blank" rel="noopener" style="color:var(--accent2)">Legislation.gov.uk</a>.
+    Not legal advice.
+</div>
+
+<script>
+(function () {
+    function val(id) {
+        const el = document.getElementById(id);
+        return el ? el.value.trim() : '';
+    }
+
+    function switchTab(name) {
+        document.querySelectorAll('.lex-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+        document.querySelectorAll('.lex-panel').forEach(p => p.classList.toggle('active', p.id === 'lex-panel-' + name));
+    }
+    document.getElementById('lex-tabbtn-bailii').addEventListener('click', () => switchTab('bailii'));
+    document.getElementById('lex-tabbtn-legislation').addEventListener('click', () => switchTab('legislation'));
+
+    function buildBailii() {
+        const base = 'https://www.bailii.org/cgi-bin/lucy_new.cgi';
+        const params = new URLSearchParams();
+
+        const all = val('lex-b-all'), phrase = val('lex-b-phrase'), any = val('lex-b-any'),
+              excl = val('lex-b-exclude'), party = val('lex-b-party'), cite = val('lex-b-citation'),
+              db = val('lex-b-db'), yrFrom = val('lex-b-yr-from'), yrTo = val('lex-b-yr-to'),
+              sort = val('lex-b-sort'), results = val('lex-b-results');
+
+        let queryParts = [];
+        if (all) queryParts.push(all);
+        if (phrase) queryParts.push('"' + phrase + '"');
+        if (any) {
+            const anyWords = any.split(/\s+/).filter(Boolean);
+            if (anyWords.length > 1) queryParts.push('(' + anyWords.join(' OR ') + ')');
+            else if (anyWords.length === 1) queryParts.push(anyWords[0]);
+        }
+        if (excl) excl.split(/\s+/).filter(Boolean).forEach(w => queryParts.push('-' + w));
+
+        if (queryParts.length) params.set('query', queryParts.join(' '));
+        if (party) params.set('party', party);
+        if (cite) params.set('citation', cite);
+        if (db) params.set('mask_path', '/' + db);
+        if (yrFrom) params.set('from_year', yrFrom);
+        if (yrTo) params.set('to_year', yrTo);
+        if (sort) params.set('sort', sort);
+        if (results) params.set('results_per_page', results);
+        params.set('method', 'boolean');
+
+        const hasParams = [...params.keys()].some(k => k !== 'method');
+        const url = hasParams ? base + '?' + params.toString() : null;
+
+        const prev = document.getElementById('lex-b-preview');
+        const txt = document.getElementById('lex-b-preview-text');
+        if (url) {
+            txt.textContent = url;
+            prev.classList.add('has-url');
+            prev.dataset.url = url;
+        } else {
+            txt.textContent = 'Fill in the fields above to generate your search URL…';
+            prev.classList.remove('has-url');
+            prev.dataset.url = '';
+        }
+    }
+
+    function buildLeg() {
+        const base = 'https://www.legislation.gov.uk/search';
+        const params = new URLSearchParams();
+
+        const query = val('lex-l-query'), title = val('lex-l-title'), type = val('lex-l-type'),
+              yrFrom = val('lex-l-yr-from'), yrTo = val('lex-l-yr-to'), number = val('lex-l-number'),
+              version = val('lex-l-version'), sort = val('lex-l-sort');
+
+        const jChecked = [...document.querySelectorAll('#lex-l-jurisdiction input:checked')].map(c => c.value);
+
+        if (query) params.set('text', query);
+        if (title) params.set('title', title);
+        if (type) params.set('type', type);
+        if (yrFrom) params.set('year-from', yrFrom);
+        if (yrTo) params.set('year-to', yrTo);
+        if (number) params.set('number', number);
+        if (version) params.set('version', version);
+        if (sort) params.set('sort', sort);
+        jChecked.forEach(j => params.append('extent[]', j));
+
+        const hasParams = [...params.keys()].length > 0;
+        const url = hasParams ? base + '?' + params.toString() : null;
+
+        const prev = document.getElementById('lex-l-preview');
+        const txt = document.getElementById('lex-l-preview-text');
+        if (url) {
+            txt.textContent = url;
+            prev.classList.add('has-url');
+            prev.dataset.url = url;
+        } else {
+            txt.textContent = 'Fill in the fields above to generate your search URL…';
+            prev.classList.remove('has-url');
+            prev.dataset.url = '';
+        }
+    }
+
+    document.querySelectorAll('#lex-panel-bailii input, #lex-panel-bailii select').forEach(el => {
+        el.addEventListener('input', buildBailii);
+        el.addEventListener('change', buildBailii);
+    });
+    document.querySelectorAll('#lex-panel-legislation input, #lex-panel-legislation select').forEach(el => {
+        el.addEventListener('input', buildLeg);
+        el.addEventListener('change', buildLeg);
+    });
+
+    document.getElementById('lex-b-launch').addEventListener('click', () => {
+        buildBailii();
+        const url = document.getElementById('lex-b-preview').dataset.url;
+        if (url) window.open(url, '_blank', 'noopener');
+        else alert('Please enter at least one search term.');
+    });
+
+    document.getElementById('lex-l-launch').addEventListener('click', () => {
+        buildLeg();
+        const url = document.getElementById('lex-l-preview').dataset.url;
+        if (url) window.open(url, '_blank', 'noopener');
+        else alert('Please enter at least one search term.');
+    });
+
+    function copyUrl(elId, btn) {
+        const text = document.getElementById(elId).textContent;
+        if (!text || text.startsWith('Fill')) { alert('No URL to copy yet.'); return; }
+        navigator.clipboard.writeText(text).then(() => {
+            const orig = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+            setTimeout(() => btn.innerHTML = orig, 1800);
+        }).catch(() => prompt('Copy this URL:', text));
+    }
+
+    document.getElementById('lex-b-copy').addEventListener('click', function () { copyUrl('lex-b-preview-text', this); });
+    document.getElementById('lex-l-copy').addEventListener('click', function () { copyUrl('lex-l-preview-text', this); });
+
+    function clearPanel(name) {
+        const panel = document.getElementById('lex-panel-' + name);
+        panel.querySelectorAll('input[type="text"], input[type="number"]').forEach(el => el.value = '');
+        panel.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+        panel.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+        if (name === 'bailii') buildBailii();
+        else buildLeg();
+    }
+
+    document.getElementById('lex-b-clear').addEventListener('click', () => clearPanel('bailii'));
+    document.getElementById('lex-l-clear').addEventListener('click', () => clearPanel('legislation'));
+
+    window.__pageFocus = window.__pageFocus || {};
+    window.__pageFocus.lexsearch = () => {};
+})();
+</script>

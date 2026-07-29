@@ -2,7 +2,7 @@
 .page-header {
     margin-bottom: 28px;
 }
-
+ 
 .page-header .eyebrow {
     font-family: var(--font-mono);
     font-size: 0.68rem;
@@ -12,20 +12,20 @@
     display: block;
     margin-bottom: 6px;
 }
-
+ 
 .page-header h1 {
     font-family: var(--font-display);
     font-weight: 600;
     font-size: 2rem;
     letter-spacing: -0.01em;
 }
-
+ 
 .page-header p {
     color: var(--text-dim);
     font-size: 0.92rem;
     margin-top: 4px;
 }
-
+ 
 .bookmarks-toolbar {
     display: flex;
     align-items: center;
@@ -34,12 +34,12 @@
     gap: 12px;
     flex-wrap: wrap;
 }
-
+ 
 .bookmarks-search {
     flex: 1;
     min-width: 200px;
 }
-
+ 
 .bookmarks-search input {
     width: 100%;
     padding: 11px 16px;
@@ -52,16 +52,23 @@
     outline: none;
     transition: border-color 0.15s;
 }
-
+ 
 .bookmarks-search input:focus {
     border-color: var(--accent);
 }
-
+ 
 .bookmarks-search input::placeholder {
     color: var(--text-faint);
 }
-
-.density-btn {
+ 
+.bookmarks-toolbar-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+ 
+.density-btn,
+.page-toggle-btn {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 8px;
@@ -78,50 +85,57 @@
     transition: background 0.15s, color 0.15s, border-color 0.15s;
     white-space: nowrap;
 }
-
-.density-btn:hover {
+ 
+.density-btn:hover,
+.page-toggle-btn:hover {
     color: var(--text);
     border-color: var(--accent);
 }
-
-.density-btn.active {
+ 
+.density-btn.active,
+.page-toggle-btn.active {
     background: var(--accent-soft);
     color: var(--accent);
     border-color: var(--accent);
 }
-
+ 
 .bookmarks-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 16px;
     transition: gap 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
+ 
 .bookmarks-container.dense {
     grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
     gap: 10px;
 }
-
+ 
 .bookmarks-container.dense .bookmark-category {
     padding: 14px 16px;
     border-radius: 8px;
 }
-
+ 
 .bookmarks-container.dense .category-header {
     font-size: 0.68rem;
     margin-bottom: 8px;
     padding-bottom: 8px;
 }
-
+ 
 .bookmarks-container.dense .bookmark-list {
     gap: 1px;
 }
-
+ 
 .bookmarks-container.dense .bookmark-item {
     font-size: 0.82rem;
     padding: 3px 0;
 }
-
+ 
+.bookmarks-container.dense .show-more-btn {
+    font-size: 0.68rem;
+    margin-top: 6px;
+}
+ 
 /* Smooth transitions for density change */
 .bookmark-category {
     background-color: var(--surface);
@@ -136,7 +150,7 @@
                 border-color 0.25s ease,
                 transform 0.25s ease;
 }
-
+ 
 .bookmark-category::before {
     content: '';
     position: absolute;
@@ -147,17 +161,17 @@
     background: var(--cat-color, var(--accent));
     opacity: 0.7;
 }
-
+ 
 .bookmark-category:hover {
     border-color: var(--cat-color, var(--accent));
     box-shadow: 0 0 24px -6px var(--cat-glow, transparent);
     transform: translateY(-2px);
 }
-
+ 
 .bookmark-category.hidden {
     display: none;
 }
-
+ 
 .category-header {
     font-family: var(--font-mono);
     font-size: 0.72rem;
@@ -172,15 +186,27 @@
                 margin-bottom 0.35s cubic-bezier(0.4, 0, 0.2, 1),
                 padding-bottom 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     text-shadow: 0 0 12px var(--cat-glow, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
 }
-
+ 
+.category-header .page-tag {
+    font-size: 0.62em;
+    opacity: 0.6;
+    letter-spacing: 0.04em;
+    text-transform: none;
+    font-weight: 400;
+}
+ 
 .bookmark-list {
     display: flex;
     flex-direction: column;
     gap: 7px;
     transition: gap 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
+ 
 .bookmark-item {
     color: var(--text-dim);
     text-decoration: none;
@@ -191,17 +217,49 @@
                 padding 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     display: block;
 }
-
+ 
 .bookmark-item:hover {
     color: var(--cat-color, var(--accent2));
     transform: translateX(3px);
     text-shadow: 0 0 8px var(--cat-glow, transparent);
 }
-
+ 
 .bookmark-item.hidden {
     display: none;
 }
-
+ 
+.bookmark-item.overflow-item {
+    display: none;
+}
+ 
+.bookmark-item.overflow-item.expanded {
+    display: block;
+}
+ 
+.show-more-btn {
+    background: none;
+    border: none;
+    color: var(--cat-color, var(--accent));
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 8px 0 0 0;
+    text-align: left;
+    opacity: 0.85;
+    transition: opacity 0.15s;
+}
+ 
+.show-more-btn:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+ 
+.show-more-btn.hidden {
+    display: none;
+}
+ 
 .no-results {
     text-align: center;
     color: var(--text-faint);
@@ -210,22 +268,22 @@
     font-size: 0.85rem;
     display: none;
 }
-
+ 
 .no-results.show {
     display: block;
     animation: fadeIn 0.3s ease;
 }
-
+ 
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
 }
-
+ 
 /* Entrance animation for category cards */
 .bookmark-category {
     animation: cardIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) backwards;
 }
-
+ 
 @keyframes cardIn {
     from {
         opacity: 0;
@@ -236,41 +294,46 @@
         transform: translateY(0);
     }
 }
-
+ 
 @media (max-width: 600px) {
     .bookmarks-container {
         grid-template-columns: 1fr;
     }
 }
 </style>
-
+ 
 <div class="page-header">
     <span class="eyebrow">01</span>
-    <h1>Bookmarks</h1>
-    <p>Quick access to your favorite sites.</p>
+    <h1 id="bookmarks-page-title">Bookmarks</h1>
+    <p id="bookmarks-page-subtitle">Quick access to your favorite sites.</p>
 </div>
-
+ 
 <div class="bookmarks-toolbar">
     <div class="bookmarks-search">
         <input type="text" id="bookmarks-search-input" placeholder="Search bookmarks...">
     </div>
-    <button class="density-btn" id="density-toggle" title="Toggle compact view">
-        <i class="fas fa-grip-lines"></i>
-        <span id="density-label">Compact</span>
-    </button>
+    <div class="bookmarks-toolbar-buttons">
+        <button class="page-toggle-btn" id="page-toggle" title="Switch bookmark page">
+            <span id="page-toggle-label">🥈</span>
+        </button>
+        <button class="density-btn" id="density-toggle" title="Toggle compact view">
+            <i class="fas fa-grip-lines"></i>
+            <span id="density-label">Compact</span>
+        </button>
+    </div>
 </div>
-
+ 
 <div class="bookmarks-container" id="bookmarks-container"></div>
-
+ 
 <div class="no-results" id="no-results">
     No bookmarks found matching your search.
 </div>
-
+ 
 <script>
 (function () {
 
     // Bookmarks data
-    const bookmarks = [
+    const bookmarksPrimary = [
         
         // Prudence
         { name: "🟥 Todoist", url: "https://app.todoist.com/app/filters-labels", category: "Prudence", tags: ["Prudence", "Planning"] },
@@ -286,6 +349,7 @@
         { name: "🟢 Spotify", url: "https://open.spotify.com/", category: "Entertainment", tags: ["Entertainment", "Learning", "Podcast", "Music"] },
         { name: "🟠 Rumble", url: "https://rumble.com/", category: "Entertainment", tags: ["Entertainment", "Learning", "Podcast"] },
         { name: "🟣 Odysee", url: "https://odysee.com/", category: "Entertainment", tags: ["Entertainment", "Learning", "Podcast"] },
+        { name: "🤳 TikTok", url: "https://www.tiktok.com/", category: "Entertainment", tags: ["Entertainment", "Learning", "Podcast"] },
         { name: "⌛ Screensaver Hub", url: "https://github.com/kay-who-codes/Screensaver-Hub", category: "Entertainment", tags: ["Entertainment", "AFK", "Idle"] },
         
         // Communication
@@ -303,22 +367,14 @@
         { name: "🟣 Yahoo Finance - Trending", url: "https://uk.finance.yahoo.com/markets/stocks/trending/", category: "Money", tags: ["Learning", "money", "investing", "fiat"] },
         { name: "📈 TradingView", url: "https://www.tradingview.com", category: "Money", tags: ["Learning", "money", "investing", "charts", "technical analysis", "stocks"] },
         { name: "🧱 Simply Wall St", url: "https://simplywall.st", category: "Money", tags: ["Learning", "money", "investing", "stocks", "analysis", "visualization"] },
-        { name: "🔍 Finviz", url: "https://finviz.com", category: "Money", tags: ["Learning", "money", "investing", "stocks", "screener", "charts"] },
-        { name: "📈 Seeking Alpha", url: "https://seekingalpha.com/sectors", category: "Money", tags: ["Learning", "money", "investing", "stocks", "analysis", "articles"] },
 
         // AI Chat
         { name: "⚪ ChatGPT", url: "https://chat.openai.com", category: "AI Chat", tags: ["ai", "chatbot", "assistant", "openai"] },
         { name: "🟠 Claude", url: "https://claude.ai", category: "AI Chat", tags: ["ai", "chatbot", "assistant", "anthropic"] },
         { name: "🟣 DeepSeek", url: "https://chat.deepseek.com", category: "AI Chat", tags: ["ai", "chatbot", "assistant", "deepseek"] },
-        { name: "⚫ Perplexity AI", url: "https://perplexity.ai", category: "AI Chat", tags: ["ai", "chatbot", "search", "assistant"] },
-        { name: "🔘 HuggingChat", url: "https://huggingface.co/chat", category: "AI Chat", tags: ["ai", "chatbot", "open-source", "assistant"] },
         { name: "🔴 Google Gemini", url: "https://gemini.google.com", category: "AI Chat", tags: ["ai", "chatbot", "assistant", "google"] },
         { name: "🔵 Microsoft Copilot", url: "https://copilot.microsoft.com", category: "AI Chat", tags: ["ai", "chatbot", "assistant", "microsoft", "bing"] },
-        { name: "🟣 Lumo", url: "https://lumo.proton.me/u/0/", category: "AI Chat", tags: ["ai", "chatbot", "private", "assistant"] },
         { name: "⚫ Grok", url: "https://grok.x.ai", category: "AI Chat", tags: ["ai", "chatbot", "xai", "assistant"] },
-        { name: "🟠 Mistral Chat", url: "https://chat.mistral.ai", category: "AI Chat", tags: ["ai", "chatbot", "open-source", "france"] },
-        { name: "🟢 Pi AI", url: "https://pi.ai", category: "AI Chat", tags: ["ai", "chatbot", "friendly", "assistant"] },
-        { name: "🟣 Poe", url: "https://poe.com", category: "AI Chat", tags: ["ai", "chatbot", "multi-model", "assistant"] },
 
         // Programming
         { name: "🐈‍⬛ GitHub", url: "https://github.com", category: "Programming", tags: ["development", "code", "repository", "version control", "git"] },
@@ -340,7 +396,6 @@
         { name: "📎 Dropbox", url: "https://www.dropbox.com/", category: "Cloud Storage", tags: ["Free: 2GB", "Sync", "Backup", "Business"] },
         { name: "📦 OneDrive", url: "https://onedrive.live.com/", category: "Cloud Storage", tags: ["Free: 5GB", "Microsoft", "Office", "Windows"] },
         { name: "🍎 iCloud", url: "https://www.icloud.com/", category: "Cloud Storage", tags: ["Free: 5GB", "Apple", "Photos", "Backup"] },
-        { name: "📦 Box", url: "https://www.box.com/", category: "Cloud Storage", tags: ["Free: 10GB", "Business", "Enterprise", "Collaboration"] },
         { name: "☁️ pCloud", url: "https://www.pcloud.com/", category: "Cloud Storage", tags: ["Free: 10GB", "Encryption", "Lifetime Plans", "Privacy"] },
         { name: "🌐 Mega", url: "https://mega.nz/", category: "Cloud Storage", tags: ["Free: 20GB", "Encrypted", "Privacy", "NZ"] },
         { name: "🌐 Proton Drive", url: "https://proton.me/drive", category: "Cloud Storage", tags: ["Free: 1GB", "Encrypted", "Privacy", "Swiss"] },
@@ -360,6 +415,10 @@
         { name: "🟠 Reddit", url: "https://www.reddit.com", category: "Social", tags: ["social", "community", "forums", "discussion"] },
         { name: "🔵 LinkedIn", url: "https://www.linkedin.com", category: "Social", tags: ["social", "professional", "networking", "jobs"] },
         { name: "🟣 Discord", url: "https://discord.com", category: "Social", tags: ["social", "chat", "community", "voice"] },
+        { name: "🟢 Mastodon", url: "https://mastodon.social", category: "Social", tags: ["social", "microblogging", "decentralized"] },
+        { name: "🟤 Instagram", url: "https://www.instagram.com", category: "Social", tags: ["social", "photo", "video"] },
+        { name: "🎟️ Eventbrite", url: "https://www.eventbrite.com", category: "Social", tags: ["social", "events", "tickets"] },
+        { name: "🤝 Meetup", url: "https://www.meetup.com", category: "Social", tags: ["social", "events", "community"] },
 
         // Gaming
         { name: "📊 Steam DB", url: "https://steamdb.info/", category: "Gaming", tags: ["gaming", "learning", "statistics"] },
@@ -378,11 +437,40 @@
         { name: "📙 Substack", url: "https://substack.com/", category: "Reading", tags: ["Learning", "reading", "writing", "articles", "blogs"] },
         { name: "🎓 Google Scholar", url: "https://scholar.google.com", category: "Reading", tags: ["Learning", "academic", "research", "papers", "journals"] },
         { name: "✍️ Medium", url: "https://medium.com", category: "Reading", tags: ["Learning", "reading", "articles", "blogs", "writing"] },
+        { name: "🔢 Serendipitous Scriptures", url: "https://github.com/kay-who-codes/Serendipitous-Scriptures", category: "Reading", tags: ["Bible", "reading", "books", "classics", "numerology", "gematria"] },
+
+
+// Language Learning
+        { name: "🦉 Duolingo", url: "https://www.duolingo.com/", category: "Language Learning", tags: ["Free", "Spanish", "Greek", "Gamified", "Mobile"] }
+
+    ];
+
+
+
+    // Secondary page (populate with the user's secondary bookmark set)
+    const bookmarksSecondary = [
+ 
+    // Money
+        { name: "🔍 Finviz", url: "https://finviz.com", category: "Money", tags: ["Learning", "money", "investing", "stocks", "screener", "charts"] },
+        { name: "📈 Seeking Alpha", url: "https://seekingalpha.com/sectors", category: "Money", tags: ["Learning", "money", "investing", "stocks", "analysis", "articles"] },
+
+    // AI 
+        { name: "🟣 Lumo", url: "https://lumo.proton.me/u/0/", category: "AI Chat", tags: ["ai", "chatbot", "private", "assistant"] },
+        { name: "🟠 Mistral Chat", url: "https://chat.mistral.ai", category: "AI Chat", tags: ["ai", "chatbot", "open-source", "france"] },
+        { name: "🟢 Pi AI", url: "https://pi.ai", category: "AI Chat", tags: ["ai", "chatbot", "friendly", "assistant"] },
+        { name: "🟣 Poe", url: "https://poe.com", category: "AI Chat", tags: ["ai", "chatbot", "multi-model", "assistant"] },
+        { name: "⚫ Perplexity AI", url: "https://perplexity.ai", category: "AI Chat", tags: ["ai", "chatbot", "search", "assistant"] },
+        { name: "🔘 HuggingChat", url: "https://huggingface.co/chat", category: "AI Chat", tags: ["ai", "chatbot", "open-source", "assistant"] },
+
+    // Reading
         { name: "📚 Internet Archive", url: "https://archive.org", category: "Reading", tags: ["Learning", "reading", "books", "digital library", "historical"] },
         { name: "🔬 PubMed", url: "https://pubmed.ncbi.nlm.nih.gov", category: "Reading", tags: ["Learning", "medical", "research", "papers", "science"] },
         { name: "📖 Project Gutenberg", url: "https://www.gutenberg.org", category: "Reading", tags: ["Learning", "reading", "books", "classics", "free ebooks"] },
+        
+    // Cloud Storage
+        { name: "📦 Box", url: "https://www.box.com/", category: "Cloud Storage", tags: ["Free: 10GB", "Business", "Enterprise", "Collaboration"] },
 
-        // UK Legal Resources
+    // UK Legal Resources
         { name: "🔬 LexSearch", url: "https://kay-who-codes.github.io/LexSearch/", category: "UK Legal Resources", tags: ["legal", "statutes", "acts", "search", "primary legislation", "government"] },
         { name: "⚖️ Legislation.gov.uk", url: "https://www.legislation.gov.uk", category: "UK Legal Resources", tags: ["legal", "statutes", "acts", "primary legislation", "government"] },
         { name: "📜 BAILII", url: "https://www.bailii.org", category: "UK Legal Resources", tags: ["legal", "case law", "judgments", "courts", "tribunals"] },
@@ -391,8 +479,8 @@
         { name: "🔍 LawCom.gov.uk", url: "https://lawcom.gov.uk", category: "UK Legal Resources", tags: ["legal", "law reform", "reports", "consultations", "commission"] },
         { name: "📖 UK Parliament", url: "https://www.parliament.uk/business/publications", category: "UK Legal Resources", tags: ["legal", "bills", "statutes", "parliamentary", "debates"] },
 
-        // Language Learning
-        { name: "🦉 Duolingo", url: "https://www.duolingo.com/", category: "Language Learning", tags: ["Free", "Spanish", "Greek", "Gamified", "Mobile"] },
+
+    // Language Learning
         { name: "🗣️ SpanishDict", url: "https://www.spanishdict.com/", category: "Language Learning", tags: ["Free", "Spanish", "Dictionary", "Conjugations", "Grammar"] },
         { name: "📚 StudySpanish.com", url: "https://studyspanish.com/", category: "Language Learning", tags: ["Free/Paid", "Spanish", "Grammar", "Lessons"] },
         { name: "📖 Notes in Spanish", url: "https://www.notesinspanish.com/", category: "Language Learning", tags: ["Free/Paid", "Spanish", "Podcast", "Real Conversations"] },
@@ -402,10 +490,29 @@
         { name: "🇬🇷 Kypros.org", url: "https://www.kypros.org/LearnGreek/", category: "Language Learning", tags: ["Free", "Greek", "Lessons", "Audio"] },
         { name: "📚 CoolJugator", url: "https://cooljugator.com/", category: "Language Learning", tags: ["Free", "Spanish", "Greek", "Verb Conjugation"] },
         { name: "📚 Anki", url: "https://apps.ankiweb.net/", category: "Language Learning", tags: ["Free", "Spanish", "Greek", "Flashcards", "SRS"] },
-        { name: "📰 News in Slow Spanish", url: "https://www.newsinslowspanish.com/", category: "Language Learning", tags: ["Paid", "Spanish", "News", "Listening"] }
+        { name: "📰 News in Slow Spanish", url: "https://www.newsinslowspanish.com/", category: "Language Learning", tags: ["Paid", "Spanish", "News", "Listening"] },
+    
 
+    // Travel
+        { name: "🗺️ Rome2Rio", url: "https://www.rome2rio.com/", category: "Travel", tags: ["Travel", "Planning", "Transport", "Flights"] },
+        { name: "✈️ Skyscanner", url: "https://www.skyscanner.net/", category: "Travel", tags: ["Travel", "Flights", "Hotels", "Car Hire"] },
+        { name: "🏨 Booking.com", url: "https://www.booking.com/", category: "Travel", tags: ["Travel", "Hotels", "Accommodation"] },
+        { name: "✈️ Kayak", url: "https://www.kayak.com/", category: "Travel", tags: ["Travel", "Flights", "Hotels", "Car Hire"] },
+        { name: "🏨 Airbnb", url: "https://www.airbnb.com/", category: "Travel", tags: ["Travel", "Accommodation", "Vacation Rentals"] }
     ];
 
+        const PAGE_DATA = {
+        primary: bookmarksPrimary,
+        secondary: bookmarksSecondary
+    };
+ 
+    const PAGE_LABELS = {
+        primary: { title: 'Bookmarks', subtitle: '', toggleShows: '🥈' },
+        secondary: { title: 'Secondary Bookmarks', subtitle: '', toggleShows: '🥇' }
+    };
+ 
+    const VISIBLE_LIMIT = 8;
+ 
     // Unique color per category (hue-based, used for accent + glow)
     const categoryColors = {
         "Entertainment":       "#ff5c8a",
@@ -422,111 +529,188 @@
         "Shopping":            "#ff6b6b",
         "UK Legal Resources":  "#748ffc",
         "Creative":            "#f783ac",
-        "Language Learning":   "#63e6be"
+        "Language Learning":   "#63e6be",
+        "Travel":              "#FF55D4"
     };
-
+ 
     function hexToRgba(hex, alpha) {
         const r = parseInt(hex.slice(1, 3), 16);
         const g = parseInt(hex.slice(3, 5), 16);
         const b = parseInt(hex.slice(5, 7), 16);
         return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     }
-
+ 
     const bookmarksContainer = document.getElementById('bookmarks-container');
     const bookmarksSearchInput = document.getElementById('bookmarks-search-input');
     const noResults = document.getElementById('no-results');
-
+    const pageToggle = document.getElementById('page-toggle');
+    const pageToggleLabel = document.getElementById('page-toggle-label');
+    const pageTitleEl = document.getElementById('bookmarks-page-title');
+    const pageSubtitleEl = document.getElementById('bookmarks-page-subtitle');
+ 
+    let currentPage = 'primary';
+    let searchActive = false;
+ 
+    function groupByCategory(items) {
+        const grouped = {};
+        items.forEach(bookmark => {
+            if (!grouped[bookmark.category]) grouped[bookmark.category] = [];
+            grouped[bookmark.category].push(bookmark);
+        });
+        return grouped;
+    }
+ 
+    function buildCategoryCard(category, items, index, showPageTag) {
+        const color = categoryColors[category] || "var(--accent)";
+ 
+        const categoryCard = document.createElement('div');
+        categoryCard.className = 'bookmark-category';
+        categoryCard.dataset.category = category;
+        categoryCard.style.setProperty('--cat-color', color);
+        categoryCard.style.setProperty('--cat-glow', hexToRgba(color, 0.35));
+        categoryCard.style.animationDelay = `${index * 30}ms`;
+ 
+        const categoryHeader = document.createElement('div');
+        categoryHeader.className = 'category-header';
+        const headerText = document.createElement('span');
+        headerText.textContent = category;
+        categoryHeader.appendChild(headerText);
+ 
+        const bookmarkList = document.createElement('div');
+        bookmarkList.className = 'bookmark-list';
+ 
+        items.forEach((bookmark, i) => {
+            const bookmarkLink = document.createElement('a');
+            bookmarkLink.href = bookmark.url;
+            bookmarkLink.className = 'bookmark-item';
+            if (i >= VISIBLE_LIMIT) {
+                bookmarkLink.classList.add('overflow-item');
+            }
+            bookmarkLink.target = '_blank';
+            bookmarkLink.textContent = bookmark.name;
+            bookmarkLink.dataset.name = bookmark.name.toLowerCase();
+            bookmarkLink.dataset.tags = bookmark.tags.join(' ').toLowerCase();
+            if (showPageTag && bookmark.__page) {
+                bookmarkLink.dataset.page = bookmark.__page;
+                const tag = document.createElement('span');
+                tag.className = 'page-tag';
+                tag.textContent = ` (${bookmark.__page === 'primary' ? '🥇' : '🥈'})`;
+                bookmarkLink.appendChild(tag);
+            }
+            bookmarkList.appendChild(bookmarkLink);
+        });
+ 
+        categoryCard.appendChild(categoryHeader);
+        categoryCard.appendChild(bookmarkList);
+ 
+        if (items.length > VISIBLE_LIMIT) {
+            const moreBtn = document.createElement('button');
+            moreBtn.className = 'show-more-btn';
+            const remaining = items.length - VISIBLE_LIMIT;
+            moreBtn.textContent = `+ ${remaining} more`;
+            moreBtn.dataset.expanded = 'false';
+            moreBtn.addEventListener('click', () => {
+                const expanded = moreBtn.dataset.expanded === 'true';
+                const overflowItems = bookmarkList.querySelectorAll('.overflow-item');
+                overflowItems.forEach(item => item.classList.toggle('expanded', !expanded));
+                moreBtn.dataset.expanded = (!expanded).toString();
+                moreBtn.textContent = expanded ? `+ ${remaining} more` : 'Show less';
+            });
+            categoryCard.appendChild(moreBtn);
+        }
+ 
+        return categoryCard;
+    }
+ 
     function renderBookmarks() {
         bookmarksContainer.innerHTML = '';
-        const bookmarksByCategory = {};
-        bookmarks.forEach(bookmark => {
-            if (!bookmarksByCategory[bookmark.category]) {
-                bookmarksByCategory[bookmark.category] = [];
-            }
-            bookmarksByCategory[bookmark.category].push(bookmark);
+        const items = PAGE_DATA[currentPage];
+        const grouped = groupByCategory(items);
+ 
+        Object.keys(grouped).forEach((category, index) => {
+            const card = buildCategoryCard(category, grouped[category], index, false);
+            bookmarksContainer.appendChild(card);
         });
-
-        Object.keys(bookmarksByCategory).forEach((category, index) => {
-            const color = categoryColors[category] || "var(--accent)";
-
-            const categoryCard = document.createElement('div');
-            categoryCard.className = 'bookmark-category';
-            categoryCard.dataset.category = category;
-            categoryCard.style.setProperty('--cat-color', color);
-            categoryCard.style.setProperty('--cat-glow', hexToRgba(color, 0.35));
-            categoryCard.style.animationDelay = `${index * 30}ms`;
-
-            const categoryHeader = document.createElement('div');
-            categoryHeader.className = 'category-header';
-            categoryHeader.textContent = category;
-
-            const bookmarkList = document.createElement('div');
-            bookmarkList.className = 'bookmark-list';
-
-            bookmarksByCategory[category].forEach(bookmark => {
-                const bookmarkLink = document.createElement('a');
-                bookmarkLink.href = bookmark.url;
-                bookmarkLink.className = 'bookmark-item';
-                bookmarkLink.target = '_blank';
-                bookmarkLink.textContent = bookmark.name;
-                bookmarkLink.dataset.name = bookmark.name.toLowerCase();
-                bookmarkLink.dataset.tags = bookmark.tags.join(' ').toLowerCase();
-                bookmarkList.appendChild(bookmarkLink);
-            });
-
-            categoryCard.appendChild(categoryHeader);
-            categoryCard.appendChild(bookmarkList);
-            bookmarksContainer.appendChild(categoryCard);
-        });
+ 
+        noResults.classList.remove('show');
+        searchActive = false;
     }
-
-    function filterBookmarks(searchTerm) {
-        const term = searchTerm.toLowerCase().trim();
-        const categories = document.querySelectorAll('.bookmark-category');
-        let visibleCount = 0;
-
-        if (term === '') {
-            categories.forEach(category => {
-                category.classList.remove('hidden');
-                category.querySelectorAll('.bookmark-item').forEach(item => item.classList.remove('hidden'));
-            });
-            noResults.classList.remove('show');
+ 
+    function renderSearchResults(term) {
+        bookmarksContainer.innerHTML = '';
+ 
+        const combined = [
+            ...bookmarksPrimary.map(b => ({ ...b, __page: 'primary' })),
+            ...bookmarksSecondary.map(b => ({ ...b, __page: 'secondary' }))
+        ];
+ 
+        const matched = combined.filter(b =>
+            b.name.toLowerCase().includes(term) ||
+            b.tags.join(' ').toLowerCase().includes(term)
+        );
+ 
+        if (matched.length === 0) {
+            noResults.classList.add('show');
             return;
         }
-
-        categories.forEach(category => {
-            const bookmarkItems = category.querySelectorAll('.bookmark-item');
-            let categoryHasVisibleItems = false;
-
-            bookmarkItems.forEach(item => {
-                const matches = item.dataset.name.includes(term) || item.dataset.tags.includes(term);
-                item.classList.toggle('hidden', !matches);
-                if (matches) { categoryHasVisibleItems = true; visibleCount++; }
-            });
-
-            category.classList.toggle('hidden', !categoryHasVisibleItems);
+        noResults.classList.remove('show');
+ 
+        const grouped = groupByCategory(matched);
+        Object.keys(grouped).forEach((category, index) => {
+            const card = buildCategoryCard(category, grouped[category], index, true);
+            bookmarksContainer.appendChild(card);
         });
-
-        noResults.classList.toggle('show', visibleCount === 0);
+ 
+        searchActive = true;
     }
-
+ 
+    function handleSearchInput(value) {
+        const term = value.toLowerCase().trim();
+        if (term === '') {
+            renderBookmarks();
+            return;
+        }
+        renderSearchResults(term);
+    }
+ 
+    function setPage(page) {
+        currentPage = page;
+        const labels = PAGE_LABELS[page];
+        pageTitleEl.textContent = labels.title;
+        pageSubtitleEl.textContent = labels.subtitle;
+        pageToggleLabel.textContent = labels.toggleShows;
+ 
+        // Re-apply current search (if any), otherwise render the page normally
+        const term = bookmarksSearchInput.value.toLowerCase().trim();
+        if (term === '') {
+            renderBookmarks();
+        } else {
+            renderSearchResults(term);
+        }
+    }
+ 
     function init() {
         renderBookmarks();
-
+ 
         bookmarksSearchInput.addEventListener('input', (e) => {
-            filterBookmarks(e.target.value);
+            handleSearchInput(e.target.value);
         });
-
+ 
+        pageToggle.addEventListener('click', () => {
+            const nextPage = currentPage === 'primary' ? 'secondary' : 'primary';
+            setPage(nextPage);
+        });
+ 
         const densityToggle = document.getElementById('density-toggle');
         const densityLabel = document.getElementById('density-label');
-
+ 
         if (localStorage.getItem('bookmarksDense') === 'true') {
             bookmarksContainer.classList.add('dense');
             densityToggle.classList.add('active');
             densityLabel.textContent = 'Comfortable';
             densityToggle.querySelector('i').className = 'fas fa-th-large';
         }
-
+ 
         densityToggle.addEventListener('click', function () {
             const isDense = bookmarksContainer.classList.toggle('dense');
             this.classList.toggle('active', isDense);
@@ -535,14 +719,14 @@
             localStorage.setItem('bookmarksDense', isDense);
         });
     }
-
+ 
     init();
-
+ 
     // Register this page's focus handler with the shell (generic hook, keyed by page id)
     window.__pageFocus = window.__pageFocus || {};
     window.__pageFocus.bookmarks = function () {
         setTimeout(() => bookmarksSearchInput.focus(), 50);
     };
-
+ 
 })();
 </script>

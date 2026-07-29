@@ -81,6 +81,7 @@
         min-height: 100vh;
         display: grid;
         grid-template-columns: var(--rail-w) 1fr;
+        grid-template-rows: 1fr auto;
     }
 
     ::selection {
@@ -98,6 +99,8 @@
 
     /* ── Rail (sidebar nav) ── */
     .rail {
+        grid-column: 1;
+        grid-row: 1 / 3;
         background: var(--bg-rail);
         border-right: 1px solid var(--border);
         display: flex;
@@ -242,6 +245,8 @@
 
     /* ── Main viewport ── */
     .viewport {
+        grid-column: 2;
+        grid-row: 1;
         padding: 40px 48px 60px;
         max-width: 960px;
         width: 100%;
@@ -268,13 +273,43 @@
         padding: 40px 0;
     }
 
+    /* ── Persistent quote footer (shown on every page) ── */
+    .app-footer {
+        grid-column: 2;
+        grid-row: 2;
+        border-top: 1px solid var(--border);
+        background: var(--bg-rail);
+        padding: 14px 48px;
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        min-height: 46px;
+    }
+
+    .app-footer i {
+        color: var(--accent);
+        font-size: 0.78rem;
+        flex-shrink: 0;
+    }
+
+    .app-footer .quote-text {
+        font-family: var(--font-display);
+        font-style: italic;
+        font-size: 0.9rem;
+        color: var(--text-dim);
+        line-height: 1.5;
+    }
+
     /* ── Mobile: rail collapses to a top strip ── */
     @media (max-width: 760px) {
         body {
             grid-template-columns: 1fr;
+            grid-template-rows: auto 1fr auto;
         }
 
         .rail {
+            grid-column: 1;
+            grid-row: 1;
             position: static;
             height: auto;
             flex-direction: row;
@@ -315,7 +350,16 @@
         }
 
         .viewport {
+            grid-column: 1;
+            grid-row: 2;
             padding: 28px 20px 48px;
+        }
+
+        .app-footer {
+            grid-column: 1;
+            grid-row: 3;
+            padding: 12px 20px;
+            flex-wrap: wrap;
         }
     }
 </style>
@@ -338,6 +382,12 @@
 
     <!-- ── Main content ── -->
     <main class="viewport" id="viewport"></main>
+
+    <!-- ── Persistent quote footer (present on every page) ── -->
+    <footer class="app-footer" id="app-footer">
+        <i class="fa-solid fa-quote-left"></i>
+        <span class="quote-text" id="footer-quote-text">Loading a quote…</span>
+    </footer>
 
     <script>
         /* ────────────────────────────────────────────────────────────
@@ -461,12 +511,59 @@
             clockEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
+        // ── Persistent quote footer ──
+        // AppFiles/Quotes.js is loaded as a plain script (not a module), so it
+        // is expected to expose its data as a global QUOTES array of plain
+        // quote strings (grouped by // author comments inside the file itself
+        // — the author isn't part of the data, just organizational).
+        function resolveQuotesArray() {
+            const candidates = [
+                window.QUOTES, window.Quotes, window.quotes,
+                window.QuoteList, window.quoteList
+            ];
+            for (const c of candidates) {
+                if (Array.isArray(c) && c.length) return c;
+            }
+            return null;
+        }
+
+        function renderQuote(entry) {
+            const text = typeof entry === 'string' ? entry : (entry && (entry.text || entry.quote)) || '';
+            document.getElementById('footer-quote-text').textContent = text || 'No quote available.';
+        }
+
+        function loadFooterQuote() {
+            const existing = resolveQuotesArray();
+            if (existing) {
+                renderQuote(existing[Math.floor(Math.random() * existing.length)]);
+                return;
+            }
+
+            const script = document.createElement('script');
+            script.src = '/AppFiles/Quotes.js';
+            script.onload = () => {
+                const list = resolveQuotesArray();
+                if (list && list.length) {
+                    renderQuote(list[Math.floor(Math.random() * list.length)]);
+                } else {
+                    document.getElementById('footer-quote-text').textContent =
+                        "Couldn't find any quotes in Quotes.js.";
+                }
+            };
+            script.onerror = () => {
+                document.getElementById('footer-quote-text').textContent =
+                    "Couldn't load AppFiles/Quotes.js.";
+            };
+            document.body.appendChild(script);
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             buildNav();
             buildPanels();
             PAGES.forEach(page => loadFragment(page.file, 'panel-' + page.id));
             tickClock();
             setInterval(tickClock, 15000);
+            loadFooterQuote();
         });
     </script>
 </body>

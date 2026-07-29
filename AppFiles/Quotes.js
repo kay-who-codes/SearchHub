@@ -4,5 +4,5 @@ const QUOTES = [
 
     // Socrates
     "The unexamined life is not worth living.",
-    "The only true wisdom is in knowing you know nothing."
+    "The only true wisdom is in knowing you know nothing.",
 ];

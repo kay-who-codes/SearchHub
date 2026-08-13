@@ -575,6 +575,18 @@
         }
 
         document.addEventListener('keydown', (e) => {
+            // Page Up / Page Down always switch channels, even while typing.
+            if (e.key === 'PageDown' || e.key === 'PageUp') {
+                e.preventDefault();
+                const cur = currentPageIndex();
+                const next = e.key === 'PageDown'
+                    ? (cur + 1) % PAGES.length
+                    : (cur - 1 + PAGES.length) % PAGES.length;
+                showSection(PAGES[next].id);
+                document.getElementById('nav-' + PAGES[next].id).scrollIntoView({ block: 'nearest', inline: 'nearest' });
+                return;
+            }
+
             if (isTypingTarget(document.activeElement)) return;
             if (e.altKey || e.ctrlKey || e.metaKey) return;
 

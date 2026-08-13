@@ -559,6 +559,48 @@
             document.body.appendChild(script);
         }
 
+        // ── Keyboard navigation ──
+        // 1–7 jump straight to the matching channel (and focus its primary
+        // text box, via window.__pageFocus[id], same hook showSection uses).
+        // Up/Down move to the previous/next channel in the rail.
+        function isTypingTarget(el) {
+            if (!el) return false;
+            const tag = el.tagName;
+            return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || el.isContentEditable;
+        }
+
+        function currentPageIndex() {
+            const i = PAGES.findIndex(p => document.getElementById('panel-' + p.id).classList.contains('visible'));
+            return i === -1 ? 0 : i;
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (isTypingTarget(document.activeElement)) return;
+            if (e.altKey || e.ctrlKey || e.metaKey) return;
+
+            // Number keys 1–7 → jump to that channel.
+            if (e.key >= '1' && e.key <= '9') {
+                const idx = parseInt(e.key, 10) - 1;
+                if (idx >= 0 && idx < PAGES.length) {
+                    e.preventDefault();
+                    showSection(PAGES[idx].id);
+                    document.getElementById('nav-' + PAGES[idx].id).scrollIntoView({ block: 'nearest', inline: 'nearest' });
+                }
+                return;
+            }
+
+            // Up/Down → move to previous/next channel.
+            if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                const cur = currentPageIndex();
+                const next = e.key === 'ArrowDown'
+                    ? (cur + 1) % PAGES.length
+                    : (cur - 1 + PAGES.length) % PAGES.length;
+                showSection(PAGES[next].id);
+                document.getElementById('nav-' + PAGES[next].id).scrollIntoView({ block: 'nearest', inline: 'nearest' });
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', () => {
             buildNav();
             buildPanels();

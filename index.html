@@ -360,9 +360,198 @@
             flex-wrap: wrap;
         }
     }
+    /* ── Color scheme presets ──
+       Applied via [data-theme] on <html>. Only overrides the primary
+       accent + the subtle page-wide tint; channel colors (--ch) are
+       untouched since those are per-channel, not theme-wide. */
+    html[data-theme="red"] {
+        --accent: #d9564c;
+        --accent-soft: rgba(217, 86, 76, 0.14);
+        --bg: color-mix(in srgb, #d9564c 5%, #14171c);
+        --bg-rail: color-mix(in srgb, #d9564c 5%, #0f1115);
+        --surface: color-mix(in srgb, #d9564c 4%, #1b1f27);
+    }
+    html[data-theme="red"] body {
+        background:
+            radial-gradient(ellipse 900px 500px at 15% -10%, rgba(217, 86, 76, 0.09), transparent 60%),
+            var(--bg);
+    }
+
+    html[data-theme="orange"] {
+        --accent: #e0873e;
+        --accent-soft: rgba(224, 135, 62, 0.14);
+        --bg: color-mix(in srgb, #e0873e 5%, #14171c);
+        --bg-rail: color-mix(in srgb, #e0873e 5%, #0f1115);
+        --surface: color-mix(in srgb, #e0873e 4%, #1b1f27);
+    }
+    html[data-theme="orange"] body {
+        background:
+            radial-gradient(ellipse 900px 500px at 15% -10%, rgba(224, 135, 62, 0.09), transparent 60%),
+            var(--bg);
+    }
+
+  html[data-theme="blue"] {
+        --accent: #e0873e;
+        --accent-soft: rgba(0, 138, 255, 0.14);
+        --bg: color-mix(in srgb, #008aff 5%, #14171c);
+        --bg-rail: color-mix(in srgb, #00bfff 5%, #0f1115);
+        --surface: color-mix(in srgb, #00bfff 4%, #1b1f27);
+    }
+    html[data-theme="blue"] body {
+        background:
+            radial-gradient(ellipse 900px 500px at 15% -10%, rgba(0, 138, 255, 0.14), transparent 60%),
+            var(--bg);
+    }
+
+    /* ── Settings button (top-right, every page) ── */
+    .settings-btn {
+        position: fixed;
+        top: 18px;
+        right: 22px;
+        z-index: 50;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text-dim);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background 0.15s, color 0.15s, transform 0.15s;
+    }
+
+    .settings-btn:hover {
+        background: var(--accent-soft);
+        color: var(--accent);
+        transform: rotate(24deg);
+    }
+
+    /* ── Settings panel ── */
+    .settings-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 60;
+        display: none;
+        align-items: flex-start;
+        justify-content: flex-end;
+    }
+
+    .settings-overlay.open {
+        display: flex;
+    }
+
+    .settings-panel {
+        margin: 66px 22px 0 0;
+        width: 280px;
+        max-width: calc(100vw - 44px);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        padding: 18px;
+        animation: rise 0.15s ease;
+    }
+
+    .settings-panel h2 {
+        font-family: var(--font-display);
+        font-size: 1.05rem;
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .settings-panel .settings-sub {
+        font-family: var(--font-mono);
+        font-size: 0.66rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+        margin-bottom: 16px;
+    }
+
+    .theme-option {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 9px 10px;
+        margin-bottom: 6px;
+        cursor: pointer;
+        color: var(--text-dim);
+        font-family: var(--font-body);
+        font-size: 0.88rem;
+        text-align: left;
+        transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+
+    .theme-option:last-child {
+        margin-bottom: 0;
+    }
+
+    .theme-option:hover {
+        background: var(--accent-soft);
+        color: var(--text);
+    }
+
+    .theme-option.active {
+        border-color: var(--theme-swatch, var(--accent));
+        background: var(--accent-soft);
+        color: var(--text);
+    }
+
+    .theme-option .swatch {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        background: var(--theme-swatch);
+        border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .theme-option .check {
+        margin-left: auto;
+        font-size: 0.8rem;
+        color: var(--theme-swatch, var(--accent));
+        visibility: hidden;
+    }
+
+    .theme-option.active .check {
+        visibility: visible;
+    }
+
+    @media (max-width: 760px) {
+        .settings-btn {
+            top: 10px;
+            right: 14px;
+            width: 34px;
+            height: 34px;
+        }
+        .settings-panel {
+            margin-top: 54px;
+        }
+    }
 </style>
 </head>
 <body>
+
+    <!-- ── Settings: gear button + slide-down panel (present on every page) ── -->
+    <button class="settings-btn" id="settings-btn" aria-haspopup="dialog" aria-expanded="false" aria-label="Settings" title="Settings">
+        <i class="fa-solid fa-gear"></i>
+    </button>
+
+    <div class="settings-overlay" id="settings-overlay">
+        <div class="settings-panel" role="dialog" aria-label="Settings" id="settings-panel">
+            <h2>Settings</h2>
+            <div class="settings-sub">Colour scheme</div>
+            <div id="theme-options"></div>
+        </div>
+    </div>
 
     <!-- ── Rail: sidebar / mobile top-strip navigation ── -->
     <nav class="rail">
@@ -639,6 +828,73 @@
             }
         });
 
+        // ── Settings: colour scheme presets ──
+        const THEMES = [
+            { id: 'default', label: 'Default', swatch: '#c9a35f' },
+            { id: 'red',     label: 'Red',      swatch: '#d9564c' },
+            { id: 'orange',  label: 'Orange',    swatch: '#e0873e' },
+            { id: 'blue',     label: 'Blue',      swatch: '#008aff' }
+        ];
+
+        const settingsBtn = document.getElementById('settings-btn');
+        const settingsOverlay = document.getElementById('settings-overlay');
+        const settingsPanel = document.getElementById('settings-panel');
+        const themeOptionsEl = document.getElementById('theme-options');
+
+        function applyTheme(id) {
+            if (id === 'default') {
+                document.documentElement.removeAttribute('data-theme');
+            } else {
+                document.documentElement.setAttribute('data-theme', id);
+            }
+            try { localStorage.setItem('searchhub-theme', id); } catch (err) { /* ignore */ }
+            renderThemeOptions(id);
+        }
+
+        function renderThemeOptions(activeId) {
+            themeOptionsEl.innerHTML = '';
+            THEMES.forEach(theme => {
+                const btn = document.createElement('button');
+                btn.className = 'theme-option' + (theme.id === activeId ? ' active' : '');
+                btn.style.setProperty('--theme-swatch', theme.swatch);
+                btn.addEventListener('click', () => applyTheme(theme.id));
+                btn.innerHTML = `
+                    <span class="swatch"></span>
+                    <span>${theme.label}</span>
+                    <i class="fa-solid fa-check check"></i>
+                `;
+                themeOptionsEl.appendChild(btn);
+            });
+        }
+
+        function openSettings() {
+            settingsOverlay.classList.add('open');
+            settingsBtn.setAttribute('aria-expanded', 'true');
+        }
+
+        function closeSettings() {
+            settingsOverlay.classList.remove('open');
+            settingsBtn.setAttribute('aria-expanded', 'false');
+        }
+
+        settingsBtn.addEventListener('click', () => {
+            settingsOverlay.classList.contains('open') ? closeSettings() : openSettings();
+        });
+
+        settingsOverlay.addEventListener('click', (e) => {
+            if (e.target === settingsOverlay) closeSettings();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && settingsOverlay.classList.contains('open')) closeSettings();
+        });
+
+        function initTheme() {
+            let saved = 'default';
+            try { saved = localStorage.getItem('searchhub-theme') || 'default'; } catch (err) { /* ignore */ }
+            applyTheme(saved);
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             buildNav();
             buildPanels();
@@ -648,6 +904,7 @@
             tickClock();
             setInterval(tickClock, 15000);
             loadFooterQuote();
+            initTheme();
         });
     </script>
 </body>

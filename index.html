@@ -444,6 +444,7 @@
                 document.getElementById('panel-' + page.id).classList.toggle('visible', page.id === id);
                 document.getElementById('nav-' + page.id).classList.toggle('active', page.id === id);
             });
+            ensurePageLoaded(id);
             const focusFn = window.__pageFocus && window.__pageFocus[id];
             if (typeof focusFn === 'function') focusFn();
         }
@@ -452,8 +453,23 @@
         // ── Generic fragment loader ──
         // Fetches an HTML fragment (its own <style>/markup/<script>) and
         // mounts it into the given container, executing its script.
-        async function loadFragment(url, containerId) {
+        // Tracks which pages have been loaded (for lazy-loading) and calls
+        // each page's cleanup hook (window.__pageCleanup[id]) before a
+        // reload, so re-invoking loadFragment for the same page doesn't
+        // stack duplicate listeners/intervals.
+        const loadedPages = new Set();
+
+        async function loadFragment(url, containerId, pageId) {
     const container = document.getElementById(containerId);
+
+    // Run this page's cleanup hook, if it registered one, before we wipe
+    // and replace its markup — lets a fragment tear down listeners,
+    // intervals, etc. from a previous load.
+    const cleanupFn = pageId && window.__pageCleanup && window.__pageCleanup[pageId];
+    if (typeof cleanupFn === 'function') {
+        try { cleanupFn(); } catch (err) { console.error('Cleanup error for', pageId, err); }
+    }
+
     try {
         const res = await fetch(url);
         if (!res.ok) throw new Error(`${res.status}`);
@@ -487,10 +503,20 @@
             s.textContent = code;
             document.body.appendChild(s);
         });
+
+        if (pageId) loadedPages.add(pageId);
     } catch (err) {
         container.innerHTML = `<p class="panel-loading">Couldn't load this page (${err.message}). If you're opening this file directly from disk, serve it over a local web server instead.</p>`;
     }
 }
+
+        // Lazily loads a page's fragment the first time its panel is shown.
+        function ensurePageLoaded(id) {
+            if (loadedPages.has(id)) return;
+            const page = PAGES.find(p => p.id === id);
+            if (!page) return;
+            loadFragment(page.file, 'panel-' + page.id, page.id);
+        }
 
         function ordinal(n) {
             const s = ['th', 'st', 'nd', 'rd'];
@@ -616,7 +642,9 @@
         document.addEventListener('DOMContentLoaded', () => {
             buildNav();
             buildPanels();
-            PAGES.forEach(page => loadFragment(page.file, 'panel-' + page.id));
+            // Only the first (initially visible) channel loads eagerly;
+            // the rest are fetched lazily the first time their panel is shown.
+            if (PAGES.length) ensurePageLoaded(PAGES[0].id);
             tickClock();
             setInterval(tickClock, 15000);
             loadFooterQuote();

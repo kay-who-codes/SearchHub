@@ -178,8 +178,10 @@
         color: var(--text);
     }
 
+    /* Each nav-item carries its own --ch (channel color), set inline per page.
+       Falls back to the global --accent if none is set. */
     .nav-item.active {
-        background: var(--accent-soft);
+        background: color-mix(in srgb, var(--ch, var(--accent)) 14%, transparent);
         color: var(--text);
     }
 
@@ -192,7 +194,7 @@
     }
 
     .nav-item.active .idx {
-        color: var(--accent);
+        color: var(--ch, var(--accent));
     }
 
     .nav-item i.nav-icon {
@@ -200,11 +202,7 @@
         text-align: center;
         font-size: 0.85rem;
         flex-shrink: 0;
-        color: var(--text-faint);
-    }
-
-    .nav-item.active i.nav-icon {
-        color: var(--accent);
+        color: var(--ch, var(--text-faint));
     }
 
     .nav-item .label {
@@ -222,8 +220,8 @@
     }
 
     .nav-item.active .dot {
-        background: var(--accent);
-        box-shadow: 0 0 8px 1px var(--accent);
+        background: var(--ch, var(--accent));
+        box-shadow: 0 0 8px 1px var(--ch, var(--accent));
     }
 
     .rail-footer {
@@ -395,15 +393,18 @@
            Add a new page by adding one entry here and dropping a
            matching fragment file (its own <style>/markup/<script>)
            next to index.html. Nothing else needs to change.
+
+           `color` sets this channel's accent (active state, dot,
+           icon, index number) — any valid CSS color.
         ──────────────────────────────────────────────────────────── */
         const PAGES = [
-    { id: 'bookmarks', label: 'Bookmarks', icon: 'fa-solid fa-star',      file: 'Pages/bookmarks.html' },
-    { id: 'search',    label: 'Search',    icon: 'fa-solid fa-magnifying-glass', file: 'Pages/search.html' },
-    { id: 'advanced',  label: 'Advanced',  icon: 'fa-solid fa-cogs', file: 'Pages/advanced.html' },
-    { id: 'subsearch', label: 'SubSearch', icon: 'fa-solid fa-layer-group', file: 'Pages/subsearch.html' },
-    { id: 'lexsearch', label: 'LexSearch', icon: 'fa-solid fa-scale-balanced', file: 'Pages/lexsearch.html' },
-    { id: 'xsearch',   label: 'X Search',  icon: 'fav fa-x',   file: 'Pages/xsearch.html' },
-    { id: 'pulse',   label: 'Pulse',  icon: 'fa-solid fa-coins',   file: 'Pages/pulse.html' }
+    { id: 'bookmarks', label: 'Bookmarks', icon: 'fa-solid fa-star',      file: 'Pages/bookmarks.html', color: '#4caf50' },
+    { id: 'search',    label: 'Search',    icon: 'fa-solid fa-magnifying-glass', file: 'Pages/search.html', color: '#e0c93a' },
+    { id: 'advanced',  label: 'Advanced',  icon: 'fa-solid fa-cogs', file: 'Pages/advanced.html', color: '#e0473e' },
+    { id: 'subsearch', label: 'SubSearch', icon: 'fa-solid fa-layer-group', file: 'Pages/subsearch.html', color: '#e08a3e' },
+    { id: 'lexsearch', label: 'LexSearch', icon: 'fa-solid fa-scale-balanced', file: 'Pages/lexsearch.html', color: '#4a90e2' },
+    { id: 'xsearch',   label: 'X Search',  icon: 'fav fa-x',   file: 'Pages/xsearch.html', color: '#9aa0ac' },
+    { id: 'pulse',   label: 'Pulse',  icon: 'fa-solid fa-coins',   file: 'Pages/pulse.html', color: '#1b5e33' }
         ];
 
         const navList = document.getElementById('nav-list');
@@ -415,6 +416,7 @@
                 const btn = document.createElement('button');
                 btn.className = 'nav-item' + (i === 0 ? ' active' : '');
                 btn.id = 'nav-' + page.id;
+                if (page.color) btn.style.setProperty('--ch', page.color);
                 btn.addEventListener('click', () => showSection(page.id));
                 btn.innerHTML = `
                     <span class="idx">${String(i + 1).padStart(2, '0')}</span>

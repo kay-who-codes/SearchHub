@@ -390,18 +390,96 @@
             var(--bg);
     }
 
+html[data-theme="yellow"] {
+    --accent: #d4b83a;
+    --accent-soft: rgba(212, 184, 58, 0.14);
+    --bg: color-mix(in srgb, #d4b83a 5%, #14171c);
+    --bg-rail: color-mix(in srgb, #d4b83a 5%, #0f1115);
+    --surface: color-mix(in srgb, #d4b83a 4%, #1b1f27);
+}
+html[data-theme="yellow"] body {
+    background:
+        radial-gradient(ellipse 900px 500px at 15% -10%, rgba(212, 184, 58, 0.09), transparent 60%),
+        var(--bg);
+}
+
+    html[data-theme="green"] {
+    --accent: #4caf6e;
+    --accent-soft: rgba(76, 175, 110, 0.14);
+    --bg: color-mix(in srgb, #4caf6e 5%, #14171c);
+    --bg-rail: color-mix(in srgb, #4caf6e 5%, #0f1115);
+    --surface: color-mix(in srgb, #4caf6e 4%, #1b1f27);
+}
+
+  html[data-theme="green"] body {
+    background:
+        radial-gradient(ellipse 900px 500px at 15% -10%, rgba(76, 175, 110, 0.09), transparent 60%),
+        var(--bg);
+}
+
   html[data-theme="blue"] {
-        --accent: #e0873e;
-        --accent-soft: rgba(0, 138, 255, 0.14);
-        --bg: color-mix(in srgb, #008aff 5%, #14171c);
-        --bg-rail: color-mix(in srgb, #00bfff 5%, #0f1115);
-        --surface: color-mix(in srgb, #00bfff 4%, #1b1f27);
-    }
+    --accent: #008aff;
+    --accent-soft: rgba(0, 138, 255, 0.14);
+    --bg: color-mix(in srgb, #008aff 5%, #14171c);
+    --bg-rail: color-mix(in srgb, #00bfff 5%, #0f1115);
+    --surface: color-mix(in srgb, #00bfff 4%, #1b1f27);
+}
     html[data-theme="blue"] body {
         background:
             radial-gradient(ellipse 900px 500px at 15% -10%, rgba(0, 138, 255, 0.14), transparent 60%),
             var(--bg);
     }
+
+html[data-theme="purple"] {
+    --accent: #9a5fe0;
+    --accent-soft: rgba(154, 95, 224, 0.14);
+    --bg: color-mix(in srgb, #9a5fe0 5%, #14171c);
+    --bg-rail: color-mix(in srgb, #9a5fe0 5%, #0f1115);
+    --surface: color-mix(in srgb, #9a5fe0 4%, #1b1f27);
+}
+html[data-theme="purple"] body {
+    background:
+        radial-gradient(ellipse 900px 500px at 15% -10%, rgba(154, 95, 224, 0.09), transparent 60%),
+        var(--bg);
+}
+
+html[data-theme="pink"] {
+    --accent: #e0609a;
+    --accent-soft: rgba(224, 96, 154, 0.14);
+    --bg: color-mix(in srgb, #e0609a 5%, #14171c);
+    --bg-rail: color-mix(in srgb, #e0609a 5%, #0f1115);
+    --surface: color-mix(in srgb, #e0609a 4%, #1b1f27);
+}
+html[data-theme="pink"] body {
+    background:
+        radial-gradient(ellipse 900px 500px at 15% -10%, rgba(224, 96, 154, 0.09), transparent 60%),
+        var(--bg);
+}
+  
+/* ── Animated Rainbow ── */
+@property --hue {
+    syntax: '<number>';
+    inherits: true;
+    initial-value: 0;
+}
+
+html[data-theme="rainbow"] {
+    --hue: 0;
+    --accent: hsl(var(--hue) 75% 62%);
+    --accent-soft: hsl(var(--hue) 75% 62% / 0.14);
+    --bg: color-mix(in srgb, hsl(var(--hue) 75% 62%) 5%, #14171c);
+    --bg-rail: color-mix(in srgb, hsl(var(--hue) 75% 62%) 5%, #0f1115);
+    --surface: color-mix(in srgb, hsl(var(--hue) 75% 62%) 4%, #1b1f27);
+    animation: rainbow-cycle 10s linear infinite;
+}
+html[data-theme="rainbow"] body {
+    background:
+        radial-gradient(ellipse 900px 500px at 15% -10%, hsl(var(--hue) 75% 62% / 0.1), transparent 60%),
+        var(--bg);
+}
+@keyframes rainbow-cycle {
+    to { --hue: 360; }
+}
 
     /* ── Settings button (top-right, every page) ── */
     .settings-btn {
@@ -830,11 +908,16 @@
 
         // ── Settings: colour scheme presets ──
         const THEMES = [
-            { id: 'default', label: 'Default', swatch: '#a9a9a9' },
-            { id: 'red',     label: 'Red',      swatch: '#d9564c' },
-            { id: 'orange',  label: 'Orange',    swatch: '#e0873e' },
-            { id: 'blue',     label: 'Blue',      swatch: '#008aff' }
-        ];
+    { id: 'default', label: 'Default', swatch: '#a9a9a9' },
+    { id: 'red',     label: 'Red',     swatch: '#d9564c' },
+    { id: 'orange',  label: 'Orange',  swatch: '#e0873e' },
+    { id: 'yellow',  label: 'Yellow',  swatch: '#d4b83a' },
+    { id: 'green',   label: 'Green',   swatch: '#4caf6e' },
+    { id: 'blue',    label: 'Blue',    swatch: '#008aff' },
+    { id: 'purple',  label: 'Purple',  swatch: '#9a5fe0' },
+    { id: 'pink',    label: 'Pink',    swatch: '#e0609a' },
+    { id: 'rainbow', label: 'Rainbow', swatch: 'conic-gradient(from 0deg, red, orange, yellow, green, blue, purple, red)' }
+];
 
         const settingsBtn = document.getElementById('settings-btn');
         const settingsOverlay = document.getElementById('settings-overlay');

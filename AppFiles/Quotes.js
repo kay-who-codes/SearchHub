@@ -32,5 +32,16 @@ const QUOTES = [
     "The secret of getting ahead is getting started."
 ];
 
+// Alias in lowercase — the app looks for a variable/export named "quotes"
+const quotes = QUOTES;
+
+// Support both CommonJS and ES module import styles, plus plain <script> tag loading
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { quotes, QUOTES };
+}
+if (typeof window !== 'undefined') {
+    window.quotes = quotes;
+}
+
 // For debugging - log to confirm the file loaded
 console.log('Quotes.js loaded successfully. Quotes count:', QUOTES.length);

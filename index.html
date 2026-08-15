@@ -811,47 +811,63 @@ html[data-theme="rainbow"] body {
         // is expected to expose its data as a global QUOTES array of plain
         // quote strings (grouped by // author comments inside the file itself
         // — the author isn't part of the data, just organizational).
-        function resolveQuotesArray() {
-            const candidates = [
-                window.QUOTES, window.Quotes, window.quotes,
-                window.QuoteList, window.quoteList
-            ];
-            for (const c of candidates) {
-                if (Array.isArray(c) && c.length) return c;
+        // ── Persistent quote footer ──
+function resolveQuotesArray() {
+    const candidates = [
+        window.QUOTES, window.Quotes, window.quotes,
+        window.QuoteList, window.quoteList
+    ];
+    for (const c of candidates) {
+        if (Array.isArray(c) && c.length) return c;
+    }
+    return null;
+}
+
+function renderQuote(entry) {
+    const text = typeof entry === 'string' ? entry : (entry && (entry.text || entry.quote)) || '';
+    document.getElementById('footer-quote-text').textContent = text || 'No quote available.';
+}
+
+function loadFooterQuote() {
+    const existing = resolveQuotesArray();
+    if (existing && existing.length) {
+        renderQuote(existing[Math.floor(Math.random() * existing.length)]);
+        return;
+    }
+
+    // Try loading the script
+    const script = document.createElement('script');
+    script.src = 'AppFiles/Quotes.js';  // Try relative path first
+    script.onload = () => {
+        const list = resolveQuotesArray();
+        if (list && list.length) {
+            renderQuote(list[Math.floor(Math.random() * list.length)]);
+        } else {
+            document.getElementById('footer-quote-text').textContent = 
+                "Found Quotes.js but no quotes array.";
+        }
+    };
+    script.onerror = () => {
+        // Try with leading slash as fallback
+        const fallbackScript = document.createElement('script');
+        fallbackScript.src = '/AppFiles/Quotes.js';
+        fallbackScript.onload = () => {
+            const list = resolveQuotesArray();
+            if (list && list.length) {
+                renderQuote(list[Math.floor(Math.random() * list.length)]);
+            } else {
+                document.getElementById('footer-quote-text').textContent = 
+                    "Couldn't find quotes in Quotes.js.";
             }
-            return null;
-        }
-
-        function renderQuote(entry) {
-            const text = typeof entry === 'string' ? entry : (entry && (entry.text || entry.quote)) || '';
-            document.getElementById('footer-quote-text').textContent = text || 'No quote available.';
-        }
-
-        function loadFooterQuote() {
-            const existing = resolveQuotesArray();
-            if (existing) {
-                renderQuote(existing[Math.floor(Math.random() * existing.length)]);
-                return;
-            }
-
-            const script = document.createElement('script');
-            script.src = '/AppFiles/Quotes.js';
-            script.onload = () => {
-                const list = resolveQuotesArray();
-                if (list && list.length) {
-                    renderQuote(list[Math.floor(Math.random() * list.length)]);
-                } else {
-                    document.getElementById('footer-quote-text').textContent =
-                        "Couldn't find any quotes in Quotes.js.";
-                }
-            };
-            script.onerror = () => {
-                document.getElementById('footer-quote-text').textContent =
-                    "Couldn't load AppFiles/Quotes.js.";
-            };
-            document.body.appendChild(script);
-        }
-
+        };
+        fallbackScript.onerror = () => {
+            document.getElementById('footer-quote-text').textContent = 
+                "Couldn't load AppFiles/Quotes.js. Check file path.";
+        };
+        document.body.appendChild(fallbackScript);
+    };
+    document.body.appendChild(script);
+}
         // ── Keyboard navigation ──
         // 1–7 jump straight to the matching channel (and focus its primary
         // text box, via window.__pageFocus[id], same hook showSection uses).

@@ -829,43 +829,55 @@ function renderQuote(entry) {
 }
 
 function loadFooterQuote() {
+    const quoteElement = document.getElementById('footer-quote-text');
+    
+    // First check if quotes are already loaded
     const existing = resolveQuotesArray();
     if (existing && existing.length) {
         renderQuote(existing[Math.floor(Math.random() * existing.length)]);
         return;
     }
-
-    // Try loading the script
+    
+    // Try loading the script with cache-busting to avoid caching issues
     const script = document.createElement('script');
-    script.src = 'AppFiles/Quotes.js';  // Try relative path first
-    script.onload = () => {
-        const list = resolveQuotesArray();
-        if (list && list.length) {
-            renderQuote(list[Math.floor(Math.random() * list.length)]);
-        } else {
-            document.getElementById('footer-quote-text').textContent = 
-                "Found Quotes.js but no quotes array.";
-        }
-    };
-    script.onerror = () => {
-        // Try with leading slash as fallback
-        const fallbackScript = document.createElement('script');
-        fallbackScript.src = '/AppFiles/Quotes.js';
-        fallbackScript.onload = () => {
+    script.src = 'AppFiles/Quotes.js?v=' + Date.now();
+    
+    script.onload = function() {
+        console.log('Script loaded, checking for quotes...');
+        // Wait a tiny bit to ensure the script executed
+        setTimeout(() => {
             const list = resolveQuotesArray();
             if (list && list.length) {
                 renderQuote(list[Math.floor(Math.random() * list.length)]);
+                console.log('✅ Quote loaded successfully');
             } else {
-                document.getElementById('footer-quote-text').textContent = 
-                    "Couldn't find quotes in Quotes.js.";
+                quoteElement.textContent = "Found Quotes.js but no quotes array.";
+                console.warn('No quotes array found. Available window props:', Object.keys(window).filter(k => k.includes('quote') || k.includes('Quote')));
             }
-        };
-        fallbackScript.onerror = () => {
-            document.getElementById('footer-quote-text').textContent = 
-                "Couldn't load AppFiles/Quotes.js. Check file path.";
-        };
-        document.body.appendChild(fallbackScript);
+        }, 50);
     };
+    
+    script.onerror = function() {
+        console.error('Failed to load Quotes.js');
+        // Try alternative path
+        const altScript = document.createElement('script');
+        altScript.src = '/AppFiles/Quotes.js?v=' + Date.now();
+        altScript.onload = function() {
+            setTimeout(() => {
+                const list = resolveQuotesArray();
+                if (list && list.length) {
+                    renderQuote(list[Math.floor(Math.random() * list.length)]);
+                } else {
+                    quoteElement.textContent = "Couldn't load quotes from /AppFiles/Quotes.js";
+                }
+            }, 50);
+        };
+        altScript.onerror = function() {
+            quoteElement.textContent = "⚠️ Couldn't load AppFiles/Quotes.js. Check file path.";
+        };
+        document.body.appendChild(altScript);
+    };
+    
     document.body.appendChild(script);
 }
         // ── Keyboard navigation ──

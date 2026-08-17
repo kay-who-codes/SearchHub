@@ -1,4 +1,4 @@
-# 🌍 Universal Search
+# 🔎 SearchHub
 
 A clean, dark-themed browser homepage for fast searching and organised bookmark access.
 

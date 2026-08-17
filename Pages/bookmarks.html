@@ -138,7 +138,7 @@
  
 /* Smooth transitions for density change */
 .bookmark-category {
-    background-color: var(--surface);
+    background-color: var(--cat-bg, var(--surface));
     border: 1px solid var(--border);
     border-radius: 10px;
     padding: 18px 20px;
@@ -148,7 +148,8 @@
                 border-radius 0.35s cubic-bezier(0.4, 0, 0.2, 1),
                 box-shadow 0.25s ease,
                 border-color 0.25s ease,
-                transform 0.25s ease;
+                transform 0.25s ease,
+                background-color 0.25s ease;
 }
  
 .bookmark-category::before {
@@ -190,6 +191,35 @@
     align-items: center;
     justify-content: space-between;
     gap: 8px;
+}
+ 
+.category-header .header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+ 
+.category-icon {
+    flex-shrink: 0;
+    width: 15px;
+    height: 15px;
+    background-color: var(--cat-color, var(--accent));
+    -webkit-mask-image: var(--icon-url);
+    mask-image: var(--icon-url);
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+ 
+.bookmarks-container.dense .category-icon {
+    width: 13px;
+    height: 13px;
 }
  
 .category-header .page-tag {
@@ -521,7 +551,7 @@
         { name: "🏨 Booking.com", url: "https://www.booking.com/", category: "Travel", tags: ["Travel", "Hotels", "Accommodation"] },
         { name: "✈️ Kayak", url: "https://www.kayak.com/", category: "Travel", tags: ["Travel", "Flights", "Hotels", "Car Hire"] },
         { name: "🏨 Airbnb", url: "https://www.airbnb.com/", category: "Travel", tags: ["Travel", "Accommodation", "Vacation Rentals"] }
-    ]; // <-- Added missing closing bracket here
+    ];
 
     const PAGE_DATA = {
         primary: bookmarksPrimary,
@@ -555,6 +585,36 @@
         "Language Learning":   "#63e6be",
         "Travel":              "#FF55D4"
     };
+
+        // Category name -> icon (raw SVG from GitHub, recoloured per-category via CSS mask).
+    // Icons are plain white/monochrome outline SVGs; since we mask instead of
+    // filtering, their original fill colour doesn't matter.
+    const ICON_BASE = 'https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/';
+    const categoryIcons = {
+        'Programming': 'code-2.svg',
+        'Creative': 'palette.svg',
+        'Social': 'users.svg',
+        'Prudence': 'check-square.svg',
+        'Money': 'landmark.svg',
+        'Shopping': 'shopping-cart.svg',
+        'Entertainment': 'clapperboard.svg',
+        'Reading': 'book-open.svg',
+        'UK Legal Resources': 'graduation-cap.svg',
+        'AI Chat': 'sparkles.svg',
+        'Cloud Storage': 'cloud.svg',
+        'Language Learning': 'file-text.svg',
+        'Gaming': 'gamepad-2.svg',
+        'Travel': 'plane.svg',
+        'Communication': 'message-circle.svg',
+        'Words': 'speech-bubble.svg',
+        'Profiteering': 'dollar-sign.svg',
+    };
+    const DEFAULT_ICON = 'bookmark.svg';
+ 
+    function iconUrlForCategory(category) {
+        const file = categoryIcons[category] || DEFAULT_ICON;
+        return `url("${ICON_BASE}${file}")`;
+    }
  
     function hexToRgba(hex, alpha) {
         const r = parseInt(hex.slice(1, 3), 16);
@@ -591,13 +651,25 @@
         categoryCard.dataset.category = category;
         categoryCard.style.setProperty('--cat-color', color);
         categoryCard.style.setProperty('--cat-glow', hexToRgba(color, 0.35));
+        categoryCard.style.setProperty('--cat-bg', hexToRgba(color, 0.07));
         categoryCard.style.animationDelay = `${index * 30}ms`;
  
         const categoryHeader = document.createElement('div');
         categoryHeader.className = 'category-header';
+ 
+        const headerLeft = document.createElement('div');
+        headerLeft.className = 'header-left';
+ 
+        const categoryIcon = document.createElement('span');
+        categoryIcon.className = 'category-icon';
+        categoryIcon.style.setProperty('--icon-url', iconUrlForCategory(category));
+        headerLeft.appendChild(categoryIcon);
+ 
         const headerText = document.createElement('span');
         headerText.textContent = category;
-        categoryHeader.appendChild(headerText);
+        headerLeft.appendChild(headerText);
+ 
+        categoryHeader.appendChild(headerLeft);
  
         const bookmarkList = document.createElement('div');
         bookmarkList.className = 'bookmark-list';
@@ -662,10 +734,7 @@
     function renderSearchResults(term) {
         bookmarksContainer.innerHTML = '';
  
-        const combined = [
-            ...bookmarksPrimary.map(b => ({ ...b, __page: 'primary' })),
-            ...bookmarksSecondary.map(b => ({ ...b, __page: 'secondary' }))
-        ];
+        const combined = "DATA OMITTED FOR BREVITY [__OMIT_CONST_6__]. DO NOT invent or restore this data — leave the marker as-is.";
  
         const matched = combined.filter(b =>
             b.name.toLowerCase().includes(term) ||

@@ -734,7 +734,10 @@
     function renderSearchResults(term) {
         bookmarksContainer.innerHTML = '';
  
-        const combined = "DATA OMITTED FOR BREVITY [__OMIT_CONST_6__]. DO NOT invent or restore this data — leave the marker as-is.";
+        const combined = [
+    ...bookmarksPrimary.map(b => ({ ...b, __page: 'primary' })),
+    ...bookmarksSecondary.map(b => ({ ...b, __page: 'secondary' }))
+];
  
         const matched = combined.filter(b =>
             b.name.toLowerCase().includes(term) ||

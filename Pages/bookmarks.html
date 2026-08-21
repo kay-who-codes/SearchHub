@@ -783,15 +783,24 @@
  
     function init() {
         renderBookmarks();
- 
-        bookmarksSearchInput.addEventListener('input', (e) => {
-            handleSearchInput(e.target.value);
-        });
- 
-        pageToggle.addEventListener('click', () => {
-            const nextPage = currentPage === 'primary' ? 'secondary' : 'primary';
-            setPage(nextPage);
-        });
+
+    bookmarksSearchInput.addEventListener('input', (e) => {
+        handleSearchInput(e.target.value);
+    });
+
+    bookmarksSearchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const term = bookmarksSearchInput.value.trim();
+            if (term !== '') {
+                window.open(`https://search.brave.com/search?q=${encodeURIComponent(term)}`, '_blank');
+            }
+        }
+    });
+
+    pageToggle.addEventListener('click', () => {
+        const nextPage = currentPage === 'primary' ? 'secondary' : 'primary';
+        setPage(nextPage);
+    });
  
         const densityToggle = document.getElementById('density-toggle');
         const densityLabel = document.getElementById('density-label');

@@ -380,6 +380,11 @@
     .bookmarks-container {
         grid-template-columns: 1fr;
     }
+
+    .page-toggle-menu {
+        left: 0;
+        right: auto;
+    }
 }
 </style>
  
@@ -511,16 +516,16 @@
         // Creative
         { name: "✏️ Typebox", url: "https://kay-who-codes.github.io/Type-Box/", category: "Creative", tags: ["write", "text", "notepad"] },
 
-    // AI 
-        { name: "🔴 Google Gemini", url: "https://gemini.google.com", category: "AI Chat", tags: ["ai", "chatbot", "assistant", "google"] },
-        { name: "🔵 Microsoft Copilot", url: "https://copilot.microsoft.com", category: "AI Chat", tags: ["ai", "chatbot", "assistant", "microsoft", "bing"] },
-        { name: "⚫ Grok", url: "https://grok.x.ai", category: "AI Chat", tags: ["ai", "chatbot", "xai", "assistant"] },
-        { name: "🟣 Lumo", url: "https://lumo.proton.me/u/0/", category: "AI Chat", tags: ["ai", "chatbot", "private", "assistant"] },
-        { name: "🟠 Mistral Chat", url: "https://chat.mistral.ai", category: "AI Chat", tags: ["ai", "chatbot", "open-source", "france"] },
-        { name: "🟢 Pi AI", url: "https://pi.ai", category: "AI Chat", tags: ["ai", "chatbot", "friendly", "assistant"] },
-        { name: "🟣 Poe", url: "https://poe.com", category: "AI Chat", tags: ["ai", "chatbot", "multi-model", "assistant"] },
-        { name: "⚫ Perplexity AI", url: "https://perplexity.ai", category: "AI Chat", tags: ["ai", "chatbot", "search", "assistant"] },
-        { name: "🔘 HuggingChat", url: "https://huggingface.co/chat", category: "AI Chat", tags: ["ai", "chatbot", "open-source", "assistant"] },
+        // AI 
+            { name: "🔴 Google Gemini", url: "https://gemini.google.com", category: "AI Chat", tags: ["ai", "chatbot", "assistant", "google"] },
+            { name: "🔵 Microsoft Copilot", url: "https://copilot.microsoft.com", category: "AI Chat", tags: ["ai", "chatbot", "assistant", "microsoft", "bing"] },
+            { name: "⚫ Grok", url: "https://grok.x.ai", category: "AI Chat", tags: ["ai", "chatbot", "xai", "assistant"] },
+            { name: "🟣 Lumo", url: "https://lumo.proton.me/u/0/", category: "AI Chat", tags: ["ai", "chatbot", "private", "assistant"] },
+            { name: "🟠 Mistral Chat", url: "https://chat.mistral.ai", category: "AI Chat", tags: ["ai", "chatbot", "open-source", "france"] },
+            { name: "🟢 Pi AI", url: "https://pi.ai", category: "AI Chat", tags: ["ai", "chatbot", "friendly", "assistant"] },
+            { name: "🟣 Poe", url: "https://poe.com", category: "AI Chat", tags: ["ai", "chatbot", "multi-model", "assistant"] },
+            { name: "⚫ Perplexity AI", url: "https://perplexity.ai", category: "AI Chat", tags: ["ai", "chatbot", "search", "assistant"] },
+            { name: "🔘 HuggingChat", url: "https://huggingface.co/chat", category: "AI Chat", tags: ["ai", "chatbot", "open-source", "assistant"] },
         
     // Entertainment
         { name: "🟠 Rumble", url: "https://rumble.com/", category: "Entertainment", tags: ["Entertainment", "Learning", "Podcast"] },
@@ -891,7 +896,21 @@
 
     pageToggle.addEventListener('click', (e) => {
         e.stopPropagation();
+        const willOpen = pageToggleMenu.classList.contains('hidden');
         pageToggleMenu.classList.toggle('hidden');
+        if (willOpen) {
+            // Reset to default (right-aligned) positioning, then clamp to viewport if it overflows.
+            pageToggleMenu.style.left = '';
+            pageToggleMenu.style.right = '';
+            const rect = pageToggleMenu.getBoundingClientRect();
+            if (rect.left < 0) {
+                pageToggleMenu.style.left = '0';
+                pageToggleMenu.style.right = 'auto';
+            } else if (rect.right > window.innerWidth) {
+                pageToggleMenu.style.right = '0';
+                pageToggleMenu.style.left = 'auto';
+            }
+        }
     });
 
     pageToggleMenu.querySelectorAll('.page-toggle-option').forEach(optionBtn => {

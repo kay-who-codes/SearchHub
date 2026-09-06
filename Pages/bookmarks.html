@@ -1,4 +1,5 @@
 <style>
+
 .page-header {
     margin-bottom: 28px;
 }
@@ -386,6 +387,7 @@
         right: auto;
     }
 }
+
 </style>
  
 <div class="page-header">
@@ -403,11 +405,7 @@
             <button class="page-toggle-btn" id="page-toggle" title="Switch bookmark page">
                 <span id="page-toggle-label">🥇</span>
             </button>
-            <div class="page-toggle-menu hidden" id="page-toggle-menu">
-                <button class="page-toggle-option" data-page="primary">🥇 Primary</button>
-                <button class="page-toggle-option" data-page="secondary">🥈 Secondary</button>
-                <button class="page-toggle-option" data-page="tertiary">🥉 Tertiary</button>
-            </div>
+            <div class="page-toggle-menu hidden" id="page-toggle-menu"></div>
         </div>
         <button class="density-btn" id="density-toggle" title="Toggle compact view">
             <i class="fas fa-grip-lines"></i>
@@ -656,8 +654,15 @@
     PAGE_LABELS.tertiary = {
         title: "Tertiary Bookmarks",
         subtitle: "Quick access to your favorite sites.",
-        toggleShows: "🥈"
+        toggleShows: "🥉"
     };
+
+    // Single source of truth for page emoji, used by both the toggle menu
+    // and the per-result page tags shown in search results.
+    const PAGE_EMOJI = { primary: '🥇', secondary: '🥈', tertiary: '🥉' };
+    function emojiForPage(page) {
+        return PAGE_EMOJI[page] || '🥉';
+    }
  
     const VISIBLE_LIMIT = 8;
  
@@ -786,7 +791,7 @@
                 bookmarkLink.dataset.page = bookmark.__page;
                 const tag = document.createElement('span');
                 tag.className = 'page-tag';
-                const pageEmoji = bookmark.__page === 'primary' ? '🥇' : (bookmark.__page === 'secondary' ? '🥈' : '🥉');
+                const pageEmoji = emojiForPage(bookmark.__page);
                 tag.textContent = ` (${pageEmoji})`;
                 bookmarkLink.appendChild(tag);
             }
@@ -831,29 +836,30 @@
  
     function renderSearchResults(term) {
         bookmarksContainer.innerHTML = '';
- 
-        const combined = [
-    ...bookmarksPrimary.map(b => ({ ...b, __page: 'primary' })),
-    ...bookmarksSecondary.map(b => ({ ...b, __page: 'secondary' }))
-];
- 
+
+        const combined = Object.keys(PAGE_DATA).flatMap(page =>
+            PAGE_DATA[page].map(b => ({ ...b, __page: page }))
+        );
+
         const matched = combined.filter(b =>
             b.name.toLowerCase().includes(term) ||
+            b.category.toLowerCase().includes(term) ||
+            b.url.toLowerCase().includes(term) ||
             b.tags.join(' ').toLowerCase().includes(term)
         );
- 
+
         if (matched.length === 0) {
             noResults.classList.add('show');
             return;
         }
         noResults.classList.remove('show');
- 
+
         const grouped = groupByCategory(matched);
         Object.keys(grouped).forEach((category, index) => {
             const card = buildCategoryCard(category, grouped[category], index, true);
             bookmarksContainer.appendChild(card);
         });
- 
+
         searchActive = true;
     }
  
@@ -865,11 +871,39 @@
         }
         renderSearchResults(term);
     }
+
+    function debounce(fn, delay) {
+        let t;
+        return (...args) => {
+            clearTimeout(t);
+            t = setTimeout(() => fn(...args), delay);
+        };
+    }
+    const debouncedSearch = debounce(handleSearchInput, 120);
  
     function updateToggleMenuActiveState() {
         const options = pageToggleMenu.querySelectorAll('.page-toggle-option');
         options.forEach(opt => {
             opt.classList.toggle('active', opt.dataset.page === currentPage);
+        });
+    }
+
+    // Builds the toggle-menu buttons from PAGE_DATA so a future page needs
+    // no menu-markup changes — just an entry in PAGE_DATA/PAGE_LABELS.
+    function buildToggleMenu() {
+        pageToggleMenu.innerHTML = '';
+        Object.keys(PAGE_DATA).forEach(page => {
+            const btn = document.createElement('button');
+            btn.className = 'page-toggle-option';
+            btn.dataset.page = page;
+            const label = (PAGE_LABELS[page] && PAGE_LABELS[page].title) || page;
+            btn.textContent = `${emojiForPage(page)} ${label}`;
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                setPage(page);
+                closeToggleMenu();
+            });
+            pageToggleMenu.appendChild(btn);
         });
     }
  
@@ -896,10 +930,11 @@
  
     function init() {
         renderBookmarks();
+        buildToggleMenu();
         updateToggleMenuActiveState();
 
     bookmarksSearchInput.addEventListener('input', (e) => {
-        handleSearchInput(e.target.value);
+        debouncedSearch(e.target.value);
     });
 
     bookmarksSearchInput.addEventListener('keydown', (e) => {
@@ -928,14 +963,6 @@
                 pageToggleMenu.style.left = 'auto';
             }
         }
-    });
-
-    pageToggleMenu.querySelectorAll('.page-toggle-option').forEach(optionBtn => {
-        optionBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            setPage(optionBtn.dataset.page);
-            closeToggleMenu();
-        });
     });
 
     document.addEventListener('click', (e) => {

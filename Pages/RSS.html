@@ -1,6 +1,10 @@
 <style>
-  
-.app {
+/* ── RSS / Dispatch page — all classes prefixed with rss- to avoid
+   colliding with the host app's global stylesheet (which defines its
+   own .rail, .nav-item, .dot, .count, .rail-footer, etc. for the
+   sidebar). Every class below is scoped this way. ── */
+
+.rss-app {
     display: grid;
     grid-template-columns: 280px 1fr;
     gap: 0;
@@ -8,7 +12,7 @@
 }
 
 /* ── Left rail ── */
-.app .rail {
+.rss-rail {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 12px 0 0 12px;
@@ -19,18 +23,18 @@
     min-width: 0;
 }
 
-.app .rail h1 {
+.rss-rail h1 {
     font-family: var(--font-display);
     font-size: 1.3rem;
     font-weight: 700;
     color: var(--text);
 }
 
-.app .rail h1 span {
+.rss-rail h1 span {
     color: var(--accent);
 }
 
-.search-box {
+.rss-search-box {
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -56,7 +60,7 @@
     color: var(--text-faint);
 }
 
-.search-all-btn {
+.rss-search-all-btn {
     background: transparent;
     border: 1px solid var(--border);
     border-radius: 8px;
@@ -69,18 +73,18 @@
     transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 
-.search-all-btn:hover:not(:disabled) {
+.rss-search-all-btn:hover:not(:disabled) {
     background: var(--accent-soft);
     color: var(--accent);
     border-color: var(--accent);
 }
 
-.search-all-btn:disabled {
+.rss-search-all-btn:disabled {
     opacity: 0.45;
     cursor: default;
 }
 
-.search-hint {
+.rss-search-hint {
     font-family: var(--font-mono);
     font-size: 0.66rem;
     color: var(--text-faint);
@@ -89,7 +93,7 @@
 }
 
 /* ── Feed tree / nav ── */
-.tree {
+.rss-tree {
     display: flex;
     flex-direction: column;
     gap: 2px;
@@ -97,7 +101,7 @@
     flex: 1;
 }
 
-.nav-item {
+.rss-nav-item {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -114,18 +118,18 @@
     transition: background 0.15s, color 0.15s;
 }
 
-.nav-item:hover {
+.rss-nav-item:hover {
     background: var(--accent-soft);
     color: var(--text);
 }
 
-.nav-item.active {
+.rss-nav-item.rss-active {
     background: var(--accent-soft);
     color: var(--text);
     font-weight: 500;
 }
 
-.nav-item .dot {
+.rss-nav-item .rss-dot {
     width: 6px;
     height: 6px;
     border-radius: 50%;
@@ -133,32 +137,32 @@
     flex-shrink: 0;
 }
 
-.nav-item.active .dot {
+.rss-nav-item.rss-active .rss-dot {
     background: var(--accent);
     box-shadow: 0 0 6px 1px var(--accent);
 }
 
-.nav-item span:nth-child(2) {
+.rss-nav-item span:nth-child(2) {
     flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.nav-item .count {
+.rss-nav-item .rss-count {
     font-family: var(--font-mono);
     font-size: 0.68rem;
     color: var(--text-faint);
     flex-shrink: 0;
 }
 
-.category-group {
+.rss-category-group {
     display: flex;
     flex-direction: column;
     margin-top: 6px;
 }
 
-.category-header {
+.rss-category-header {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -175,37 +179,37 @@
     text-transform: uppercase;
 }
 
-.category-header:hover {
+.rss-category-header:hover {
     color: var(--text-dim);
 }
 
-.category-header .chevron {
+.rss-category-header .rss-chevron {
     display: inline-block;
     transition: transform 0.15s;
     font-size: 0.7rem;
 }
 
-.category-header.open .chevron {
+.rss-category-header.rss-open .rss-chevron {
     transform: rotate(90deg);
 }
 
-.category-header .count {
+.rss-category-header .rss-count {
     margin-left: auto;
     font-family: var(--font-mono);
 }
 
-.category-feeds {
+.rss-category-feeds {
     display: none;
     flex-direction: column;
     gap: 2px;
     padding-left: 6px;
 }
 
-.category-feeds.open {
+.rss-category-feeds.rss-open {
     display: flex;
 }
 
-.rail-footer {
+.rss-rail-footer {
     margin-top: auto;
     padding-top: 12px;
     border-top: 1px solid var(--border);
@@ -215,7 +219,7 @@
     line-height: 1.6;
 }
 
-.rail-footer button {
+.rss-rail-footer button {
     margin-top: 6px;
     background: transparent;
     border: 1px solid var(--border);
@@ -228,13 +232,13 @@
     transition: background 0.15s, color 0.15s;
 }
 
-.rail-footer button:hover {
+.rss-rail-footer button:hover {
     background: var(--accent-soft);
     color: var(--accent);
 }
 
 /* ── Main content ── */
-.app main {
+.rss-app main {
     background: var(--bg);
     border: 1px solid var(--border);
     border-left: none;
@@ -246,7 +250,7 @@
     gap: 18px;
 }
 
-.main-head {
+.rss-main-head {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
@@ -256,14 +260,14 @@
     flex-wrap: wrap;
 }
 
-.main-head h2 {
+.rss-main-head h2 {
     font-family: var(--font-display);
     font-size: 1.4rem;
     font-weight: 600;
     color: var(--text);
 }
 
-.updated {
+.rss-updated {
     font-family: var(--font-mono);
     font-size: 0.7rem;
     color: var(--text-faint);
@@ -271,17 +275,17 @@
 }
 
 /* ── Status / skeleton states ── */
-.status {
+.rss-status {
     font-family: var(--font-body);
     color: var(--text-dim);
     padding: 24px 0;
 }
 
-.status.error {
+.rss-status.rss-error {
     color: #e0776e;
 }
 
-.skeleton {
+.rss-skeleton {
     height: 76px;
     border-radius: 10px;
     margin-bottom: 10px;
@@ -292,23 +296,23 @@
         var(--surface) 70%
     );
     background-size: 200% 100%;
-    animation: skeleton-shimmer 1.4s ease-in-out infinite;
+    animation: rss-skeleton-shimmer 1.4s ease-in-out infinite;
 }
 
-@keyframes skeleton-shimmer {
+@keyframes rss-skeleton-shimmer {
     0% { background-position: 200% 0; }
     100% { background-position: -200% 0; }
 }
 
 /* ── Item list ── */
-.items {
+.rss-items {
     list-style: none;
     display: flex;
     flex-direction: column;
     gap: 4px;
 }
 
-.item {
+.rss-item {
     display: grid;
     grid-template-columns: 96px 1fr;
     gap: 14px;
@@ -317,18 +321,18 @@
     transition: background 0.15s;
 }
 
-.item:hover {
+.rss-item:hover {
     background: var(--surface);
 }
 
-.thumb-wrap {
+.rss-thumb-wrap {
     position: relative;
     width: 96px;
     height: 72px;
     flex-shrink: 0;
 }
 
-.thumb {
+.rss-thumb {
     width: 96px;
     height: 72px;
     object-fit: cover;
@@ -337,7 +341,7 @@
     background: var(--surface-2);
 }
 
-.thumb.placeholder {
+.rss-thumb.rss-placeholder {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -348,7 +352,7 @@
     background: var(--accent-soft);
 }
 
-.thumb-wrap .date {
+.rss-thumb-wrap .rss-date {
     position: absolute;
     bottom: 4px;
     left: 4px;
@@ -361,7 +365,7 @@
     letter-spacing: 0.02em;
 }
 
-.item h3 {
+.rss-item h3 {
     font-family: var(--font-body);
     font-size: 0.96rem;
     font-weight: 600;
@@ -369,17 +373,17 @@
     margin-bottom: 4px;
 }
 
-.item h3 a {
+.rss-item h3 a {
     color: var(--text);
     text-decoration: none;
 }
 
-.item h3 a:hover {
+.rss-item h3 a:hover {
     color: var(--accent);
     text-decoration: underline;
 }
 
-.snippet {
+.rss-snippet {
     font-family: var(--font-body);
     font-size: 0.82rem;
     color: var(--text-dim);
@@ -391,7 +395,7 @@
     overflow: hidden;
 }
 
-.meta {
+.rss-meta {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -401,21 +405,21 @@
     flex-wrap: wrap;
 }
 
-.meta .sep {
+.rss-meta .rss-sep {
     color: var(--text-faint);
     opacity: 0.5;
 }
 
-.source-badge {
+.rss-source-badge {
     color: var(--accent);
     font-weight: 500;
 }
 
-.meta .category {
+.rss-meta .rss-category {
     color: var(--text-dim);
 }
 
-.load-more-sentinel {
+.rss-load-more-sentinel {
     text-align: center;
     padding: 14px 0;
     font-family: var(--font-mono);
@@ -425,61 +429,61 @@
 
 /* ── Responsive ── */
 @media (max-width: 760px) {
-    .app {
+    .rss-app {
         grid-template-columns: 1fr;
     }
 
-    .app .rail {
+    .rss-rail {
         border-radius: 12px 12px 0 0;
         border-bottom: none;
         max-height: 260px;
     }
 
-    .app main {
+    .rss-app main {
         border-radius: 0 0 12px 12px;
         border-left: 1px solid var(--border);
         border-top: none;
     }
 
-    .item {
+    .rss-item {
         grid-template-columns: 72px 1fr;
     }
 
-    .thumb-wrap,
-    .thumb {
+    .rss-thumb-wrap,
+    .rss-thumb {
         width: 72px;
         height: 54px;
     }
 }
 </style>
 
-<div class="app">
-  <aside class="rail">
+<div class="rss-app">
+  <aside class="rss-rail">
     <h1>Dispatch<span>.</span></h1>
 
-    <div class="search-box">
+    <div class="rss-search-box">
       <input id="rss-search-input" type="text" placeholder="Search titles, categories, tags…" autocomplete="off">
-      <button id="rss-search-all-btn" type="button" class="search-all-btn" title="Search every feed, including ones not yet loaded">Search all feeds</button>
-      <div class="search-hint" id="rss-search-hint"></div>
+      <button id="rss-search-all-btn" type="button" class="rss-search-all-btn" title="Search every feed, including ones not yet loaded">Search all feeds</button>
+      <div class="rss-search-hint" id="rss-search-hint"></div>
     </div>
 
-    <nav class="tree" id="rss-feed-nav"></nav>
+    <nav class="rss-tree" id="rss-feed-nav"></nav>
 
-    <div class="rail-footer">
+    <div class="rss-rail-footer">
       Sources fetched live via a public RSS proxy.<br>
       <button id="rss-refresh-btn" type="button">Refresh current view</button>
     </div>
   </aside>
 
   <main>
-    <div class="main-head">
+    <div class="rss-main-head">
       <h2 id="rss-feed-title">Loading…</h2>
-      <span class="updated" id="rss-feed-updated"></span>
+      <span class="rss-updated" id="rss-feed-updated"></span>
     </div>
     <div id="rss-content">
-      <div class="skeleton"></div>
-      <div class="skeleton"></div>
-      <div class="skeleton"></div>
+      <div class="rss-skeleton"></div>
+      <div class="rss-skeleton"></div>
+      <div class="rss-skeleton"></div>
     </div>
   </main>
 </div>
@@ -546,10 +550,10 @@
 
     // "All" aggregate view
     const allBtn = document.createElement("button");
-    allBtn.className = "nav-item" + (view.mode === "all" ? " active" : "");
+    allBtn.className = "rss-nav-item" + (view.mode === "all" ? " rss-active" : "");
     allBtn.type = "button";
     const totalLoaded = FEEDS.reduce((sum, f) => sum + (cache[f.url] ? cache[f.url].items.length : 0), 0);
-    allBtn.innerHTML = `<span class="dot"></span><span>All feeds</span><span class="count">${totalLoaded || ""}</span>`;
+    allBtn.innerHTML = `<span class="rss-dot"></span><span>All feeds</span><span class="rss-count">${totalLoaded || ""}</span>`;
     allBtn.addEventListener("click", () => selectAll());
     feedNav.appendChild(allBtn);
 
@@ -558,12 +562,12 @@
       const isOpen = openCategories.has(category);
 
       const group = document.createElement("div");
-      group.className = "category-group";
+      group.className = "rss-category-group";
 
       const header = document.createElement("button");
       header.type = "button";
-      header.className = "category-header" + (isOpen ? " open" : "");
-      header.innerHTML = `<span class="chevron">▸</span><span>${escapeHtml(category)}</span><span class="count">${entries.length}</span>`;
+      header.className = "rss-category-header" + (isOpen ? " rss-open" : "");
+      header.innerHTML = `<span class="rss-chevron">▸</span><span>${escapeHtml(category)}</span><span class="rss-count">${entries.length}</span>`;
       header.addEventListener("click", () => {
         if (openCategories.has(category)) openCategories.delete(category);
         else openCategories.add(category);
@@ -572,13 +576,13 @@
       group.appendChild(header);
 
       const feedsWrap = document.createElement("div");
-      feedsWrap.className = "category-feeds" + (isOpen ? " open" : "");
+      feedsWrap.className = "rss-category-feeds" + (isOpen ? " rss-open" : "");
       entries.forEach(({ feed, index }) => {
         const btn = document.createElement("button");
-        btn.className = "nav-item" + (view.mode === "feed" && view.index === index ? " active" : "");
+        btn.className = "rss-nav-item" + (view.mode === "feed" && view.index === index ? " rss-active" : "");
         btn.type = "button";
         const count = cache[feed.url] ? cache[feed.url].items.length : "";
-        btn.innerHTML = `<span class="dot"></span><span>${escapeHtml(feed.name)}</span><span class="count">${count}</span>`;
+        btn.innerHTML = `<span class="rss-dot"></span><span>${escapeHtml(feed.name)}</span><span class="rss-count">${count}</span>`;
         btn.addEventListener("click", () => selectFeed(index));
         feedsWrap.appendChild(btn);
       });
@@ -666,17 +670,17 @@
     const showBadge = !!opts.showBadge;
 
     if (!items.length){
-      content.innerHTML = `<p class="status">${escapeHtml(opts.emptyText || "No items to show.")}</p>`;
+      content.innerHTML = `<p class="rss-status">${escapeHtml(opts.emptyText || "No items to show.")}</p>`;
       return;
     }
 
     content.innerHTML = "";
     const list = document.createElement("ul");
-    list.className = "items";
+    list.className = "rss-items";
     content.appendChild(list);
 
     const sentinel = document.createElement("div");
-    sentinel.className = "load-more-sentinel";
+    sentinel.className = "rss-load-more-sentinel";
     content.appendChild(sentinel);
 
     let rendered = 0;
@@ -708,33 +712,33 @@
   function buildItemNode(item, showBadge){
     const feed = item._feed || {};
     const li = document.createElement("li");
-    li.className = "item";
+    li.className = "rss-item";
 
     const snippetText = stripHtml(item.description || item.content || "").trim();
     const thumbUrl = extractThumbnail(item);
     const initial = (item.title || "?").trim().charAt(0).toUpperCase();
 
     const thumbHtml = thumbUrl
-      ? `<img class="thumb" src="${escapeHtml(thumbUrl)}" alt="" loading="lazy" onerror="this.outerHTML='<div class=&quot;thumb placeholder&quot;>${escapeHtml(initial)}</div>'">`
-      : `<div class="thumb placeholder">${escapeHtml(initial)}</div>`;
+      ? `<img class="rss-thumb" src="${escapeHtml(thumbUrl)}" alt="" loading="lazy" onerror="this.outerHTML='<div class=&quot;rss-thumb rss-placeholder&quot;>${escapeHtml(initial)}</div>'">`
+      : `<div class="rss-thumb rss-placeholder">${escapeHtml(initial)}</div>`;
 
     const badgeHtml = showBadge && feed.name
-      ? `<span class="source-badge">${escapeHtml(feed.name)}</span><span class="sep">·</span>`
+      ? `<span class="rss-source-badge">${escapeHtml(feed.name)}</span><span class="rss-sep">·</span>`
       : "";
     const categoryHtml = feed.category
-      ? `<span class="category">${escapeHtml(feed.category)}</span><span class="sep">·</span>`
+      ? `<span class="rss-category">${escapeHtml(feed.category)}</span><span class="rss-sep">·</span>`
       : "";
     const tagsAttr = (feed.tags || []).join(",");
 
     li.innerHTML = `
-      <div class="thumb-wrap">
+      <div class="rss-thumb-wrap">
         ${thumbHtml}
-        <div class="date">${formatDate(item.pubDate)}</div>
+        <div class="rss-date">${formatDate(item.pubDate)}</div>
       </div>
       <div>
         <h3><a href="${item.link}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.title)}</a></h3>
-        ${snippetText ? `<p class="snippet">${escapeHtml(snippetText.slice(0, MAX_SNIPPET_CHARS))}${snippetText.length > MAX_SNIPPET_CHARS ? "…" : ""}</p>` : ""}
-        <div class="meta">
+        ${snippetText ? `<p class="rss-snippet">${escapeHtml(snippetText.slice(0, MAX_SNIPPET_CHARS))}${snippetText.length > MAX_SNIPPET_CHARS ? "…" : ""}</p>` : ""}
+        <div class="rss-meta">
           ${badgeHtml}
           ${categoryHtml}
           <span>${timeAgo(item.pubDate)}</span>
@@ -747,9 +751,9 @@
 
   function renderSkeleton(){
     content.innerHTML = `
-      <div class="skeleton"></div>
-      <div class="skeleton"></div>
-      <div class="skeleton"></div>
+      <div class="rss-skeleton"></div>
+      <div class="rss-skeleton"></div>
+      <div class="rss-skeleton"></div>
     `;
   }
 
@@ -770,7 +774,7 @@
       renderItemList(entry.items, { showBadge: false });
       renderNav();
     } catch (err) {
-      content.innerHTML = `<p class="status error">Couldn't load this feed — ${escapeHtml(err.message)}. The proxy service may be rate-limited; try refreshing in a moment.</p>`;
+      content.innerHTML = `<p class="rss-status rss-error">Couldn't load this feed — ${escapeHtml(err.message)}. The proxy service may be rate-limited; try refreshing in a moment.</p>`;
       feedUpdated.textContent = "";
     }
   }

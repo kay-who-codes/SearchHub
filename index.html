@@ -728,6 +728,11 @@ html[data-theme="rainbow"] body {
         // stack duplicate listeners/intervals.
         const loadedPages = new Set();
 
+        // Tracks the <script> elements injected for each page's most recent
+        // load, so a reload can remove the old (now-inert) nodes instead of
+        // letting them accumulate in the DOM forever.
+        const pageScriptNodes = new Map();
+
         async function loadFragment(url, containerId, pageId) {
     const container = document.getElementById(containerId);
 
@@ -766,14 +771,25 @@ html[data-theme="rainbow"] body {
         const markup = html.replace(styleRe, '').replace(scriptRe, '');
         container.innerHTML = markup;
 
+        // Remove this page's script nodes from its previous load (if any)
+        // before appending new ones — otherwise every reload leaves the old,
+        // now-inert <script> tags sitting in the DOM permanently.
+        if (pageId && pageScriptNodes.has(pageId)) {
+            pageScriptNodes.get(pageId).forEach(node => node.remove());
+        }
+
         // Re-create and append each script so it actually executes.
-        scripts.forEach(code => {
+        const newNodes = scripts.map(code => {
             const s = document.createElement('script');
             s.textContent = code;
             document.body.appendChild(s);
+            return s;
         });
 
-        if (pageId) loadedPages.add(pageId);
+        if (pageId) {
+            pageScriptNodes.set(pageId, newNodes);
+            loadedPages.add(pageId);
+        }
     } catch (err) {
         container.innerHTML = `<p class="panel-loading">Couldn't load this page (${err.message}). If you're opening this file directly from disk, serve it over a local web server instead.</p>`;
     }
@@ -801,7 +817,7 @@ html[data-theme="rainbow"] body {
 
             // Update date (e.g. "Sun, 26th July")
             const dateEl = document.getElementById('date');
-            dateEl.textContent = `${days[now.getDay()]}, ${(now.getDate())} ${months[now.getMonth()]}`;
+            dateEl.textContent = `${days[now.getDay()]}, ${ordinal(now.getDate())} ${months[now.getMonth()]}`;
 
             // Update time
             const clockEl = document.getElementById('clock');

@@ -879,7 +879,7 @@
             t = setTimeout(() => fn(...args), delay);
         };
     }
-    const debouncedSearch = debounce(handleSearchInput, 120);
+    const debouncedSearch = debounce(handleSearchInput, 750);
  
     function updateToggleMenuActiveState() {
         const options = pageToggleMenu.querySelectorAll('.page-toggle-option');

@@ -4,6 +4,16 @@
    own .rail, .nav-item, .dot, .count, .rail-footer, etc. for the
    sidebar). Every class below is scoped this way. ── */
 
+.page08-eyebrow {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent, #c9a35f);
+    display: block;
+    margin-bottom: 6px;
+}
+   
 .rss-app {
     display: grid;
     grid-template-columns: 280px 1fr;
@@ -457,41 +467,46 @@
 }
 </style>
 
-<div class="rss-app">
-  <aside class="rss-rail">
+<div class="app">
+  <aside class="rail">
+    <span class="page08-eyebrow">08</span>
     <h1>Dispatch<span>.</span></h1>
-
-    <div class="rss-search-box">
-      <input id="rss-search-input" type="text" placeholder="Search titles, categories, tags…" autocomplete="off">
-      <button id="rss-search-all-btn" type="button" class="rss-search-all-btn" title="Search every feed, including ones not yet loaded">Search all feeds</button>
-      <div class="rss-search-hint" id="rss-search-hint"></div>
+ 
+    <div class="search-box">
+      <input id="page08-search-input" type="text" placeholder="Search titles, categories, tags…" autocomplete="off">
+      <button id="page08-search-all-btn" type="button" class="search-all-btn" title="Search every feed, including ones not yet loaded">Search all feeds</button>
+      <div class="search-hint" id="page08-search-hint"></div>
     </div>
-
-    <nav class="rss-tree" id="rss-feed-nav"></nav>
-
-    <div class="rss-rail-footer">
+ 
+    <nav class="tree" id="page08-feed-nav"></nav>
+ 
+    <div class="rail-footer">
       Sources fetched live via a public RSS proxy.<br>
-      <button id="rss-refresh-btn" type="button">Refresh current view</button>
+      <button id="page08-refresh-btn" type="button">Refresh current view</button>
     </div>
   </aside>
-
+ 
   <main>
-    <div class="rss-main-head">
-      <h2 id="rss-feed-title">Loading…</h2>
-      <span class="rss-updated" id="rss-feed-updated"></span>
+    <div class="main-head">
+      <h2 id="page08-feed-title">Loading…</h2>
+      <span class="updated" id="page08-feed-updated"></span>
     </div>
-    <div id="rss-content">
-      <div class="rss-skeleton"></div>
-      <div class="rss-skeleton"></div>
-      <div class="rss-skeleton"></div>
+    <div id="page08-content">
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
     </div>
   </main>
 </div>
-
+ 
 <script>
 (function () {
+  // ============================================================
   // Feed configuration
-
+  // Add, remove, or recategorize feeds here. `category` groups
+  // feeds in the left rail tree; `tags` are invisible metadata
+  // reserved for future filtering and are also searchable.
+  // ============================================================
   const FEEDS = [
     {
       name: "Bank of England",
@@ -508,31 +523,31 @@
       tags: ["youtube", "education"]
     }
   ];
-
+ 
   const WORDS_PER_MIN = 200; // average adult silent reading speed (currently unused — see renderItems)
   const PROXY = "https://api.rss2json.com/v1/api.json?rss_url=";
   const STALE_MS = 5 * 60 * 1000;      // cached feed data older than this refetches on select
   const SEARCH_DEBOUNCE_MS = 250;
   const RENDER_BATCH_SIZE = 30;         // items rendered per batch — keeps huge lists cheap to paint
   const MAX_SNIPPET_CHARS = 220;
-
+ 
   // ---- DOM refs (scoped to this page's namespaced ids) ----
-  const feedNav = document.getElementById("rss-feed-nav");
-  const content = document.getElementById("rss-content");
-  const feedTitle = document.getElementById("rss-feed-title");
-  const feedUpdated = document.getElementById("rss-feed-updated");
-  const refreshBtn = document.getElementById("rss-refresh-btn");
-  const searchInput = document.getElementById("rss-search-input");
-  const searchAllBtn = document.getElementById("rss-search-all-btn");
-  const searchHint = document.getElementById("rss-search-hint");
-
+  const feedNav = document.getElementById("page08-feed-nav");
+  const content = document.getElementById("page08-content");
+  const feedTitle = document.getElementById("page08-feed-title");
+  const feedUpdated = document.getElementById("page08-feed-updated");
+  const refreshBtn = document.getElementById("page08-refresh-btn");
+  const searchInput = document.getElementById("page08-search-input");
+  const searchAllBtn = document.getElementById("page08-search-all-btn");
+  const searchHint = document.getElementById("page08-search-hint");
+ 
   // ---- State ----
   const cache = {};              // feed.url -> {items, fetchedAt}
   const openCategories = new Set(FEEDS.map(f => f.category || "Uncategorized")); // start expanded
   let view = { mode: "feed", index: 0 };   // {mode:'feed', index} | {mode:'all'} | {mode:'search', query}
   let searchTimer = null;
   let observer = null;
-
+ 
   // Group feeds by category, preserving FEEDS order within each group.
   function groupByCategory(){
     const groups = new Map();
@@ -543,91 +558,95 @@
     });
     return groups;
   }
-
+ 
+  // ============================================================
   // Rendering: left rail (category tree)
+  // ============================================================
   function renderNav(){
     feedNav.innerHTML = "";
-
+ 
     // "All" aggregate view
     const allBtn = document.createElement("button");
-    allBtn.className = "rss-nav-item" + (view.mode === "all" ? " rss-active" : "");
+    allBtn.className = "nav-item" + (view.mode === "all" ? " active" : "");
     allBtn.type = "button";
     const totalLoaded = FEEDS.reduce((sum, f) => sum + (cache[f.url] ? cache[f.url].items.length : 0), 0);
-    allBtn.innerHTML = `<span class="rss-dot"></span><span>All feeds</span><span class="rss-count">${totalLoaded || ""}</span>`;
+    allBtn.innerHTML = `<span class="dot"></span><span>All feeds</span><span class="count">${totalLoaded || ""}</span>`;
     allBtn.addEventListener("click", () => selectAll());
     feedNav.appendChild(allBtn);
-
+ 
     const groups = groupByCategory();
     groups.forEach((entries, category) => {
       const isOpen = openCategories.has(category);
-
+ 
       const group = document.createElement("div");
-      group.className = "rss-category-group";
-
+      group.className = "category-group";
+ 
       const header = document.createElement("button");
       header.type = "button";
-      header.className = "rss-category-header" + (isOpen ? " rss-open" : "");
-      header.innerHTML = `<span class="rss-chevron">▸</span><span>${escapeHtml(category)}</span><span class="rss-count">${entries.length}</span>`;
+      header.className = "category-header" + (isOpen ? " open" : "");
+      header.innerHTML = `<span class="chevron">▸</span><span>${escapeHtml(category)}</span><span class="count">${entries.length}</span>`;
       header.addEventListener("click", () => {
         if (openCategories.has(category)) openCategories.delete(category);
         else openCategories.add(category);
         renderNav();
       });
       group.appendChild(header);
-
+ 
       const feedsWrap = document.createElement("div");
-      feedsWrap.className = "rss-category-feeds" + (isOpen ? " rss-open" : "");
+      feedsWrap.className = "category-feeds" + (isOpen ? " open" : "");
       entries.forEach(({ feed, index }) => {
         const btn = document.createElement("button");
-        btn.className = "rss-nav-item" + (view.mode === "feed" && view.index === index ? " rss-active" : "");
+        btn.className = "nav-item" + (view.mode === "feed" && view.index === index ? " active" : "");
         btn.type = "button";
         const count = cache[feed.url] ? cache[feed.url].items.length : "";
-        btn.innerHTML = `<span class="rss-dot"></span><span>${escapeHtml(feed.name)}</span><span class="rss-count">${count}</span>`;
+        btn.innerHTML = `<span class="dot"></span><span>${escapeHtml(feed.name)}</span><span class="count">${count}</span>`;
         btn.addEventListener("click", () => selectFeed(index));
         feedsWrap.appendChild(btn);
       });
       group.appendChild(feedsWrap);
-
+ 
       feedNav.appendChild(group);
     });
   }
-
+ 
+  // ============================================================
   // Helpers
+  // ============================================================
   function escapeHtml(str){
     return String(str).replace(/[&<>"']/g, s => ({
       "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
     }[s]));
   }
-
+ 
   function stripHtml(html){
     const tmp = document.createElement("div");
     tmp.innerHTML = html || "";
     return tmp.textContent || tmp.innerText || "";
   }
-
+ 
   function extractThumbnail(item){
     if (item.thumbnail && item.thumbnail.trim()) return item.thumbnail.trim();
     const source = item.description || item.content || "";
     const match = source.match(/<img[^>]+src=["']([^"']+)["']/i);
     return match ? match[1] : null;
   }
-
+ 
   function wordCount(text){
     const trimmed = text.trim();
     if (!trimmed) return 0;
     return trimmed.split(/\s+/).length;
   }
-
+ 
   function readingTime(words){
     return Math.max(1, Math.round(words / WORDS_PER_MIN));
   }
-
+ 
   function formatDate(iso){
     const d = new Date(iso);
     if (isNaN(d)) return "";
     return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
   }
-
+ 
   function timeAgo(iso){
     const d = new Date(iso);
     if (isNaN(d)) return "";
@@ -640,51 +659,63 @@
     if (days < 30) return `${days}d ago`;
     return formatDate(iso);
   }
-
+ 
+  // ============================================================
   // Data loading
-
+  // ============================================================
   async function loadFeed(feed, force){
     const cached = cache[feed.url];
     const isStale = cached && (Date.now() - cached.fetchedAt.getTime() > STALE_MS);
     if (cached && !force && !isStale) return cached;
-
+ 
     const res = await fetch(PROXY + encodeURIComponent(feed.url));
     if (!res.ok) throw new Error("Network error (" + res.status + ")");
     const data = await res.json();
     if (data.status !== "ok") throw new Error(data.message || "Feed could not be parsed");
-
+ 
+    // Tag every item with its source feed so aggregate/search views
+    // can render badges and apply per-feed rules (type, category…)
+    // without re-fetching or losing provenance.
     const items = (data.items || []).map(it => ({ ...it, _feed: feed }));
     const entry = { items, fetchedAt: new Date() };
     cache[feed.url] = entry;
     return entry;
   }
-
+ 
+  // Load every feed not yet cached (or stale). Used by "All" and search
+  // so those views can operate over full data. At true "thousands of
+  // feeds" scale you'd want to lazy-load only expanded categories rather
+  // than everything — this is the point to add that limit.
   async function ensureAllLoaded(force){
     await Promise.all(FEEDS.map(f => loadFeed(f, force).catch(() => null)));
   }
-
+ 
+  // ============================================================
   // Rendering: item list (shared by feed / all / search views)
-
+  // Batched rendering + "load more" sentinel keeps large result
+  // sets cheap to paint instead of building thousands of DOM nodes
+  // up front.
+  // ============================================================
   function renderItemList(items, opts){
     opts = opts || {};
     const showBadge = !!opts.showBadge;
-
+ 
     if (!items.length){
-      content.innerHTML = `<p class="rss-status">${escapeHtml(opts.emptyText || "No items to show.")}</p>`;
+      content.innerHTML = `<p class="status">${escapeHtml(opts.emptyText || "No items to show.")}</p>`;
       return;
     }
-
+ 
     content.innerHTML = "";
     const list = document.createElement("ul");
-    list.className = "rss-items";
+    list.className = "items";
     content.appendChild(list);
-
+ 
     const sentinel = document.createElement("div");
-    sentinel.className = "rss-load-more-sentinel";
+    sentinel.className = "load-more-sentinel";
     content.appendChild(sentinel);
-
+ 
     let rendered = 0;
-
+ 
     function renderBatch(){
       const next = items.slice(rendered, rendered + RENDER_BATCH_SIZE);
       next.forEach(item => list.appendChild(buildItemNode(item, showBadge)));
@@ -697,9 +728,9 @@
         observer = null;
       }
     }
-
+ 
     renderBatch();
-
+ 
     if (rendered < items.length){
       if (observer) observer.disconnect();
       observer = new IntersectionObserver(entries => {
@@ -708,101 +739,112 @@
       observer.observe(sentinel);
     }
   }
-
+ 
   function buildItemNode(item, showBadge){
     const feed = item._feed || {};
     const li = document.createElement("li");
-    li.className = "rss-item";
-
+    li.className = "item";
+ 
     const snippetText = stripHtml(item.description || item.content || "").trim();
     const thumbUrl = extractThumbnail(item);
     const initial = (item.title || "?").trim().charAt(0).toUpperCase();
-
+ 
     const thumbHtml = thumbUrl
-      ? `<img class="rss-thumb" src="${escapeHtml(thumbUrl)}" alt="" loading="lazy" onerror="this.outerHTML='<div class=&quot;rss-thumb rss-placeholder&quot;>${escapeHtml(initial)}</div>'">`
-      : `<div class="rss-thumb rss-placeholder">${escapeHtml(initial)}</div>`;
-
+      ? `<img class="thumb" src="${escapeHtml(thumbUrl)}" alt="" loading="lazy" onerror="this.outerHTML='<div class=&quot;thumb placeholder&quot;>${escapeHtml(initial)}</div>'">`
+      : `<div class="thumb placeholder">${escapeHtml(initial)}</div>`;
+ 
+    // Reading-time estimate disabled — RSS summaries are too short/unreliable
+    // to give a meaningful read-time for the full article. Left in place,
+    // commented, in case a full-text fetch is added later.
+    // const words = wordCount(snippetText);
+    // const mins = words > 0 ? readingTime(words) : null;
+ 
     const badgeHtml = showBadge && feed.name
-      ? `<span class="rss-source-badge">${escapeHtml(feed.name)}</span><span class="rss-sep">·</span>`
+      ? `<span class="source-badge">${escapeHtml(feed.name)}</span><span class="sep">·</span>`
       : "";
     const categoryHtml = feed.category
-      ? `<span class="rss-category">${escapeHtml(feed.category)}</span><span class="rss-sep">·</span>`
+      ? `<span class="category">${escapeHtml(feed.category)}</span><span class="sep">·</span>`
       : "";
     const tagsAttr = (feed.tags || []).join(",");
-
+ 
     li.innerHTML = `
-      <div class="rss-thumb-wrap">
+      <div class="thumb-wrap">
         ${thumbHtml}
-        <div class="rss-date">${formatDate(item.pubDate)}</div>
+        <div class="date">${formatDate(item.pubDate)}</div>
       </div>
       <div>
         <h3><a href="${item.link}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.title)}</a></h3>
-        ${snippetText ? `<p class="rss-snippet">${escapeHtml(snippetText.slice(0, MAX_SNIPPET_CHARS))}${snippetText.length > MAX_SNIPPET_CHARS ? "…" : ""}</p>` : ""}
-        <div class="rss-meta">
+        ${snippetText ? `<p class="snippet">${escapeHtml(snippetText.slice(0, MAX_SNIPPET_CHARS))}${snippetText.length > MAX_SNIPPET_CHARS ? "…" : ""}</p>` : ""}
+        <div class="meta">
           ${badgeHtml}
           ${categoryHtml}
           <span>${timeAgo(item.pubDate)}</span>
         </div>
       </div>
     `;
-    li.dataset.tags = tagsAttr;
+    li.dataset.tags = tagsAttr; // invisible — not rendered, used by search
     return li;
   }
-
+ 
   function renderSkeleton(){
     content.innerHTML = `
-      <div class="rss-skeleton"></div>
-      <div class="rss-skeleton"></div>
-      <div class="rss-skeleton"></div>
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
     `;
   }
-
+ 
+  // ============================================================
+  // View controllers
+  // ============================================================
   async function selectFeed(i, force){
     searchInput.value = "";
     view = { mode: "feed", index: i };
     const feed = FEEDS[i];
     feedTitle.textContent = feed.name;
     renderNav();
-
+ 
     const cached = cache[feed.url];
     if (!cached) renderSkeleton();
     else renderItemList(cached.items, { showBadge: false });
-
+ 
     try {
       const entry = await loadFeed(feed, force);
       feedUpdated.textContent = "Updated " + entry.fetchedAt.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
       renderItemList(entry.items, { showBadge: false });
       renderNav();
     } catch (err) {
-      content.innerHTML = `<p class="rss-status rss-error">Couldn't load this feed — ${escapeHtml(err.message)}. The proxy service may be rate-limited; try refreshing in a moment.</p>`;
+      content.innerHTML = `<p class="status error">Couldn't load this feed — ${escapeHtml(err.message)}. The proxy service may be rate-limited; try refreshing in a moment.</p>`;
       feedUpdated.textContent = "";
     }
   }
-
+ 
   async function selectAll(force){
     searchInput.value = "";
     view = { mode: "all" };
     feedTitle.textContent = "All feeds";
     renderNav();
     renderSkeleton();
-
+ 
     await ensureAllLoaded(force);
     const merged = FEEDS
       .flatMap(f => (cache[f.url] ? cache[f.url].items : []))
       .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-
+ 
     feedUpdated.textContent = "Updated " + new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
     renderItemList(merged, { showBadge: true, emptyText: "No items loaded yet." });
     renderNav();
   }
-
+ 
   async function runSearch(query){
     view = { mode: "search", query };
     feedTitle.textContent = `Search: "${query}"`;
     feedUpdated.textContent = "";
     filterAndRender(query);
   }
-
+ 
+  // Filters whatever is currently cached — no network requests.
+  // This is what runs on every keystroke.
   function filterAndRender(query){
     const q = query.trim().toLowerCase();
     const all = FEEDS.flatMap(f => (cache[f.url] ? cache[f.url].items : []));
@@ -817,19 +859,23 @@
       ].join(" ").toLowerCase();
       return haystack.includes(q);
     }).sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-
+ 
     renderItemList(results, {
       showBadge: true,
       emptyText: `No items match "${query}".`
     });
-
+ 
     const loadedCount = FEEDS.filter(f => cache[f.url]).length;
     searchHint.textContent = loadedCount < FEEDS.length
       ? `Showing results from ${loadedCount}/${FEEDS.length} loaded feeds. Press Enter or "Search all feeds" for full coverage.`
       : "";
     searchAllBtn.disabled = loadedCount >= FEEDS.length;
   }
-
+ 
+  // Loads every not-yet-cached feed, then re-filters. Only runs on
+  // explicit user action (Enter key or the "Search all feeds" button) —
+  // never automatically while typing, since at scale that would mean
+  // firing off requests for every feed on every keystroke.
   async function searchAllFeeds(){
     const query = searchInput.value.trim();
     if (!query) return;
@@ -837,16 +883,20 @@
     feedTitle.textContent = `Search: "${query}"`;
     searchAllBtn.disabled = true;
     searchAllBtn.textContent = "Searching all feeds…";
-
+ 
     await ensureAllLoaded(false);
-
+ 
     searchAllBtn.textContent = "Search all feeds";
     filterAndRender(query);
     renderNav();
   }
-
+ 
+  // ============================================================
   // Search input wiring
-
+  // Typing filters cached data only (debounced, no network calls).
+  // A full search across every feed only happens on Enter or the
+  // "Search all feeds" button — see searchAllFeeds().
+  // ============================================================
   function onSearchInput(){
     const q = searchInput.value.trim();
     clearTimeout(searchTimer);
@@ -859,45 +909,53 @@
     searchAllBtn.disabled = false;
     searchTimer = setTimeout(() => runSearch(q), SEARCH_DEBOUNCE_MS);
   }
-
+ 
   function onSearchKeydown(e){
     if (e.key === "Enter"){
       clearTimeout(searchTimer);
       searchAllFeeds();
     }
   }
-
+ 
   function onSearchAllClick(){ searchAllFeeds(); }
-
+ 
   function onRefreshClick(){
     if (view.mode === "feed") selectFeed(view.index, true);
     else if (view.mode === "all") selectAll(true);
     else if (view.mode === "search") runSearch(view.query);
   }
-
+ 
   searchInput.addEventListener("input", onSearchInput);
   searchInput.addEventListener("keydown", onSearchKeydown);
   searchAllBtn.addEventListener("click", onSearchAllClick);
   refreshBtn.addEventListener("click", onRefreshClick);
-
+ 
   // ---- Init ----
   searchAllBtn.disabled = true;
   renderNav();
   selectFeed(0);
-
+ 
+  // ============================================================
+  // Shell integration
+  // ============================================================
+  // Focus hook: called by the shell whenever this page becomes visible
+  // (matches the pattern the shell already uses for other pages).
   window.__pageFocus = window.__pageFocus || {};
-  window.__pageFocus.rss = function () {
+  window.__pageFocus.page08 = function () {
     setTimeout(() => searchInput.focus(), 50);
   };
-
+ 
+  // Cleanup hook: called by the shell right before this fragment is
+  // reloaded, so a stale timer or observer from a previous load doesn't
+  // keep running against DOM nodes that are about to be replaced.
   window.__pageCleanup = window.__pageCleanup || {};
-  window.__pageCleanup.rss = function () {
+  window.__pageCleanup.page08 = function () {
     clearTimeout(searchTimer);
     if (observer) {
       observer.disconnect();
       observer = null;
     }
   };
-
+ 
 })();
 </script>

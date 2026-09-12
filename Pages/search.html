@@ -138,6 +138,23 @@
     margin-bottom: 10px;
     padding-bottom: 6px;
     border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.category-title .cat-svg-icon {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    background-color: var(--category-color);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
 }
 
 .search-options {
@@ -242,11 +259,12 @@
 <script>
 (function () {
 
-    // Each category carries its own colour. Options inherit it automatically.
+    // Each category carries its own colour and Lucide icon filename. Options inherit the colour automatically.
     const categories = [
         {
             name: "Search engines",
             color: "#FF505E",
+            catIcon: "search.svg",
             options: [
                 { name: "Google", icon: "fab fa-google", url: "https://www.google.com/search?q=", home: "https://www.google.com/" },
                 { name: "DuckDuckGo", icon: "fas fa-search", url: "https://duckduckgo.com/?q=", home: "https://duckduckgo.com/" },
@@ -261,6 +279,7 @@
         {
             name: "Gaming",
             color: "#FF65EA",
+            catIcon: "gamepad-2.svg",
             options: [
                 { name: "Steam DB", icon: "fa-brands fa-steam-symbol", url: "https://steamdb.info/search/?a=all&q=", home: "https://steamdb.info/" },
                 { name: "CD Keys", icon: "fa-solid fa-gamepad", url: "https://www.cdkeys.com/#q=", home: "https://www.cdkeys.com/" },
@@ -270,6 +289,7 @@
         {
             name: "Research and academia",
             color: "#3392FF",
+            catIcon: "graduation-cap.svg",
             options: [
                 { name: "Google Scholar", icon: "fab fa-google", url: "https://scholar.google.com/scholar?q=", home: "https://scholar.google.com/" },
                 { name: "PubMed", icon: "fa-solid fa-microscope", url: "https://pubmed.ncbi.nlm.nih.gov/?term=", home: "https://pubmed.ncbi.nlm.nih.gov/" },
@@ -281,6 +301,7 @@
         {
             name: "Legal",
             color: "#C5C8CE",
+            catIcon: "scale.svg",
             options: [
                 { name: "Legislation.gov.uk", icon: "fa-solid fa-scale-balanced", url: "https://www.legislation.gov.uk/search?text=", home: "https://www.legislation.gov.uk/" },
                 { name: "BAILII", icon: "fa-solid fa-gavel", url: "https://www.bailii.org/cgi-bin/lucy_search_engine.cgi?querytarget=all&querystring=", home: "https://www.bailii.org/" },
@@ -290,6 +311,7 @@
         {
             name: "Social media",
             color: "#A46CFF",
+            catIcon: "message-circle.svg",
             options: [
                 { name: "Twitter", icon: "fab fa-twitter", url: "https://twitter.com/search?q=", home: "https://twitter.com/" },
                 { name: "Reddit", icon: "fa-brands fa-reddit-alien", url: "https://www.reddit.com/search/?q=", home: "https://www.reddit.com/" },
@@ -301,6 +323,7 @@
         {
             name: "Shopping",
             color: "#F2FF38",
+            catIcon: "shopping-cart.svg",
             options: [
                 { name: "Amazon", icon: "fab fa-amazon", url: "https://www.amazon.co.uk/s?k=", home: "https://www.amazon.co.uk/" },
                 { name: "eBay", icon: "fab fa-ebay", url: "https://www.ebay.co.uk/sch/i.html?_nkw=", home: "https://www.ebay.co.uk/" },
@@ -311,6 +334,7 @@
         {
             name: "Entertainment",
             color: "#5BFF76",
+            catIcon: "clapperboard.svg",
             options: [
                 { name: "IMDb", icon: "fab fa-imdb", url: "https://www.imdb.com/find?q=", home: "https://www.imdb.com/" },
                 { name: "Spotify", icon: "fab fa-spotify", url: "https://open.spotify.com/search/", home: "https://open.spotify.com/" },
@@ -320,6 +344,7 @@
         {
             name: "Learning",
             color: "#FF9147",
+            catIcon: "book-open.svg",
             options: [
                 { name: "Google Maps", icon: "fas fa-map-marker-alt", url: "https://www.google.com/maps/search/", home: "https://www.google.com/maps/" },
                 { name: "Wikipedia", icon: "fab fa-wikipedia-w", url: "https://en.wikipedia.org/wiki/Special:Search?search=", home: "https://en.wikipedia.org/" },
@@ -333,11 +358,14 @@
         {
             name: "Programming",
             color: "#00E426",
+            catIcon: "code.svg",
             options: [
                 { name: "GitHub", icon: "fab fa-github", url: "https://github.com/search?q=", home: "https://github.com/" }
             ]
         }
     ];
+
+    const ICON_BASE = 'https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/';
 
     const searchInput = document.getElementById('search-input');
     const searchButton = document.getElementById('search-button');
@@ -374,7 +402,11 @@
 
             const title = document.createElement('div');
             title.className = 'category-title';
-            title.textContent = category.name;
+            const iconUrl = category.catIcon ? ICON_BASE + category.catIcon : '';
+            const iconSpan = iconUrl
+                ? `<span class="cat-svg-icon" style="-webkit-mask-image:url('${iconUrl}');mask-image:url('${iconUrl}');"></span>`
+                : '';
+            title.innerHTML = `${iconSpan}<span>${category.name}</span>`;
             block.appendChild(title);
 
             const grid = document.createElement('div');

@@ -65,6 +65,14 @@
         flex-shrink: 0;
     }
 
+    .srch-eng-icon {
+        width: 14px;
+        height: 14px;
+        flex-shrink: 0;
+        object-fit: contain;
+        border-radius: 3px;
+    }
+
     /* ── Query card ── */
     .srch-card {
         background: var(--surface);
@@ -178,7 +186,6 @@
         font-size: 0.82rem;
         color: var(--text);
         outline: none;
-        -webkit-appearance: none;
         transition: border-color 0.15s;
     }
 
@@ -343,6 +350,16 @@
         padding: 3px 8px;
         border: 1px solid var(--border);
         border-radius: 4px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .srch-footer-tag img {
+        width: 11px;
+        height: 11px;
+        object-fit: contain;
+        flex-shrink: 0;
     }
 
     /* ── Toast ── */
@@ -375,7 +392,7 @@
 </style>
 
 <div class="srch-eyebrow">03</div>
-<div class="srch-title">Search</div>
+<div class="srch-title">Advanced Search</div>
 <div class="srch-sub">Pick an engine, refine the query, dispatch it in a new tab.</div>
 
 <div class="srch-engines" id="srchEngineBtns"></div>
@@ -517,19 +534,21 @@
 
 <script>
 (function () {
+    const SRCH_ICON_BASE = 'https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/';
+
     const ENGINES = [
-        { id: 'google',     label: 'Google',      color: '#c9a35f',
+        { id: 'google',     label: 'Google',      color: '#c9a35f', icon: 'google',
             url: q => `https://www.google.com/search?q=${q}`,
             time: t => t === 'd' ? '&tbs=qdr:d' : t === 'w' ? '&tbs=qdr:w' : t === 'm' ? '&tbs=qdr:m' : t === 'y' ? '&tbs=qdr:y' : '' },
-        { id: 'brave',      label: 'Brave',       color: '#4fb0a8', url: q => `https://search.brave.com/search?q=${q}` },
-        { id: 'ddg',        label: 'DuckDuckGo',  color: '#c9a35f', url: q => `https://duckduckgo.com/?q=${q}` },
-        { id: 'bing',       label: 'Bing',        color: '#4fb0a8', url: q => `https://www.bing.com/search?q=${q}` },
-        { id: 'ecosia',     label: 'Ecosia',      color: '#7fae6f', url: q => `https://www.ecosia.org/search?q=${q}` },
-        { id: 'startpage',  label: 'Startpage',   color: '#8189d8', url: q => `https://www.startpage.com/search?q=${q}` },
-        { id: 'kagi',       label: 'Kagi',        color: '#d38a5a', url: q => `https://kagi.com/search?q=${q}` },
-        { id: 'yandex',     label: 'Yandex',      color: '#c96f5c', url: q => `https://yandex.com/search/?text=${q}` },
-        { id: 'you',        label: 'You.com',     color: '#a58bd6', url: q => `https://you.com/search?q=${q}` },
-        { id: 'perplexity', label: 'Perplexity',  color: '#4fb0a8', url: q => `https://www.perplexity.ai/search?q=${q}` },
+        { id: 'brave',      label: 'Brave',       color: '#4fb0a8', icon: 'brave', url: q => `https://search.brave.com/search?q=${q}` },
+        { id: 'ddg',        label: 'DuckDuckGo',  color: '#c9a35f', icon: 'duckduckgo', url: q => `https://duckduckgo.com/?q=${q}` },
+        { id: 'bing',       label: 'Bing',        color: '#4fb0a8', icon: 'bing', url: q => `https://www.bing.com/search?q=${q}` },
+        { id: 'ecosia',     label: 'Ecosia',      color: '#7fae6f', icon: 'ecosia', url: q => `https://www.ecosia.org/search?q=${q}` },
+        { id: 'startpage',  label: 'Startpage',   color: '#8189d8', icon: 'startpage', url: q => `https://www.startpage.com/search?q=${q}` },
+        { id: 'kagi',       label: 'Kagi',        color: '#d38a5a', icon: 'kagi', url: q => `https://kagi.com/search?q=${q}` },
+        { id: 'yandex',     label: 'Yandex',      color: '#c96f5c', icon: 'yandex', url: q => `https://yandex.com/search/?text=${q}` },
+        { id: 'you',        label: 'You.com',     color: '#a58bd6', icon: 'youhodler', url: q => `https://you.com/search?q=${q}` },
+        { id: 'perplexity', label: 'Perplexity',  color: '#4fb0a8', icon: 'perplexity', url: q => `https://www.perplexity.ai/search?q=${q}` },
     ];
 
     const QUICK = [
@@ -542,6 +561,12 @@
     let history = JSON.parse(localStorage.getItem('console_search_history') || '[]');
     let advOpen = false;
 
+    function engineIconImg(eng, size) {
+    if (!eng.icon) return '';
+    const src = `${SRCH_ICON_BASE}${eng.icon}/default.svg`;
+    return `<img class="srch-eng-icon" src="${src}" alt="" loading="lazy" style="width:${size}px;height:${size}px" onerror="this.remove()">`;
+}
+
     const engWrap = document.getElementById('srchEngineBtns');
     ENGINES.forEach(eng => {
         const btn = document.createElement('button');
@@ -549,7 +574,7 @@
         btn.className = 'srch-eng-btn' + (eng.id === activeEngine ? ' active' : '');
         btn.dataset.id = eng.id;
         btn.style.setProperty('--eng-c', eng.color);
-        btn.innerHTML = `<span class="srch-eng-dot"></span>${eng.label}`;
+        btn.innerHTML = `${engineIconImg(eng, 14)}${eng.label}`;
         btn.addEventListener('click', () => {
             activeEngine = eng.id;
             localStorage.setItem('console_search_engine', activeEngine);
@@ -562,7 +587,7 @@
     ENGINES.forEach(eng => {
         const t = document.createElement('span');
         t.className = 'srch-footer-tag';
-        t.textContent = eng.label;
+        t.innerHTML = `${engineIconImg(eng, 11)}${eng.label}`;
         infoWrap.appendChild(t);
     });
 

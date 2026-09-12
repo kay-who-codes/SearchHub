@@ -400,7 +400,6 @@
     line-height: 1.5;
     margin-bottom: 6px;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -507,7 +506,16 @@
   // feeds in the left rail tree; `tags` are invisible metadata
   // reserved for future filtering and are also searchable.
   // ============================================================
+
+
   const FEEDS = [
+    {
+      name: "Word of the Day",
+      url: "https://www.thefreedictionary.com/_/WoD/rss.aspx",
+      type: "article",
+      category: "Language",
+      tags: ["dictionary", "vocabulary", "english"]
+    },
     {
       name: "Bank of England",
       url: "https://www.bankofengland.co.uk/rss/news",
@@ -523,6 +531,8 @@
       tags: ["youtube", "education"]
     }
   ];
+
+  
  
   const WORDS_PER_MIN = 200; // average adult silent reading speed (currently unused — see renderItems)
   const PROXY = "https://api.rss2json.com/v1/api.json?rss_url=";

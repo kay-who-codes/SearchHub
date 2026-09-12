@@ -392,7 +392,7 @@
  
 <div class="page-header">
     <span class="eyebrow">01</span>
-    <h1 id="bookmarks-page-title">Bookmarks</h1>
+    <h1 id="bookmarks-page-title">Everyday Sites</h1>
     <p id="bookmarks-page-subtitle">Quick access to your favorite sites.</p>
 </div>
  
@@ -406,10 +406,11 @@
                 <span id="page-toggle-label">🥇</span>
             </button>
             <div class="page-toggle-menu hidden" id="page-toggle-menu">
-                <button class="page-toggle-option" data-page="primary">🥇 Bookmarks</button>
+                <button class="page-toggle-option" data-page="primary">🥇 Everyday Sites</button>
                 <button class="page-toggle-option" data-page="secondary">🥈 Secondary</button>
                 <button class="page-toggle-option" data-page="tertiary">🥉 Tertiary</button>
-                <button class="page-toggle-option" data-page="appdev">🎁 App Dev</button>
+                <button class="page-toggle-option" data-page="appdev">📟 App Dev</button>
+                <button class="page-toggle-option" data-page="musicproduction">🎹 Music Production</button>
             </div>
         </div>
         <button class="density-btn" id="density-toggle" title="Toggle compact view">
@@ -429,240 +430,166 @@
 (function () {
 
     //  🥇  Primary Page
+            // Bookmarks data
     const bookmarksPrimary = [
-
-    // Entertainment
-        { name: "🔴 YouTube", url: "https://www.youtube.com/", category: "Entertainment", tags: ["Entertainment", "Learning", "Video"] },
-        { name: "🟢 Spotify", url: "https://open.spotify.com/", category: "Entertainment", tags: ["Entertainment", "Learning", "Podcast", "Music"] },
-        
-    // Prudence
-        { name: "🟥 Todoist", url: "https://app.todoist.com/app/filters-labels", category: "Prudence", tags: ["Prudence", "Planning"] },
-        { name: "📅 Calendar", url: "https://calendar.google.com/calendar/u/0/r", category: "Prudence", tags: ["Prudence", "Planning"] },
-        { name: "🟦 Habitify", url: "https://app.habitify.me/journal/all-habits", category: "Prudence", tags: ["Prudence", "Planning"] },
-
-    // Communication
-        { name: "🟢 WhatsApp", url: "https://web.whatsapp.com/", category: "Communication", tags: ["Messaging", "Chat", "Mobile"] },
-        { name: "🔵 Telegram", url: "https://web.telegram.org/", category: "Communication", tags: ["Messaging", "Chat", "Mobile", "Encrypted"] },
-        { name: "💬 Message Template Hub", url: "https://kay-who-codes.github.io/Message-Template-Hub/", category: "Communication", tags: ["Messaging", "Chat"] },
-
-    // AI Chat
-        { name: "⚪ ChatGPT", url: "https://chat.openai.com", category: "AI Chat", tags: ["ai", "chatbot", "assistant", "openai"] },
-        { name: "🟠 Claude", url: "https://claude.ai", category: "AI Chat", tags: ["ai", "chatbot", "assistant", "anthropic"] },
-        { name: "🟣 DeepSeek", url: "https://chat.deepseek.com", category: "AI Chat", tags: ["ai", "chatbot", "assistant", "deepseek"] },
-        
-    // Money
-        { name: "💳 Nationwide", url: "https://www.nationwide.co.uk/", category: "Money", tags: ["money", "fiat"] },
-        { name: "🟢 eToro Watchlist", url: "https://www.etoro.com/watchlists", category: "Money", tags: ["Learning", "money", "investing", "fiat"] },
-        { name: "🔵 Trading 212", url: "https://www.trading212.com/", category: "Money", tags: ["Learning", "money", "investing", "fiat"] },
-
-
-    // Programming
-        { name: "🐈‍⬛ GitHub", url: "https://github.com", category: "Programming", tags: ["development", "code", "repository", "version control", "git"] },
-        { name: "🗃️ GitHub Repos", url: "https://github.com/kay-who-codes?tab=repositories", category: "Programming", tags: ["development", "code", "repository", "version control", "git"] },
-
-    // Profiteering
-        { name: "👕 Vinted Listings", url: "https://www.vinted.co.uk/member/281798268", category: "Profiteering", tags: ["Selling", "Clothes", "Profiteering"] },
-
-    // Creative
-        { name: "🖌️ Canva", url: "https://www.canva.com", category: "Creative", tags: ["design", "graphics", "art"] },
-        { name: "✍️ LyricPad", url: "https://kay-who-codes.github.io/LyricPad/", category: "Creative", tags: ["lyrics", "music"] },
-        { name: "🎼 Suno", url: "https://suno.com/labs/genre-wheel", category: "Creative", tags: ["AI", "programming", "code", "music"] },
-        
-    // Cloud Storage
-        { name: "📁 Google Drive", url: "https://drive.google.com/", category: "Cloud Storage", tags: ["Free: 15GB", "Integration", "Docs", "Photos"] },
-        { name: "📦 OneDrive", url: "https://onedrive.live.com/", category: "Cloud Storage", tags: ["Free: 5GB", "Microsoft", "Office", "Windows"] },
-        { name: "🌐 Mega", url: "https://mega.nz/", category: "Cloud Storage", tags: ["Free: 20GB", "Encrypted", "Privacy", "NZ"] },
-
-    // Shopping
-        { name: "🐳 Amazon", url: "https://www.amazon.co.uk/", category: "Shopping", tags: ["shopping"] },
-        { name: "👾 Loaded", url: "http://loaded.com/", category: "Shopping", tags: ["shopping", "gaming"] },
-        { name: "🏷️ Is There Any Deal", url: "https://isthereanydeal.com/deals/#filter:N4Iglgdg6ghmAuAbMBneIBc8BOBXApgL5A==", category: "Shopping", tags: ["shopping", "gaming"] },
-
-     // Social
-        { name: "🪪 Business Card", url: "https://kay-who-codes.github.io/Business-Card/", category: "Social", tags: ["ID", "Profile", "Wallet"] },
-        { name: "⚫ X", url: "https://x.com", category: "Social", tags: ["social", "microblogging", "news"] },
-        { name: "🟠 Reddit", url: "https://www.reddit.com", category: "Social", tags: ["social", "community", "forums", "discussion"] },
-
-    // Gaming
-        { name: "📊 Steam DB", url: "https://steamdb.info/", category: "Gaming", tags: ["gaming", "learning", "statistics"] },
-        { name: "♟️ Lichess", url: "http://lichess.org/", category: "Gaming", tags: ["gaming", "strategy", "multiplayer"] },
-        { name: "🎮 Game Library", url: "https://github.com/kay-who-codes/Game-Library", category: "Gaming", tags: ["gaming", "collection", "tracker", "web app"] },
-
-      // Words
-        { name: "🔠 Dictionary", url: "https://www.thefreedictionary.com/", category: "Words", tags: ["Learning", "words", "writing", "lyricism", "music"] },
-        { name: "🆎 Thesaurus", url: "https://www.thefreedictionary.com/", category: "Words", tags: ["Learning", "words", "writing", "lyricism", "music"] },
-        { name: "🎤 Rhymezone", url: "https://www.rhymezone.com/", category: "Words", tags: ["Learning", "words", "writing", "lyricism", "music"] },
-        
-     // Reading
-        { name: "📘 Google Play Books", url: "https://play.google.com/books", category: "Reading", tags: ["Learning", "reading", "books"] },
-        { name: "📙 Substack", url: "https://substack.com/", category: "Reading", tags: ["Learning", "reading", "writing", "articles", "blogs"] },
-        { name: "🎓 Google Scholar", url: "https://scholar.google.com", category: "Reading", tags: ["Learning", "academic", "research", "papers", "journals"] },
-
-    // Language Learning
-        { name: "🦉 Duolingo", url: "https://www.duolingo.com/", category: "Language Learning", tags: ["Free", "Spanish", "Greek", "Gamified", "Mobile"] }
+        {"name":"🔴 YouTube","url":"https://www.youtube.com/","category":"Entertainment","tags":["Entertainment","Learning","Video"]},
+        {"name":"🟢 Spotify","url":"https://open.spotify.com/","category":"Entertainment","tags":["Entertainment","Learning","Podcast","Music"]},
+        {"name":"🟥 Todoist","url":"https://app.todoist.com/app/filters-labels","category":"Prudence","tags":["Prudence","Planning"]},
+        {"name":"📅 Calendar","url":"https://calendar.google.com/calendar/u/0/r","category":"Prudence","tags":["Prudence","Planning"]},
+        {"name":"🟦 Habitify","url":"https://app.habitify.me/journal/all-habits","category":"Prudence","tags":["Prudence","Planning"]},
+        {"name":"🟢 WhatsApp","url":"https://web.whatsapp.com/","category":"Communication","tags":["Messaging","Chat","Mobile"]},
+        {"name":"🔵 Telegram","url":"https://web.telegram.org/","category":"Communication","tags":["Messaging","Chat","Mobile","Encrypted"]},
+        {"name":"💬 Message Template Hub","url":"https://kay-who-codes.github.io/Message-Template-Hub/","category":"Communication","tags":["Messaging","Chat"]},
+        {"name":"⚪ ChatGPT","url":"https://chat.openai.com","category":"AI Chat","tags":["ai","chatbot","assistant","openai"]},
+        {"name":"🟠 Claude","url":"https://claude.ai","category":"AI Chat","tags":["ai","chatbot","assistant","anthropic"]},
+        {"name":"🟣 DeepSeek","url":"https://chat.deepseek.com","category":"AI Chat","tags":["ai","chatbot","assistant","deepseek"]},
+        {"name":"💳 Nationwide","url":"https://www.nationwide.co.uk/","category":"Money","tags":["money","fiat"]},
+        {"name":"🟢 eToro Watchlist","url":"https://www.etoro.com/watchlists","category":"Money","tags":["Learning","money","investing","fiat"]},
+        {"name":"🔵 Trading 212","url":"https://www.trading212.com/","category":"Money","tags":["Learning","money","investing","fiat"]},
+        {"name":"🐈‍⬛ GitHub","url":"https://github.com","category":"Programming","tags":["development","code","repository","version control","git"]},
+        {"name":"🗃️ GitHub Repos","url":"https://github.com/kay-who-codes?tab=repositories","category":"Programming","tags":["development","code","repository","version control","git"]},
+        {"name":"👕 Vinted Listings","url":"https://www.vinted.co.uk/member/281798268","category":"Profiteering","tags":["Selling","Clothes","Profiteering"]},
+        {"name":"🖌️ Canva","url":"https://www.canva.com","category":"Creative","tags":["design","graphics","art"]},
+        {"name":"🎼 Suno","url":"https://suno.com/labs/genre-wheel","category":"Creative","tags":["AI","programming","code","music"]},
+        {"name":"📁 Google Drive","url":"https://drive.google.com/","category":"Cloud Storage","tags":["Free: 15GB","Integration","Docs","Photos"]},
+        {"name":"📦 OneDrive","url":"https://onedrive.live.com/","category":"Cloud Storage","tags":["Free: 5GB","Microsoft","Office","Windows"]},
+        {"name":"🌐 Mega","url":"https://mega.nz/","category":"Cloud Storage","tags":["Free: 20GB","Encrypted","Privacy","NZ"]},
+        {"name":"🐳 Amazon","url":"https://www.amazon.co.uk/","category":"Shopping","tags":["shopping"]},
+        {"name":"👾 Loaded","url":"http://loaded.com/","category":"Shopping","tags":["shopping","gaming"]},
+        {"name":"🏷️ Is There Any Deal","url":"https://isthereanydeal.com/deals/#filter:N4Iglgdg6ghmAuAbMBneIBc8BOBXApgL5A==","category":"Shopping","tags":["shopping","gaming"]},
+        {"name":"🪪 Business Card","url":"https://kay-who-codes.github.io/Business-Card/","category":"Social","tags":["ID","Profile","Wallet"]},
+        {"name":"⚫ X","url":"https://x.com","category":"Social","tags":["social","microblogging","news"]},
+        {"name":"🟠 Reddit","url":"https://www.reddit.com","category":"Social","tags":["social","community","forums","discussion"]},
+        {"name":"📊 Steam DB","url":"https://steamdb.info/","category":"Gaming","tags":["gaming","learning","statistics"]},
+        {"name":"♟️ Lichess","url":"http://lichess.org/","category":"Gaming","tags":["gaming","strategy","multiplayer"]},
+        {"name":"🎮 Game Library","url":"https://github.com/kay-who-codes/Game-Library","category":"Gaming","tags":["gaming","collection","tracker","web app"]},
+        {"name":"🔠 Dictionary","url":"https://www.thefreedictionary.com/","category":"Words","tags":["Learning","words","writing","lyricism","music"]},
+        {"name":"🆎 Thesaurus","url":"https://www.thefreedictionary.com/","category":"Words","tags":["Learning","words","writing","lyricism","music"]},
+        {"name":"📘 Google Play Books","url":"https://play.google.com/books","category":"Reading","tags":["Learning","reading","books"]},
+        {"name":"📙 Substack","url":"https://substack.com/","category":"Reading","tags":["Learning","reading","writing","articles","blogs"]},
+        {"name":"🎓 Google Scholar","url":"https://scholar.google.com","category":"Reading","tags":["Learning","academic","research","papers","journals"]},
+        {"name":"🦉 Duolingo","url":"https://www.duolingo.com/","category":"Language Learning","tags":["Free","Spanish","Greek","Gamified","Mobile"]},
+        {"name":"🧑‍🎓 Daily Archive","url":"https://www.thefreedictionary.com/_/archive.htm","category":"Learning","tags":["Facts","Information","Random"]}
     ];
 
-
-    
-    //  🥈  Secondary Page
-    
     const bookmarksSecondary = [
- 
-    // Prudence
-        { name: "🟩 E. Matrix", url: "https://kay-who-codes.github.io/E-Matrix/", category: "Prudence", tags: ["to-do", "tasks", "Planning"] },
-
-    // Programming
-        { name: "❌ Redact Restore", url: "https://kay-who-codes.github.io/Redact-Restore/", category: "Programming", tags: ["Coding", "app development", "AI prompting"] },
-        { name: "⭐ App Iconator", url: "https://kay-who-codes.github.io/App-Iconator/", category: "Programming", tags: ["Coding", "app development", "AI prompting"] },
-        { name: "🖊️ CodePen", url: "https://codepen.io", category: "Programming", tags: ["development", "code", "frontend", "playground"] },
-        { name: "⬜ SVGHub", url: "https://github.com/kay-who-codes/SVGHub", category: "Programming", tags: ["development", "code", "backend", "assets", "repository"] },
-
-    // Money
-        { name: "🔍 Finviz", url: "https://finviz.com", category: "Money", tags: ["Learning", "money", "investing", "stocks", "screener", "charts"] },
-        { name: "📈 Seeking Alpha", url: "https://seekingalpha.com/sectors", category: "Money", tags: ["Learning", "money", "investing", "stocks", "analysis", "articles"] },
-
-    // Creative
-        { name: "✏️ Typebox", url: "https://kay-who-codes.github.io/Type-Box/", category: "Creative", tags: ["write", "text", "notepad"] },
-        { name: "📀 Music Showcase", url: "https://github.com/kay-who-codes/Music-Showcase", category: "Creative", tags: ["music", "comedy", "hub", "rap"] },
-
-    // AI 
-        { name: "🔴 Google Gemini", url: "https://gemini.google.com", category: "AI Chat", tags: ["ai", "chatbot", "assistant", "google"] },
-        { name: "🔵 Microsoft Copilot", url: "https://copilot.microsoft.com", category: "AI Chat", tags: ["ai", "chatbot", "assistant", "microsoft", "bing"] },
-        { name: "⚫ Grok", url: "https://grok.x.ai", category: "AI Chat", tags: ["ai", "chatbot", "xai", "assistant"] },
-        { name: "🟣 Lumo", url: "https://lumo.proton.me/u/0/", category: "AI Chat", tags: ["ai", "chatbot", "private", "assistant"] },
-        { name: "🟠 Mistral Chat", url: "https://chat.mistral.ai", category: "AI Chat", tags: ["ai", "chatbot", "open-source", "france"] },
-        { name: "🟢 Pi AI", url: "https://pi.ai", category: "AI Chat", tags: ["ai", "chatbot", "friendly", "assistant"] },
-        { name: "🟣 Poe", url: "https://poe.com", category: "AI Chat", tags: ["ai", "chatbot", "multi-model", "assistant"] },
-        { name: "⚫ Perplexity AI", url: "https://perplexity.ai", category: "AI Chat", tags: ["ai", "chatbot", "search", "assistant"] },
-        { name: "🔘 HuggingChat", url: "https://huggingface.co/chat", category: "AI Chat", tags: ["ai", "chatbot", "open-source", "assistant"] },
-        
-    // Entertainment
-        { name: "🟠 Rumble", url: "https://rumble.com/", category: "Entertainment", tags: ["Entertainment", "Learning", "Podcast"] },
-        { name: "🟣 Odysee", url: "https://odysee.com/", category: "Entertainment", tags: ["Entertainment", "Learning", "Podcast"] },
-        { name: "🤳 TikTok", url: "https://www.tiktok.com/", category: "Entertainment", tags: ["Entertainment", "Learning", "Podcast"] },
-        { name: "⌛ Screensaver Hub", url: "https://github.com/kay-who-codes/Screensaver-Hub", category: "Entertainment", tags: ["Entertainment", "AFK", "Idle"] },
-
-    // Reading
-        { name: "📚 Internet Archive", url: "https://archive.org", category: "Reading", tags: ["Learning", "reading", "books", "digital library", "historical"] },
-        { name: "🔬 PubMed", url: "https://pubmed.ncbi.nlm.nih.gov", category: "Reading", tags: ["Learning", "medical", "research", "papers", "science"] },
-        { name: "📖 Project Gutenberg", url: "https://www.gutenberg.org", category: "Reading", tags: ["Learning", "reading", "books", "classics", "free ebooks"] },
-        
-    // Cloud Storage
-        { name: "🍎 iCloud", url: "https://www.icloud.com/", category: "Cloud Storage", tags: ["Free: 5GB", "Apple", "Photos", "Backup"] },
-        { name: "📎 Dropbox", url: "https://www.dropbox.com/", category: "Cloud Storage", tags: ["Free: 2GB", "Sync", "Backup", "Business"] },
-        { name: "📦 Box", url: "https://www.box.com/", category: "Cloud Storage", tags: ["Free: 10GB", "Business", "Enterprise", "Collaboration"] },
-
-    // Gaming
-        { name: "🎲 Board Game Arena", url: "https://boardgamearena.com", category: "Gaming", tags: ["gaming", "Board Games", "multiplayer"] },
-        { name: "✏️ Skribbl.io", url: "https://Skribbl.io", category: "Gaming", tags: ["gaming", "Drawing", "multiplayer"] },
-
-    // UK Legal Resources
-        { name: "🔬 LexSearch", url: "https://kay-who-codes.github.io/LexSearch/", category: "UK Legal Resources", tags: ["legal", "statutes", "acts", "search", "primary legislation", "government"] },
-        { name: "⚖️ Legislation.gov.uk", url: "https://www.legislation.gov.uk", category: "UK Legal Resources", tags: ["legal", "statutes", "acts", "primary legislation", "government"] },
-        { name: "📜 BAILII", url: "https://www.bailii.org", category: "UK Legal Resources", tags: ["legal", "case law", "judgments", "courts", "tribunals"] },
-        
-      // Communication
-        { name: "🔵 Facebook Messages", url: "https://www.facebook.com/messages/", category: "Communication", tags: ["Messaging", "Chat", "Social"] },
-        { name: "🟣 Discord", url: "https://discord.com/app", category: "Communication", tags: ["Messaging", "Gaming", "Voice Chat", "Community"] },
-        { name: "🔷 Telegram", url: "https://web.telegram.org/", category: "Communication", tags: ["Messaging", "Chat", "Secure"] },
-        { name: "🟥 Gmail", url: "https://mail.google.com/", category: "Communication", tags: ["Email", "Work", "Personal"] },
-        { name: "🟦 Outlook", url: "https://outlook.live.com/", category: "Communication", tags: ["Email", "Work", "Calendar"] },
-
-     // Money                                                                                 
-        { name: "🟣 Yahoo Finance - Trending", url: "https://uk.finance.yahoo.com/markets/stocks/trending/", category: "Money", tags: ["Learning", "money", "investing", "fiat"] },
-        { name: "📈 TradingView", url: "https://www.tradingview.com", category: "Money", tags: ["Learning", "money", "investing", "charts", "technical analysis", "stocks"] },
-        { name: "🧱 Simply Wall St", url: "https://simplywall.st", category: "Money", tags: ["Learning", "money", "investing", "stocks", "analysis", "visualization"] },
-
-      // Creative
-        { name: "🎨 'Art' Gallery", url: "https://kay-who-codes.github.io/Picture-Gallery/", category: "Creative", tags: ["art", "display", "drawings", "pictures"] },
-        { name: "🍑 FL Studio Technique DB", url: "https://kay-who-codes.github.io/FL-Studio-Techniques-Database/", category: "Creative", tags: ["music", "shortcuts", "tips"] },
-        { name: "✅ Song Release Checklist", url: "https://kay-who-codes.github.io/Song-Release-Checklist/", category: "Creative", tags: ["music", "list", "professional"] },
-        { name: "🤖 AppMake-Prompter", url: "https://kay-who-codes.github.io/AppMake-Prompter/", category: "Creative", tags: ["AI", "programming", "code"] },
-
-     // Cloud Storage
-        { name: "☁️ pCloud", url: "https://www.pcloud.com/", category: "Cloud Storage", tags: ["Free: 10GB", "Encryption", "Lifetime Plans", "Privacy"] },
-
-      // Social
-        { name: "💬 Message Template Hub", url: "https://github.com/kay-who-codes/Message-Template-Hub/tree/main", category: "Social", tags: ["social", "copybank"] },
-        { name: "🔵 LinkedIn", url: "https://www.linkedin.com", category: "Social", tags: ["social", "professional", "networking", "jobs"] },
-        { name: "🟣 Discord", url: "https://discord.com", category: "Social", tags: ["social", "chat", "community", "voice"] },
-        { name: "🟢 Mastodon", url: "https://mastodon.social", category: "Social", tags: ["social", "microblogging", "decentralized"] },
-        { name: "🟤 Instagram", url: "https://www.instagram.com", category: "Social", tags: ["social", "photo", "video"] },
-        { name: "🎟️ Eventbrite", url: "https://www.eventbrite.com", category: "Social", tags: ["social", "events", "tickets"] },
-        { name: "🤝 Meetup", url: "https://www.meetup.com", category: "Social", tags: ["social", "events", "community"] },
-        { name: "🩷 Play Game", url: "file:///H:/K%20Files/Play%20Game%20-%20Official/index.html", category: "Social", tags: ["social", "practice", "flashcards"] },
-
-     // Shopping
-        { name: "🛒 eBay", url: "http://www.ebay.co.uk/", category: "Shopping", tags: ["shopping"] },
-        { name: "🏠 Facebook Marketplace", url: "http://facebook.com/marketplace", category: "Shopping", tags: ["shopping", "Secondhand"] },
-        { name: "🔥 Hot UK Deals", url: "http://hotukdeals.com/", category: "Shopping", tags: ["shopping"] },
-        { name: "👗 Vinted", url: "https://www.vinted.co.uk", category: "Shopping", tags: ["shopping", "Secondhand", "clothing", "fashion"] },
-        { name: "🍕 Just Eat", url: "https://www.just-eat.co.uk/", category: "Shopping", tags: ["shopping", "fast food", "food", "takeaway"] },
-    
-    // Language Learning
-        { name: "🇬🇷 Greek / Latin Etymology Quiz", url: "https://kay-who-codes.github.io/Greek-Quiz/", category: "Language Learning", tags: ["Learning", "words", "writing", "etymology", "music"] },
-        { name: "🗣️ SpanishDict", url: "https://www.spanishdict.com/", category: "Language Learning", tags: ["Free", "Spanish", "Dictionary", "Conjugations", "Grammar"] },
-        { name: "📚 StudySpanish.com", url: "https://studyspanish.com/", category: "Language Learning", tags: ["Free/Paid", "Spanish", "Grammar", "Lessons"] },
-        { name: "📖 Notes in Spanish", url: "https://www.notesinspanish.com/", category: "Language Learning", tags: ["Free/Paid", "Spanish", "Podcast", "Real Conversations"] },
-        { name: "🎧 Coffee Break Spanish", url: "https://coffeebreaklanguages.com/coffeebreakspanish/", category: "Language Learning", tags: ["Free/Paid", "Spanish", "Podcast", "Beginner"] },
-        { name: "📺 Dreaming Spanish", url: "https://www.dreamingspanish.com/", category: "Language Learning", tags: ["Free/Paid", "Spanish", "Comprehensible Input", "Video"] },
-        { name: "🇬🇷 Learn Greek Online", url: "https://www.learngreekonline.com/", category: "Language Learning", tags: ["Free/Paid", "Greek", "Lessons", "Grammar"] },
-        { name: "🇬🇷 Kypros.org", url: "https://www.kypros.org/LearnGreek/", category: "Language Learning", tags: ["Free", "Greek", "Lessons", "Audio"] },
-        { name: "📚 CoolJugator", url: "https://cooljugator.com/", category: "Language Learning", tags: ["Free", "Spanish", "Greek", "Verb Conjugation"] },
-        { name: "📚 Anki", url: "https://apps.ankiweb.net/", category: "Language Learning", tags: ["Free", "Spanish", "Greek", "Flashcards", "SRS"] },
-        { name: "📰 News in Slow Spanish", url: "https://www.newsinslowspanish.com/", category: "Language Learning", tags: ["Paid", "Spanish", "News", "Listening"] },
-
-    // Reading
-        { name: "✍️ Medium", url: "https://medium.com", category: "Reading", tags: ["Learning", "reading", "articles", "blogs", "writing"] },
-        { name: "🔢 Serendipitous Scriptures", url: "https://github.com/kay-who-codes/Serendipitous-Scriptures", category: "Reading", tags: ["Bible", "reading", "books", "classics", "numerology", "gematria"] },
-    
-    // Travel
-        { name: "🗺️ Rome2Rio", url: "https://www.rome2rio.com/", category: "Travel", tags: ["Travel", "Planning", "Transport", "Flights"] },
-        { name: "✈️ Skyscanner", url: "https://www.skyscanner.net/", category: "Travel", tags: ["Travel", "Flights", "Hotels", "Car Hire"] },
-        { name: "🏨 Booking.com", url: "https://www.booking.com/", category: "Travel", tags: ["Travel", "Hotels", "Accommodation"] },
-        { name: "✈️ Kayak", url: "https://www.kayak.com/", category: "Travel", tags: ["Travel", "Flights", "Hotels", "Car Hire"] },
-        { name: "🏨 Airbnb", url: "https://www.airbnb.com/", category: "Travel", tags: ["Travel", "Accommodation", "Vacation Rentals"] }
+        {"name":"🟩 E. Matrix","url":"https://kay-who-codes.github.io/E-Matrix/","category":"Prudence","tags":["to-do","tasks","Planning"]},
+        {"name":"🔍 Finviz","url":"https://finviz.com","category":"Money","tags":["Learning","money","investing","stocks","screener","charts"]},
+        {"name":"📈 Seeking Alpha","url":"https://seekingalpha.com/sectors","category":"Money","tags":["Learning","money","investing","stocks","analysis","articles"]},
+        {"name":"✏️ Typebox","url":"https://kay-who-codes.github.io/Type-Box/","category":"Creative","tags":["write","text","notepad"]},
+        {"name":"📀 Music Showcase","url":"https://github.com/kay-who-codes/Music-Showcase","category":"Creative","tags":["music","comedy","hub","rap"]},
+        {"name":"🔴 Google Gemini","url":"https://gemini.google.com","category":"AI Chat","tags":["ai","chatbot","assistant","google"]},
+        {"name":"🔵 Microsoft Copilot","url":"https://copilot.microsoft.com","category":"AI Chat","tags":["ai","chatbot","assistant","microsoft","bing"]},
+        {"name":"⚫ Grok","url":"https://grok.x.ai","category":"AI Chat","tags":["ai","chatbot","xai","assistant"]},
+        {"name":"🟣 Lumo","url":"https://lumo.proton.me/u/0/","category":"AI Chat","tags":["ai","chatbot","private","assistant"]},
+        {"name":"🟠 Mistral Chat","url":"https://chat.mistral.ai","category":"AI Chat","tags":["ai","chatbot","open-source","france"]},
+        {"name":"🟢 Pi AI","url":"https://pi.ai","category":"AI Chat","tags":["ai","chatbot","friendly","assistant"]},
+        {"name":"🟣 Poe","url":"https://poe.com","category":"AI Chat","tags":["ai","chatbot","multi-model","assistant"]},
+        {"name":"⚫ Perplexity AI","url":"https://perplexity.ai","category":"AI Chat","tags":["ai","chatbot","search","assistant"]},
+        {"name":"🔘 HuggingChat","url":"https://huggingface.co/chat","category":"AI Chat","tags":["ai","chatbot","open-source","assistant"]},
+        {"name":"🟠 Rumble","url":"https://rumble.com/","category":"Entertainment","tags":["Entertainment","Learning","Podcast"]},
+        {"name":"🟣 Odysee","url":"https://odysee.com/","category":"Entertainment","tags":["Entertainment","Learning","Podcast"]},
+        {"name":"🤳 TikTok","url":"https://www.tiktok.com/","category":"Entertainment","tags":["Entertainment","Learning","Podcast"]},
+        {"name":"⌛ Screensaver Hub","url":"https://github.com/kay-who-codes/Screensaver-Hub","category":"Entertainment","tags":["Entertainment","AFK","Idle"]},
+        {"name":"📚 Internet Archive","url":"https://archive.org","category":"Reading","tags":["Learning","reading","books","digital library","historical"]},
+        {"name":"🔬 PubMed","url":"https://pubmed.ncbi.nlm.nih.gov","category":"Reading","tags":["Learning","medical","research","papers","science"]},
+        {"name":"📖 Project Gutenberg","url":"https://www.gutenberg.org","category":"Reading","tags":["Learning","reading","books","classics","free ebooks"]},
+        {"name":"🍎 iCloud","url":"https://www.icloud.com/","category":"Cloud Storage","tags":["Apple","Photos","Backup"]},
+        {"name":"📎 Dropbox","url":"https://www.dropbox.com/","category":"Cloud Storage","tags":["Backup","Business"]},
+        {"name":"📦 Box","url":"https://www.box.com/","category":"Cloud Storage","tags":["Business","Enterprise","Collaboration"]},
+        {"name":"🎲 Board Game Arena","url":"https://boardgamearena.com","category":"Gaming","tags":["gaming","Board Games","multiplayer"]},
+        {"name":"✏️ Skribbl.io","url":"https://Skribbl.io","category":"Gaming","tags":["gaming","Drawing","multiplayer"]},
+        {"name":"🔬 LexSearch","url":"https://kay-who-codes.github.io/LexSearch/","category":"UK Legal Resources","tags":["legal","statutes","acts","search","primary legislation","government"]},
+        {"name":"⚖️ Legislation.gov.uk","url":"https://www.legislation.gov.uk","category":"UK Legal Resources","tags":["legal","statutes","acts","primary legislation","government"]},
+        {"name":"📜 BAILII","url":"https://www.bailii.org","category":"UK Legal Resources","tags":["legal","case law","judgments","courts","tribunals"]},
+        {"name":"🔵 Facebook Messages","url":"https://www.facebook.com/messages/","category":"Communication","tags":["Messaging","Chat","Social"]},
+        {"name":"🟣 Discord","url":"https://discord.com/app","category":"Communication","tags":["Messaging","Gaming","Voice Chat","Community"]},
+        {"name":"🔷 Telegram","url":"https://web.telegram.org/","category":"Communication","tags":["Messaging","Chat","Secure"]},
+        {"name":"🟥 Gmail","url":"https://mail.google.com/","category":"Communication","tags":["Email","Work","Personal"]},
+        {"name":"🟦 Outlook","url":"https://outlook.live.com/","category":"Communication","tags":["Email","Work","Calendar"]},
+        {"name":"🟣 Yahoo Finance - Trending","url":"https://uk.finance.yahoo.com/markets/stocks/trending/","category":"Money","tags":["Learning","money","investing","fiat"]},
+        {"name":"📈 TradingView","url":"https://www.tradingview.com","category":"Money","tags":["Learning","money","investing","charts","technical analysis","stocks"]},
+        {"name":"🧱 Simply Wall St","url":"https://simplywall.st","category":"Money","tags":["Learning","money","investing","stocks","analysis","visualization"]},
+        {"name":"🎨 'Art' Gallery","url":"https://kay-who-codes.github.io/Picture-Gallery/","category":"Creative","tags":["art","display","drawings","pictures"]},
+        {"name":"🤖 AppMake-Prompter","url":"https://kay-who-codes.github.io/AppMake-Prompter/","category":"Creative","tags":["AI","programming","code"]},
+        {"name":"☁️ pCloud","url":"https://www.pcloud.com/","category":"Cloud Storage","tags":["Free: 10GB","Encryption","Lifetime Plans","Privacy"]},
+        {"name":"💬 Message Template Hub","url":"https://github.com/kay-who-codes/Message-Template-Hub/tree/main","category":"Social","tags":["social","copybank"]},
+        {"name":"🔵 LinkedIn","url":"https://www.linkedin.com","category":"Social","tags":["social","professional","networking","jobs"]},
+        {"name":"🟣 Discord","url":"https://discord.com","category":"Social","tags":["social","chat","community","voice"]},
+        {"name":"🟢 Mastodon","url":"https://mastodon.social","category":"Social","tags":["social","microblogging","decentralized"]},
+        {"name":"🟤 Instagram","url":"https://www.instagram.com","category":"Social","tags":["social","photo","video"]},
+        {"name":"🎟️ Eventbrite","url":"https://www.eventbrite.com","category":"Social","tags":["social","events","tickets"]},
+        {"name":"🤝 Meetup","url":"https://www.meetup.com","category":"Social","tags":["social","events","community"]},
+        {"name":"🩷 Play Game","url":"file:///H:/K%20Files/Play%20Game%20-%20Official/index.html","category":"Social","tags":["social","practice","flashcards"]},
+        {"name":"🛒 eBay","url":"http://www.ebay.co.uk/","category":"Shopping","tags":["shopping"]},
+        {"name":"🏠 Facebook Marketplace","url":"http://facebook.com/marketplace","category":"Shopping","tags":["shopping","Secondhand"]},
+        {"name":"🔥 Hot UK Deals","url":"http://hotukdeals.com/","category":"Shopping","tags":["shopping"]},
+        {"name":"👗 Vinted","url":"https://www.vinted.co.uk","category":"Shopping","tags":["shopping","Secondhand","clothing","fashion"]},
+        {"name":"🍕 Just Eat","url":"https://www.just-eat.co.uk/","category":"Shopping","tags":["shopping","fast food","food","takeaway"]},
+        {"name":"🇬🇷 Greek / Latin Etymology Quiz","url":"https://kay-who-codes.github.io/Greek-Quiz/","category":"Language Learning","tags":["Learning","words","writing","etymology","music"]},
+        {"name":"🗣️ SpanishDict","url":"https://www.spanishdict.com/","category":"Language Learning","tags":["Free","Spanish","Dictionary","Conjugations","Grammar"]},
+        {"name":"📚 StudySpanish.com","url":"https://studyspanish.com/","category":"Language Learning","tags":["Free/Paid","Spanish","Grammar","Lessons"]},
+        {"name":"📖 Notes in Spanish","url":"https://www.notesinspanish.com/","category":"Language Learning","tags":["Free/Paid","Spanish","Podcast","Real Conversations"]},
+        {"name":"🎧 Coffee Break Spanish","url":"https://coffeebreaklanguages.com/coffeebreakspanish/","category":"Language Learning","tags":["Free/Paid","Spanish","Podcast","Beginner"]},
+        {"name":"📺 Dreaming Spanish","url":"https://www.dreamingspanish.com/","category":"Language Learning","tags":["Free/Paid","Spanish","Comprehensible Input","Video"]},
+        {"name":"🇬🇷 Learn Greek Online","url":"https://www.learngreekonline.com/","category":"Language Learning","tags":["Free/Paid","Greek","Lessons","Grammar"]},
+        {"name":"🇬🇷 Kypros.org","url":"https://www.kypros.org/LearnGreek/","category":"Language Learning","tags":["Free","Greek","Lessons","Audio"]},
+        {"name":"📚 CoolJugator","url":"https://cooljugator.com/","category":"Language Learning","tags":["Free","Spanish","Greek","Verb Conjugation"]},
+        {"name":"📚 Anki","url":"https://apps.ankiweb.net/","category":"Language Learning","tags":["Free","Spanish","Greek","Flashcards","SRS"]},
+        {"name":"📰 News in Slow Spanish","url":"https://www.newsinslowspanish.com/","category":"Language Learning","tags":["Paid","Spanish","News","Listening"]},
+        {"name":"✍️ Medium","url":"https://medium.com","category":"Reading","tags":["Learning","reading","articles","blogs","writing"]},
+        {"name":"🔢 Serendipitous Scriptures","url":"https://github.com/kay-who-codes/Serendipitous-Scriptures","category":"Reading","tags":["Bible","reading","books","classics","numerology","gematria"]},
+        {"name":"🗺️ Rome2Rio","url":"https://www.rome2rio.com/","category":"Travel","tags":["Travel","Planning","Transport","Flights"]},
+        {"name":"✈️ Skyscanner","url":"https://www.skyscanner.net/","category":"Travel","tags":["Travel","Flights","Hotels","Car Hire"]},
+        {"name":"🏨 Booking.com","url":"https://www.booking.com/","category":"Travel","tags":["Travel","Hotels","Accommodation"]},
+        {"name":"✈️ Kayak","url":"https://www.kayak.com/","category":"Travel","tags":["Travel","Flights","Hotels","Car Hire"]},
+        {"name":"🏨 Airbnb","url":"https://www.airbnb.com/","category":"Travel","tags":["Travel","Accommodation","Vacation Rentals"]},
+        {"name":"📉 Google Trends","url":"https://trends.google.co.uk/trends/?geo=GB","category":"Learning","tags":["Search Engine","Trends"]},
+        {"name":"📜 Esoteric Archives","url":"https://www.esotericarchives.com/index.html","category":"Reading","tags":["Text","Scripture"]},
+        {"name":"📃 Sacred Texts","url":"https://sacred-texts.com/","category":"Reading","tags":["Text","Scripture"]},
+        {"name":"🃏 AnkiApp Flashcards","url":"https://web.algoapp.ai/home","category":"Learning","tags":["Words","Vocabulary","Flashcards"]},
+        {"name":"🕹️ 50 Games Like","url":"https://www.50gameslike.com/","category":"Gaming","tags":["Recommendations"]}
     ];
 
-
-    
-    //  🥉 Tertiary Page 
-    
     const bookmarksTertiary = [
-
-    // Programming
-        { name: "🔧 SearchHub Backend", url: "https://github.com/kay-who-codes/SearchHub/tree/v2", category: "Programming", tags: ["development", "code", "backend", "assets", "repository"] },
-        
-    // Entertainment
-        { name: "Stop Look Think", url: "https://stoplookthink.com/", category: "Entertainment", tags: ["Videos", "Truth", "Documentaries"] },
-        { name: "Wikipedia", url: "https://wikipedia.org", category: "General", tags: ["reference", "wiki"] },
-
-    // Legal
-        { name: "⚖️ UK Supreme Court", url: "https://www.supremecourt.uk", category: "UK Legal Resources", tags: ["legal", "case law", "judgments", "courts", "appeals"] },
-        { name: "📋 Judiciary UK", url: "https://www.judiciary.uk", category: "UK Legal Resources", tags: ["legal", "courts", "judgments", "sentencing", "guidance"] },
-        { name: "🔍 LawCom.gov.uk", url: "https://lawcom.gov.uk", category: "UK Legal Resources", tags: ["legal", "law reform", "reports", "consultations", "commission"] },
-        { name: "📖 UK Parliament", url: "https://www.parliament.uk/business/publications", category: "UK Legal Resources", tags: ["legal", "bills", "statutes", "parliamentary", "debates"] },
-
+        {"name":"Stop Look Think","url":"https://stoplookthink.com/","category":"Entertainment","tags":["Videos","Truth","Documentaries"]},
+        {"name":"Wikipedia","url":"https://wikipedia.org","category":"General","tags":["reference","wiki"]},
+        {"name":"⚖️ UK Supreme Court","url":"https://www.supremecourt.uk","category":"UK Legal Resources","tags":["legal","case law","judgments","courts","appeals"]},
+        {"name":"📋 Judiciary UK","url":"https://www.judiciary.uk","category":"UK Legal Resources","tags":["legal","courts","judgments","sentencing","guidance"]},
+        {"name":"🔍 LawCom.gov.uk","url":"https://lawcom.gov.uk","category":"UK Legal Resources","tags":["legal","law reform","reports","consultations","commission"]},
+        {"name":"📖 UK Parliament","url":"https://www.parliament.uk/business/publications","category":"UK Legal Resources","tags":["legal","bills","statutes","parliamentary","debates"]},
+        {"name":"🐳 Google nGram Viewer","url":"https://books.google.com/ngrams/graph?content=&year_start=1800&year_end=2019&corpus=en-GB-2019&smoothing=1","category":"Learning","tags":["Trends","Books","Writing"]}
     ];
-
-    // 🎁 App Dev Page
 
     const bookmarksAppdev = [
-        {"name":"Test","url":"https://test.com","category":"General","tags":["ball"]}
+        {"name":"❌ Redact Restore","url":"https://kay-who-codes.github.io/Redact-Restore/","category":"Programming","tags":["Coding","app development","AI prompting"]},
+        {"name":"⭐ App Iconator","url":"https://kay-who-codes.github.io/App-Iconator/","category":"Programming","tags":["Coding","app development","AI prompting"]},
+        {"name":"🖊️ CodePen","url":"https://codepen.io","category":"Programming","tags":["development","code","frontend","playground"]},
+        {"name":"⬜ SVGHub","url":"https://github.com/kay-who-codes/SVGHub","category":"Programming","tags":["development","code","backend","assets","repository"]},
+        {"name":"🔧 SearchHub Backend","url":"https://github.com/kay-who-codes/SearchHub/tree/v2","category":"Programming","tags":["development","code","backend","assets","repository"]}
+    ];
+
+    const bookmarksMusicproduction = [
+        {"name":"✍️ LyricPad","url":"https://kay-who-codes.github.io/LyricPad/","category":"Creative","tags":["lyrics","music"]},
+        {"name":"🎤 Rhymezone","url":"https://www.rhymezone.com/","category":"Words","tags":["Learning","words","writing","lyricism","music"]},
+        {"name":"🍑 FL Studio Technique DB","url":"https://kay-who-codes.github.io/FL-Studio-Techniques-Database/","category":"Creative","tags":["music","shortcuts","tips"]},
+        {"name":"✅ Song Release Checklist","url":"https://kay-who-codes.github.io/Song-Release-Checklist/","category":"Creative","tags":["music","list","professional"]}
     ];
 
     const PAGE_DATA = {
         primary: bookmarksPrimary,
         secondary: bookmarksSecondary,
         tertiary: bookmarksTertiary,
-        appdev: bookmarksAppdev
+        appdev: bookmarksAppdev,
+        musicproduction: bookmarksMusicproduction
     };
 
     const PAGE_LABELS = {
-        primary: { title: "Bookmarks", subtitle: "Quick access to your favorite sites.", toggleShows: "🥇" },
+        primary: { title: "Everyday Sites", subtitle: "Quick access to your favorite sites.", toggleShows: "🥇" },
         secondary: { title: "Secondary Bookmarks", subtitle: "Quick access to your favorite sites.", toggleShows: "🥈" },
         tertiary: { title: "Tertiary Bookmarks", subtitle: "Quick access to your favorite sites.", toggleShows: "🥉" },
-        appdev: { title: "App Dev", subtitle: "Quick access to your favourite sites.", toggleShows: "🎁" }
+        appdev: { title: "App Dev", subtitle: "Sites dedicated to app development.", toggleShows: "📟" },
+        musicproduction: { title: "Music Production", subtitle: "Quick access to your favorite sites.", toggleShows: "🎹" }
     };
 
     // Single source of truth for page emoji, used by both the toggle menu

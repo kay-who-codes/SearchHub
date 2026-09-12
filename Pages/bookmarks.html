@@ -599,7 +599,11 @@
     }
 
 
-const VISIBLE_LIMIT = 8;
+const VISIBLE_LIMIT_NORMAL = 8;
+const VISIBLE_LIMIT_DENSE = 3;
+function getVisibleLimit() {
+    return bookmarksContainer.classList.contains('dense') ? VISIBLE_LIMIT_DENSE : VISIBLE_LIMIT_NORMAL;
+}
  
     // Unique color per category (hue-based, used for accent + glow)
     const categoryColors = {
@@ -682,6 +686,7 @@ const VISIBLE_LIMIT = 8;
  
     function buildCategoryCard(category, items, index, showPageTag) {
         const color = categoryColors[category] || "var(--accent)";
+        const visibleLimit = getVisibleLimit();
  
         const categoryCard = document.createElement('div');
         categoryCard.className = 'bookmark-category';
@@ -715,7 +720,7 @@ const VISIBLE_LIMIT = 8;
             const bookmarkLink = document.createElement('a');
             bookmarkLink.href = bookmark.url;
             bookmarkLink.className = 'bookmark-item';
-            if (i >= VISIBLE_LIMIT) {
+            if (i >= visibleLimit) {
                 bookmarkLink.classList.add('overflow-item');
             }
             bookmarkLink.target = '_blank';
@@ -736,10 +741,10 @@ const VISIBLE_LIMIT = 8;
         categoryCard.appendChild(categoryHeader);
         categoryCard.appendChild(bookmarkList);
  
-        if (items.length > VISIBLE_LIMIT) {
+        if (items.length > visibleLimit) {
             const moreBtn = document.createElement('button');
             moreBtn.className = 'show-more-btn';
-            const remaining = items.length - VISIBLE_LIMIT;
+            const remaining = items.length - visibleLimit;
             moreBtn.textContent = `+ ${remaining} more`;
             moreBtn.dataset.expanded = 'false';
             moreBtn.addEventListener('click', () => {
@@ -862,6 +867,16 @@ const VISIBLE_LIMIT = 8;
     }
  
     function init() {
+        const densityToggle = document.getElementById('density-toggle');
+        const densityLabel = document.getElementById('density-label');
+
+        if (localStorage.getItem('bookmarksDense') === 'true') {
+            bookmarksContainer.classList.add('dense');
+            densityToggle.classList.add('active');
+            densityLabel.textContent = 'Comfortable';
+            densityToggle.querySelector('i').className = 'fas fa-th-large';
+        }
+
         renderBookmarks();
         buildToggleMenu();
         updateToggleMenuActiveState();
@@ -904,22 +919,20 @@ const VISIBLE_LIMIT = 8;
         }
     });
  
-        const densityToggle = document.getElementById('density-toggle');
-        const densityLabel = document.getElementById('density-label');
- 
-        if (localStorage.getItem('bookmarksDense') === 'true') {
-            bookmarksContainer.classList.add('dense');
-            densityToggle.classList.add('active');
-            densityLabel.textContent = 'Comfortable';
-            densityToggle.querySelector('i').className = 'fas fa-th-large';
-        }
- 
         densityToggle.addEventListener('click', function () {
             const isDense = bookmarksContainer.classList.toggle('dense');
             this.classList.toggle('active', isDense);
             densityLabel.textContent = isDense ? 'Comfortable' : 'Compact';
             this.querySelector('i').className = isDense ? 'fas fa-th-large' : 'fas fa-grip-lines';
             localStorage.setItem('bookmarksDense', isDense);
+
+            // Rebuild cards so the visible-item limit matches the new density
+            const term = bookmarksSearchInput.value.toLowerCase().trim();
+            if (term === '') {
+                renderBookmarks();
+            } else {
+                renderSearchResults(term);
+            }
         });
     }
  

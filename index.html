@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
@@ -18,8 +17,8 @@
 
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&amp;family=Inter:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
 
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
@@ -35,6 +34,12 @@
 
 <style>
     /* ... your existing styles ... */
+    @property --rail-w {
+        syntax: '<length>';
+        inherits: true;
+        initial-value: 232px;
+    }
+
     :root {
         /* ── Token system ── */
         --bg: #14171c;
@@ -82,6 +87,7 @@
         display: grid;
         grid-template-columns: var(--rail-w) 1fr;
         grid-template-rows: 1fr auto;
+        transition: grid-template-columns 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     ::selection {
@@ -241,6 +247,77 @@
         color: var(--text-dim);
     }
 
+    /* ── Collapsible rail ── */
+    .rail-collapse-btn {
+        width: 100%;
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--text-dim);
+        cursor: pointer;
+        padding: 9px 0;
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.15s, border-color 0.15s;
+    }
+
+    .rail-collapse-btn:hover {
+        color: var(--accent);
+        border-color: var(--accent);
+    }
+
+    .rail-collapse-btn i {
+        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .rail.collapsed .rail-collapse-btn i {
+        transform: rotate(180deg);
+    }
+
+    .rail-footer-compact {
+        display: none;
+        margin-top: auto;
+        padding: 14px 0 4px;
+        border-top: 1px solid var(--border);
+        font-family: var(--font-mono);
+        font-size: 0.66rem;
+        color: var(--text-faint);
+        text-align: center;
+    }
+
+    .rail.collapsed .brand {
+        justify-content: center;
+    }
+
+    .rail.collapsed .brand .mark {
+        font-size: 0;
+    }
+
+    .rail.collapsed .brand .mark::after {
+        font-size: 1.4rem;
+    }
+
+    .rail.collapsed .brand .tag,
+    .rail.collapsed .rail-eyebrow,
+    .rail.collapsed .nav-item .label,
+    .rail.collapsed .nav-item .idx {
+        display: none;
+    }
+
+    .rail.collapsed .nav-item {
+        justify-content: normal;
+    }
+
+    .rail.collapsed .rail-footer {
+        display: none;
+    }
+
+    .rail.collapsed .rail-footer-compact {
+        display: block;
+    }
+
     /* ── Main viewport ── */
     .viewport {
         grid-column: 2;
@@ -358,6 +435,26 @@
             grid-row: 3;
             padding: 12px 20px;
             flex-wrap: wrap;
+        }
+
+        /* The collapse feature is desktop-only; neutralise it on mobile
+           even if a "collapsed" preference was saved on a wider screen. */
+        .rail-collapse-btn {
+            display: none;
+        }
+
+        .rail.collapsed .brand .mark {
+            font-size: 1.4rem;
+        }
+
+        .rail.collapsed .brand .tag,
+        .rail.collapsed .nav-item .label,
+        .rail.collapsed .nav-item .idx {
+            display: initial;
+        }
+
+        .rail.collapsed .rail-footer-compact {
+            display: none;
         }
     }
     /* ── Color scheme presets ──
@@ -481,7 +578,18 @@ html[data-theme="rainbow"] body {
     to { --hue: 360; }
 }
 
-    /* ── Settings button (top-right, every page) ── */
+/* ── Custom theme ──
+   Unlike the presets above, custom-theme colours aren't hardcoded here —
+   they're written as inline CSS variable overrides on <html> by JS
+   (see applyCustomColors). This block only supplies the page-wide tint,
+   which needs to react to whatever accent the user picks. */
+html[data-theme="custom"] body {
+    background:
+        radial-gradient(ellipse 900px 500px at 15% -10%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 60%),
+        var(--bg);
+}
+
+    /* ── Settings / help buttons (top-right, every page) ── */
     .settings-btn {
         position: fixed;
         top: 18px;
@@ -507,7 +615,15 @@ html[data-theme="rainbow"] body {
         transform: rotate(24deg);
     }
 
-    /* ── Settings panel ── */
+    .help-btn {
+        right: 68px;
+    }
+
+    .help-btn:hover {
+        transform: none;
+    }
+
+    /* ── Settings / shortcuts panel ── */
     .settings-overlay {
         position: fixed;
         inset: 0;
@@ -526,6 +642,8 @@ html[data-theme="rainbow"] body {
         margin: 66px 22px 0 0;
         width: 280px;
         max-width: calc(100vw - 44px);
+        max-height: 80vh;
+        overflow-y: auto;
         background: var(--surface);
         border: 1px solid var(--border);
         border-radius: 12px;
@@ -603,6 +721,130 @@ html[data-theme="rainbow"] body {
         visibility: visible;
     }
 
+    /* ── Custom theme editor ── */
+    .custom-theme-editor {
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid var(--border);
+    }
+
+    .custom-theme-editor.hidden {
+        display: none;
+    }
+
+    .custom-color-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 6px 2px;
+        cursor: pointer;
+    }
+
+    .custom-color-label {
+        font-size: 0.82rem;
+        color: var(--text-dim);
+    }
+
+    .custom-color-input {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 30px;
+        height: 22px;
+        padding: 0;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: none;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .custom-color-input::-webkit-color-swatch-wrapper {
+        padding: 2px;
+    }
+
+    .custom-color-input::-webkit-color-swatch {
+        border: none;
+        border-radius: 4px;
+    }
+
+    .custom-color-input::-moz-color-swatch {
+        border: none;
+        border-radius: 4px;
+    }
+
+    .custom-action-row {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .custom-action-btn {
+        flex: 1;
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 8px 10px;
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+        font-size: 0.66rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: color 0.15s, border-color 0.15s;
+    }
+
+    .custom-action-btn:hover {
+        color: var(--accent);
+        border-color: var(--accent);
+    }
+
+    /* ── Keyboard shortcuts modal ── */
+    .shortcuts-panel {
+        width: 320px;
+    }
+
+    .shortcut-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 9px 2px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .shortcut-row:last-child {
+        border-bottom: none;
+    }
+
+    .shortcut-desc {
+        font-size: 0.84rem;
+        color: var(--text-dim);
+    }
+
+    .shortcut-keys {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        flex-shrink: 0;
+    }
+
+    kbd.key {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        background: var(--bg-rail);
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 2px 6px;
+        color: var(--text);
+        white-space: nowrap;
+    }
+
     @media (max-width: 760px) {
         .settings-btn {
             top: 10px;
@@ -610,13 +852,29 @@ html[data-theme="rainbow"] body {
             width: 34px;
             height: 34px;
         }
+        .help-btn {
+            right: 56px;
+        }
         .settings-panel {
             margin-top: 54px;
         }
     }
 </style>
 </head>
-<body>
+<body><div id="kwc-repo-search" style="position:fixed;top:16px;left:50%;transform:translateX(-50%);width:min(420px,92vw);z-index:9999;"></div>
+
+    <!-- ── Help: keyboard shortcuts button (present on every page) ── -->
+    <button class="settings-btn help-btn" id="help-btn" aria-haspopup="dialog" aria-expanded="false" aria-label="Keyboard shortcuts" title="Keyboard shortcuts (?)">
+        <i class="fa-solid fa-question"></i>
+    </button>
+
+    <div class="settings-overlay" id="shortcuts-overlay">
+        <div class="settings-panel shortcuts-panel" role="dialog" aria-label="Keyboard shortcuts" id="shortcuts-panel">
+            <h2>Keyboard shortcuts</h2>
+            <div class="settings-sub">Navigate without touching the mouse</div>
+            <div id="shortcuts-list"></div>
+        </div>
+    </div>
 
     <!-- ── Settings: gear button + slide-down panel (present on every page) ── -->
     <button class="settings-btn" id="settings-btn" aria-haspopup="dialog" aria-expanded="false" aria-label="Settings" title="Settings">
@@ -628,6 +886,7 @@ html[data-theme="rainbow"] body {
             <h2>Settings</h2>
             <div class="settings-sub">Colour scheme</div>
             <div id="theme-options"></div>
+            <div class="custom-theme-editor hidden" id="custom-theme-editor"></div>
         </div>
     </div>
 
@@ -639,10 +898,14 @@ html[data-theme="rainbow"] body {
         </div>
         <div class="rail-eyebrow">Channels</div>
         <ul id="nav-list"></ul>
-        <div class="rail-footer">
+        <button class="rail-collapse-btn" id="rail-collapse-btn" title="Collapse sidebar" aria-label="Collapse sidebar">
+            <i class="fa-solid fa-angles-left"></i>
+        </button>
+        <div class="rail-footer" id="rail-footer">
             <span id="date">--</span>
             <span id="clock">--:--</span>
         </div>
+        <div class="rail-footer-compact" id="rail-footer-compact">--</div>
     </nav>
 
     <!-- ── Main content ── -->
@@ -654,7 +917,22 @@ html[data-theme="rainbow"] body {
         <span class="quote-text" id="footer-quote-text">Loading a quote…</span>
     </footer>
 
-    <script>
+    <script src="https://cdn.jsdelivr.net/gh/kay-who-codes/Kay-App-Assets@main/Headers/Header.js"></script><script>
+        /* ────────────────────────────────────────────────────────────
+           STORAGE KEYS
+           Single source of truth for every localStorage key this app
+           (and its page fragments) use, so a new persisted setting
+           can't accidentally collide with an existing key. Fragments
+           loaded via loadFragment can read this off window.STORAGE_KEYS.
+        ──────────────────────────────────────────────────────────── */
+        const STORAGE_KEYS = {
+            theme: 'searchhub-theme',
+            customColors: 'searchhub-custom-colors',
+            railCollapsed: 'searchhub-rail-collapsed',
+            bookmarksDense: 'bookmarksDense'
+        };
+        window.STORAGE_KEYS = STORAGE_KEYS;
+
         /* ────────────────────────────────────────────────────────────
            PAGE REGISTRY
            Add a new page by adding one entry here and dropping a
@@ -685,6 +963,7 @@ html[data-theme="rainbow"] body {
                 const btn = document.createElement('button');
                 btn.className = 'nav-item' + (i === 0 ? ' active' : '');
                 btn.id = 'nav-' + page.id;
+                btn.title = page.label;
                 if (page.color) btn.style.setProperty('--ch', page.color);
                 btn.addEventListener('click', () => showSection(page.id));
                 btn.innerHTML = `
@@ -803,11 +1082,20 @@ html[data-theme="rainbow"] body {
             loadFragment(page.file, 'panel-' + page.id, page.id);
         }
 
+        function pad2(n) {
+            return n.toString().padStart(2, '0');
+        }
+
         function ordinal(n) {
             const s = ['th', 'st', 'nd', 'rd'];
             const v = n % 100;
             return n + (s[(v - 20) % 10] || s[v] || s[0]);
         }
+
+        // Alternates the collapsed-rail footer between a short dd/mm date
+        // and the time, flipping every few seconds. Only visible while the
+        // rail is collapsed (see .rail.collapsed .rail-footer-compact CSS).
+        let compactShowingTime = false;
 
         function tickClock() {
             const now = new Date();
@@ -822,6 +1110,19 @@ html[data-theme="rainbow"] body {
             // Update time
             const clockEl = document.getElementById('clock');
             clockEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            // Update the collapsed-rail compact readout
+            const compactEl = document.getElementById('rail-footer-compact');
+            if (compactEl) {
+                compactEl.textContent = compactShowingTime
+                    ? now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    : `${pad2(now.getDate())}/${pad2(now.getMonth() + 1)}`;
+            }
+        }
+
+        function tickCompactAlternator() {
+            compactShowingTime = !compactShowingTime;
+            tickClock();
         }
 
         // ── Persistent quote footer ──
@@ -901,7 +1202,8 @@ function loadFooterQuote() {
         // ── Keyboard navigation ──
         // 1–7 jump straight to the matching channel (and focus its primary
         // text box, via window.__pageFocus[id], same hook showSection uses).
-        // Up/Down move to the previous/next channel in the rail.
+        // Up/Down move to the previous/next channel. '?' opens the
+        // shortcuts cheat sheet.
         function isTypingTarget(el) {
             if (!el) return false;
             const tag = el.tagName;
@@ -929,6 +1231,13 @@ function loadFooterQuote() {
             if (isTypingTarget(document.activeElement)) return;
             if (e.altKey || e.ctrlKey || e.metaKey) return;
 
+            // '?' → open the keyboard-shortcuts cheat sheet.
+            if (e.key === '?') {
+                e.preventDefault();
+                openShortcuts();
+                return;
+            }
+
             // Number keys 1–7 → jump to that channel.
             if (e.key >= '1' && e.key <= '9') {
                 const idx = parseInt(e.key, 10) - 1;
@@ -952,6 +1261,66 @@ function loadFooterQuote() {
             }
         });
 
+        // ── Keyboard shortcuts cheat sheet ──
+        const SHORTCUTS = [
+            { keys: ['1', '–', '9'], desc: 'Jump to a channel' },
+            { keys: ['↑'], desc: 'Previous channel' },
+            { keys: ['↓'], desc: 'Next channel' },
+            { keys: ['Page Up'], desc: 'Previous channel (works while typing)' },
+            { keys: ['Page Down'], desc: 'Next channel (works while typing)' },
+            { keys: ['?'], desc: 'Show this shortcuts list' },
+            { keys: ['Esc'], desc: 'Close any open panel' }
+        ];
+
+        const helpBtn = document.getElementById('help-btn');
+        const shortcutsOverlay = document.getElementById('shortcuts-overlay');
+        const shortcutsList = document.getElementById('shortcuts-list');
+
+        function renderShortcuts() {
+            shortcutsList.innerHTML = '';
+            SHORTCUTS.forEach(s => {
+                const row = document.createElement('div');
+                row.className = 'shortcut-row';
+
+                const desc = document.createElement('span');
+                desc.className = 'shortcut-desc';
+                desc.textContent = s.desc;
+
+                const keysWrap = document.createElement('span');
+                keysWrap.className = 'shortcut-keys';
+                s.keys.forEach(k => {
+                    const kbd = document.createElement('kbd');
+                    kbd.className = 'key';
+                    kbd.textContent = k;
+                    keysWrap.appendChild(kbd);
+                });
+
+                row.appendChild(desc);
+                row.appendChild(keysWrap);
+                shortcutsList.appendChild(row);
+            });
+        }
+
+        function openShortcuts() {
+            closeSettings();
+            renderShortcuts();
+            shortcutsOverlay.classList.add('open');
+            helpBtn.setAttribute('aria-expanded', 'true');
+        }
+
+        function closeShortcuts() {
+            shortcutsOverlay.classList.remove('open');
+            helpBtn.setAttribute('aria-expanded', 'false');
+        }
+
+        helpBtn.addEventListener('click', () => {
+            shortcutsOverlay.classList.contains('open') ? closeShortcuts() : openShortcuts();
+        });
+
+        shortcutsOverlay.addEventListener('click', (e) => {
+            if (e.target === shortcutsOverlay) closeShortcuts();
+        });
+
         // ── Settings: colour scheme presets ──
         const THEMES = [
     { id: 'default', label: 'Default', swatch: '#a9a9a9' },
@@ -962,22 +1331,125 @@ function loadFooterQuote() {
     { id: 'blue',    label: 'Blue',    swatch: '#008aff' },
     { id: 'purple',  label: 'Purple',  swatch: '#9a5fe0' },
     { id: 'pink',    label: 'Pink',    swatch: '#e0609a' },
-    { id: 'rainbow', label: 'Rainbow', swatch: 'conic-gradient(from 0deg, red, orange, yellow, green, blue, purple, red)' }
+    { id: 'rainbow', label: 'Rainbow', swatch: 'conic-gradient(from 0deg, red, orange, yellow, green, blue, purple, red)' },
+    { id: 'custom',  label: 'Custom',  swatch: '#a9a9a9' }
 ];
+
+        // ── Custom theme ──
+        // Fields the user can recolour, mapped to the CSS custom properties
+        // they override. Anything not listed here (e.g. --accent-soft) is
+        // derived automatically from --accent.
+        const CUSTOM_COLOR_FIELDS = [
+            { key: '--accent',  label: 'Accent' },
+            { key: '--accent2', label: 'Accent (secondary)' },
+            { key: '--bg',      label: 'Background' },
+            { key: '--bg-rail', label: 'Rail background' },
+            { key: '--surface', label: 'Surface' },
+            { key: '--text',    label: 'Text' },
+            { key: '--border',  label: 'Border' }
+        ];
+
+        const DEFAULT_CUSTOM_COLORS = {
+            '--accent': '#c9a35f',
+            '--accent2': '#4fb0a8',
+            '--bg': '#14171c',
+            '--bg-rail': '#0f1115',
+            '--surface': '#1b1f27',
+            '--text': '#e9e6dd',
+            '--border': '#2b3040'
+        };
+
+        function loadCustomColors() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEYS.customColors);
+                if (raw) return { ...DEFAULT_CUSTOM_COLORS, ...JSON.parse(raw) };
+            } catch (err) { /* ignore */ }
+            return { ...DEFAULT_CUSTOM_COLORS };
+        }
+
+        function saveCustomColors(colors) {
+            try { localStorage.setItem(STORAGE_KEYS.customColors, JSON.stringify(colors)); } catch (err) { /* ignore */ }
+        }
+
+        // Writes the custom colours as inline CSS variable overrides on
+        // <html>. Inline styles beat the :root defaults, so this works
+        // whether or not html[data-theme="custom"] is currently set.
+        function applyCustomColors(colors) {
+            CUSTOM_COLOR_FIELDS.forEach(field => {
+                document.documentElement.style.setProperty(field.key, colors[field.key]);
+            });
+            // --accent-soft isn't user-facing; derive it from --accent the
+            // same way the presets do, via color-mix instead of rgba math.
+            document.documentElement.style.setProperty(
+                '--accent-soft',
+                `color-mix(in srgb, ${colors['--accent']} 14%, transparent)`
+            );
+        }
+
+        function clearCustomColorOverrides() {
+            CUSTOM_COLOR_FIELDS.forEach(field => document.documentElement.style.removeProperty(field.key));
+            document.documentElement.style.removeProperty('--accent-soft');
+        }
+
+        // ── Harmonious randomiser ──
+        // Picks a random hue for the accent, a hue ~150–210° away for the
+        // secondary accent (roughly triadic/split-complementary, so the two
+        // read as "intentionally paired" rather than clashing), and derives
+        // dark, low-saturation surfaces from the same hue family so the
+        // whole palette feels cohesive rather than random per-swatch.
+        function hslToHex(h, s, l) {
+            s /= 100; l /= 100;
+            const k = n => (n + h / 30) % 12;
+            const a = s * Math.min(l, 1 - l);
+            const f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+            const toHex = x => Math.round(255 * x).toString(16).padStart(2, '0');
+            return `#${toHex(f(0))}${toHex(f(8))}${toHex(f(4))}`;
+        }
+
+        function randomInRange(min, max) {
+            return min + Math.random() * (max - min);
+        }
+
+        function randomizeCustomColors() {
+            const hue = Math.floor(Math.random() * 360);
+            const accent2Hue = (hue + 150 + Math.random() * 60) % 360;
+
+            const colors = {
+                '--accent': hslToHex(hue, randomInRange(55, 72), randomInRange(52, 64)),
+                '--accent2': hslToHex(accent2Hue, randomInRange(50, 68), randomInRange(52, 64)),
+                '--bg': hslToHex(hue, randomInRange(12, 22), 7),
+                '--bg-rail': hslToHex(hue, randomInRange(12, 22), 5),
+                '--surface': hslToHex(hue, randomInRange(12, 22), 11),
+                '--border': hslToHex(hue, randomInRange(10, 18), 20),
+                '--text': hslToHex(hue, 10, 92)
+            };
+
+            saveCustomColors(colors);
+            applyCustomColors(colors);
+            renderCustomEditor('custom');
+            renderThemeOptions('custom');
+        }
 
         const settingsBtn = document.getElementById('settings-btn');
         const settingsOverlay = document.getElementById('settings-overlay');
         const settingsPanel = document.getElementById('settings-panel');
         const themeOptionsEl = document.getElementById('theme-options');
+        const customEditorEl = document.getElementById('custom-theme-editor');
 
         function applyTheme(id) {
             if (id === 'default') {
                 document.documentElement.removeAttribute('data-theme');
+                clearCustomColorOverrides();
+            } else if (id === 'custom') {
+                document.documentElement.setAttribute('data-theme', 'custom');
+                applyCustomColors(loadCustomColors());
             } else {
                 document.documentElement.setAttribute('data-theme', id);
+                clearCustomColorOverrides();
             }
-            try { localStorage.setItem('searchhub-theme', id); } catch (err) { /* ignore */ }
+            try { localStorage.setItem(STORAGE_KEYS.theme, id); } catch (err) { /* ignore */ }
             renderThemeOptions(id);
+            renderCustomEditor(id);
         }
 
         function renderThemeOptions(activeId) {
@@ -985,7 +1457,10 @@ function loadFooterQuote() {
             THEMES.forEach(theme => {
                 const btn = document.createElement('button');
                 btn.className = 'theme-option' + (theme.id === activeId ? ' active' : '');
-                btn.style.setProperty('--theme-swatch', theme.swatch);
+                // The "Custom" swatch reflects whatever accent the user has
+                // actually picked, not a fixed preset colour.
+                const swatch = theme.id === 'custom' ? loadCustomColors()['--accent'] : theme.swatch;
+                btn.style.setProperty('--theme-swatch', swatch);
                 btn.addEventListener('click', () => applyTheme(theme.id));
                 btn.innerHTML = `
                     <span class="swatch"></span>
@@ -994,6 +1469,74 @@ function loadFooterQuote() {
                 `;
                 themeOptionsEl.appendChild(btn);
             });
+        }
+
+        // Shows/hides and (re)builds the colour-picker rows for the custom
+        // theme. Only visible while "Custom" is the active theme.
+        function renderCustomEditor(activeId) {
+            if (activeId !== 'custom') {
+                customEditorEl.classList.add('hidden');
+                customEditorEl.innerHTML = '';
+                return;
+            }
+            customEditorEl.classList.remove('hidden');
+            customEditorEl.innerHTML = '';
+            const colors = loadCustomColors();
+
+            const heading = document.createElement('div');
+            heading.className = 'settings-sub';
+            heading.style.marginBottom = '4px';
+            heading.textContent = 'Custom colours';
+            customEditorEl.appendChild(heading);
+
+            CUSTOM_COLOR_FIELDS.forEach(field => {
+                const row = document.createElement('label');
+                row.className = 'custom-color-row';
+
+                const name = document.createElement('span');
+                name.className = 'custom-color-label';
+                name.textContent = field.label;
+
+                const input = document.createElement('input');
+                input.type = 'color';
+                input.className = 'custom-color-input';
+                input.value = colors[field.key];
+                input.addEventListener('input', () => {
+                    colors[field.key] = input.value;
+                    applyCustomColors(colors);
+                    saveCustomColors(colors);
+                    // Keep the "Custom" row's swatch in the theme list in
+                    // sync as the accent colour is dragged live.
+                    if (field.key === '--accent') renderThemeOptions('custom');
+                });
+
+                row.appendChild(name);
+                row.appendChild(input);
+                customEditorEl.appendChild(row);
+            });
+
+            const actionRow = document.createElement('div');
+            actionRow.className = 'custom-action-row';
+
+            const randomBtn = document.createElement('button');
+            randomBtn.className = 'custom-action-btn';
+            randomBtn.innerHTML = '<i class="fa-solid fa-dice"></i> Randomise';
+            randomBtn.addEventListener('click', () => randomizeCustomColors());
+
+            const resetBtn = document.createElement('button');
+            resetBtn.className = 'custom-action-btn';
+            resetBtn.innerHTML = '<i class="fa-solid fa-rotate-left"></i> Reset';
+            resetBtn.addEventListener('click', () => {
+                const fresh = { ...DEFAULT_CUSTOM_COLORS };
+                saveCustomColors(fresh);
+                applyCustomColors(fresh);
+                renderCustomEditor('custom');
+                renderThemeOptions('custom');
+            });
+
+            actionRow.appendChild(randomBtn);
+            actionRow.appendChild(resetBtn);
+            customEditorEl.appendChild(actionRow);
         }
 
         function openSettings() {
@@ -1007,6 +1550,7 @@ function loadFooterQuote() {
         }
 
         settingsBtn.addEventListener('click', () => {
+            if (shortcutsOverlay.classList.contains('open')) closeShortcuts();
             settingsOverlay.classList.contains('open') ? closeSettings() : openSettings();
         });
 
@@ -1015,13 +1559,40 @@ function loadFooterQuote() {
         });
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && settingsOverlay.classList.contains('open')) closeSettings();
+            if (e.key !== 'Escape') return;
+            if (settingsOverlay.classList.contains('open')) closeSettings();
+            if (shortcutsOverlay.classList.contains('open')) closeShortcuts();
         });
 
         function initTheme() {
             let saved = 'default';
-            try { saved = localStorage.getItem('searchhub-theme') || 'default'; } catch (err) { /* ignore */ }
+            try { saved = localStorage.getItem(STORAGE_KEYS.theme) || 'default'; } catch (err) { /* ignore */ }
             applyTheme(saved);
+        }
+
+        // ── Collapsible rail ──
+        const railEl = document.querySelector('.rail');
+        const railCollapseBtn = document.getElementById('rail-collapse-btn');
+        const RAIL_WIDTH_EXPANDED = '232px';
+        const RAIL_WIDTH_COLLAPSED = '68px';
+
+        function setRailCollapsed(collapsed) {
+            railEl.classList.toggle('collapsed', collapsed);
+            document.documentElement.style.setProperty('--rail-w', collapsed ? RAIL_WIDTH_COLLAPSED : RAIL_WIDTH_EXPANDED);
+            const label = collapsed ? 'Expand sidebar' : 'Collapse sidebar';
+            railCollapseBtn.setAttribute('aria-label', label);
+            railCollapseBtn.title = label;
+            try { localStorage.setItem(STORAGE_KEYS.railCollapsed, collapsed ? 'true' : 'false'); } catch (err) { /* ignore */ }
+        }
+
+        railCollapseBtn.addEventListener('click', () => {
+            setRailCollapsed(!railEl.classList.contains('collapsed'));
+        });
+
+        function initRailCollapse() {
+            let collapsed = false;
+            try { collapsed = localStorage.getItem(STORAGE_KEYS.railCollapsed) === 'true'; } catch (err) { /* ignore */ }
+            setRailCollapsed(collapsed);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -1032,9 +1603,12 @@ function loadFooterQuote() {
             if (PAGES.length) ensurePageLoaded(PAGES[0].id);
             tickClock();
             setInterval(tickClock, 15000);
+            setInterval(tickCompactAlternator, 4000);
             loadFooterQuote();
             initTheme();
+            initRailCollapse();
         });
     </script>
-</body>
-</html>
+
+
+</body></html>

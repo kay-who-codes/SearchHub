@@ -44,6 +44,8 @@
         font-size: 0.74rem;
         cursor: pointer;
         transition: border-color 0.15s, color 0.15s, background 0.15s;
+        /* mobile: keep touch targets comfortable */
+        min-height: 38px;
     }
 
     .srch-eng-btn:hover {
@@ -80,6 +82,10 @@
         border-radius: 12px;
         padding: 22px;
         box-shadow: var(--shadow);
+        /* prevent inner content forcing the card wider than the viewport */
+        box-sizing: border-box;
+        max-width: 100%;
+        overflow: hidden;
     }
 
     .srch-row {
@@ -89,14 +95,18 @@
 
     .srch-input {
         flex: 1;
+        width: 100%;
+        min-width: 0; /* allow flex child to shrink below its content size */
         background: var(--bg-rail);
         border: 1px solid var(--border);
         border-radius: 8px;
         padding: 12px 16px;
         font-family: var(--font-body);
-        font-size: 0.95rem;
+        /* 16px minimum stops iOS Safari auto-zooming on focus */
+        font-size: 16px;
         color: var(--text);
         outline: none;
+        box-sizing: border-box;
         transition: border-color 0.15s, box-shadow 0.15s;
     }
 
@@ -122,6 +132,8 @@
         gap: 8px;
         transition: background 0.15s, transform 0.08s;
         white-space: nowrap;
+        min-height: 44px; /* touch target */
+        flex-shrink: 0;
     }
 
     .srch-go:hover { background: #dab873; }
@@ -143,6 +155,7 @@
         cursor: pointer;
         padding: 14px 0 2px;
         transition: color 0.15s;
+        min-height: 38px; /* touch target, was too thin to tap reliably */
     }
 
     .srch-adv-toggle:hover { color: var(--text-dim); }
@@ -167,7 +180,7 @@
         margin-top: 18px;
     }
 
-    .srch-field { display: flex; flex-direction: column; gap: 6px; }
+    .srch-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 
     .srch-field label {
         font-family: var(--font-mono);
@@ -183,9 +196,12 @@
         border-radius: 7px;
         padding: 9px 11px;
         font-family: var(--font-body);
-        font-size: 0.82rem;
+        /* 16px minimum stops iOS Safari auto-zooming on focus */
+        font-size: 16px;
         color: var(--text);
         outline: none;
+        box-sizing: border-box;
+        width: 100%;
         transition: border-color 0.15s;
     }
 
@@ -197,6 +213,9 @@
         background-repeat: no-repeat;
         background-position: right 12px center;
         padding-right: 30px;
+        /* avoid native OS styling overriding font-size on some Android browsers */
+        appearance: none;
+        -webkit-appearance: none;
     }
 
     .srch-checks {
@@ -217,7 +236,7 @@
         user-select: none;
     }
 
-    .srch-check input { accent-color: var(--accent2); width: 14px; height: 14px; cursor: pointer; }
+    .srch-check input { accent-color: var(--accent2); width: 16px; height: 16px; cursor: pointer; flex-shrink: 0; }
 
     /* ── Quick chips ── */
     .srch-block-label {
@@ -241,6 +260,7 @@
         font-size: 0.72rem;
         cursor: pointer;
         transition: border-color 0.15s, color 0.15s, background 0.15s;
+        min-height: 32px;
     }
 
     .srch-chip:hover {
@@ -254,7 +274,9 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        gap: 10px;
         margin: 30px 0 12px;
+        flex-wrap: wrap;
     }
 
     .srch-hist-head .srch-block-label { margin: 0; }
@@ -269,6 +291,7 @@
         text-transform: uppercase;
         cursor: pointer;
         transition: color 0.15s;
+        padding: 6px 0; /* bigger tap target without shifting layout */
     }
     .srch-clear:hover { color: #c96f5c; }
 
@@ -285,6 +308,7 @@
         transition: background 0.15s, border-color 0.15s;
         font-size: 0.82rem;
         color: var(--text-dim);
+        min-width: 0; /* allow .srch-q ellipsis to actually work inside flex */
     }
 
     .srch-hist-item:hover {
@@ -307,6 +331,7 @@
 
     .srch-hist-item .srch-q {
         flex: 1;
+        min-width: 0; /* required alongside flex:1 for text-overflow to trigger */
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -319,11 +344,17 @@
         color: var(--text-faint);
         cursor: pointer;
         font-size: 0.85rem;
+        padding: 6px; /* bigger tap target on touch */
         transition: opacity 0.15s, color 0.15s;
         flex-shrink: 0;
     }
     .srch-hist-item:hover .srch-del { opacity: 1; }
     .srch-hist-item .srch-del:hover { color: #c96f5c; }
+
+    /* touch devices have no hover — always show the delete affordance */
+    @media (hover: none) {
+        .srch-hist-item .srch-del { opacity: 0.6; }
+    }
 
     .srch-hist-empty {
         color: var(--text-faint);
@@ -381,13 +412,35 @@
         transition: all 0.25s;
         z-index: 100;
         white-space: nowrap;
+        /* keep the toast from overflowing narrow screens */
+        max-width: calc(100vw - 32px);
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     #srch-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+    /* ── Mobile breakpoint ── */
     @media (max-width: 560px) {
+        .srch-title { font-size: 1.5rem; }
+        .srch-sub { margin-bottom: 20px; }
+
+        .srch-card { padding: 16px; }
+
         .srch-row { flex-direction: column; }
-        .srch-go { justify-content: center; padding: 12px; }
+        .srch-go { justify-content: center; padding: 12px; width: 100%; }
+
         .srch-adv-grid { grid-template-columns: 1fr; }
+
+        .srch-eng-btn { flex: 1 1 calc(50% - 6px); justify-content: center; }
+
+        .srch-hist-item { flex-wrap: wrap; }
+        .srch-hist-item .srch-del { opacity: 0.6; }
+
+        .srch-footer-tags { gap: 6px; }
+    }
+
+    @media (max-width: 380px) {
+        .srch-eng-btn { flex: 1 1 100%; }
     }
 </style>
 

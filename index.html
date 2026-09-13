@@ -90,6 +90,12 @@
         transition: grid-template-columns 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
+.rail,
+.viewport,
+.app-footer {
+    min-width: 0;
+}
+
     ::selection {
         background: var(--accent-soft);
         color: var(--text);
@@ -863,7 +869,8 @@ html[data-theme="custom"] body {
 </head>
 <body>
 
-   <!-- ── <div id="kwc-repo-search" style="position:fixed;top:16px;left:50%;transform:translateX(-50%);width:min(420px,92vw);z-index:9999;"></div> ── -->
+    <!-- Universal Header -->
+    <div id="kwc-repo-search" style="position:fixed;top:80px;left:90.6%;transform:translateX(-50%);width:min(285px,92vw);z-index:9999;"></div> 
 
     <!-- ── Help: keyboard shortcuts button (present on every page) ── -->
     <button class="settings-btn help-btn" id="help-btn" aria-haspopup="dialog" aria-expanded="false" aria-label="Keyboard shortcuts" title="Keyboard shortcuts (?)">
@@ -891,7 +898,7 @@ html[data-theme="custom"] body {
             <div class="custom-theme-editor hidden" id="custom-theme-editor"></div>
         </div>
     </div>
-
+    
     <!-- ── Rail: sidebar / mobile top-strip navigation ── -->
     <nav class="rail">
         <div class="brand">

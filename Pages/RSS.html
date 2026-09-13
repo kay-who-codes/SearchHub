@@ -13,12 +13,19 @@
     display: block;
     margin-bottom: 6px;
 }
-   
+
 .rss-app {
     display: grid;
     grid-template-columns: 280px 1fr;
     gap: 0;
     min-height: 60vh;
+    max-width: 100%;
+}
+
+.rss-app *,
+.rss-app *::before,
+.rss-app *::after {
+    box-sizing: border-box;
 }
 
 /* ── Left rail ── */
@@ -81,6 +88,7 @@
     letter-spacing: 0.03em;
     cursor: pointer;
     transition: background 0.15s, color 0.15s, border-color 0.15s;
+    width: 100%;
 }
 
 .rss-search-all-btn:hover:not(:disabled) {
@@ -108,6 +116,7 @@
     flex-direction: column;
     gap: 2px;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     flex: 1;
 }
 
@@ -258,6 +267,7 @@
     display: flex;
     flex-direction: column;
     gap: 18px;
+    overflow-x: hidden;
 }
 
 .rss-main-head {
@@ -275,6 +285,7 @@
     font-size: 1.4rem;
     font-weight: 600;
     color: var(--text);
+    word-break: break-word;
 }
 
 .rss-updated {
@@ -282,6 +293,7 @@
     font-size: 0.7rem;
     color: var(--text-faint);
     letter-spacing: 0.03em;
+    white-space: nowrap;
 }
 
 /* ── Status / skeleton states ── */
@@ -381,6 +393,7 @@
     font-weight: 600;
     line-height: 1.35;
     margin-bottom: 4px;
+    overflow-wrap: break-word;
 }
 
 .rss-item h3 a {
@@ -401,6 +414,7 @@
     margin-bottom: 6px;
     display: -webkit-box;
     -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
     overflow: hidden;
 }
 
@@ -412,6 +426,7 @@
     font-size: 0.68rem;
     color: var(--text-faint);
     flex-wrap: wrap;
+    row-gap: 4px;
 }
 
 .rss-meta .rss-sep {
@@ -436,32 +451,115 @@
     color: var(--text-faint);
 }
 
-/* ── Responsive ── */
+/* ── Responsive: tablets / small laptops ── */
+@media (max-width: 900px) {
+    .rss-app {
+        grid-template-columns: 220px 1fr;
+    }
+
+    .rss-app main {
+        padding: 20px 18px 22px;
+    }
+}
+
+/* ── Responsive: phones — stack rail above content ── */
 @media (max-width: 760px) {
     .rss-app {
         grid-template-columns: 1fr;
+        min-height: 0;
     }
 
     .rss-rail {
         border-radius: 12px 12px 0 0;
         border-bottom: none;
-        max-height: 260px;
+        max-height: 44vh;
+        padding: 16px;
     }
 
     .rss-app main {
         border-radius: 0 0 12px 12px;
         border-left: 1px solid var(--border);
         border-top: none;
+        padding: 18px 16px 20px;
+        gap: 14px;
+    }
+
+    .rss-main-head {
+        padding-bottom: 10px;
+    }
+
+    .rss-main-head h2 {
+        font-size: 1.15rem;
     }
 
     .rss-item {
         grid-template-columns: 72px 1fr;
+        gap: 10px;
+        padding: 10px 6px;
     }
 
     .rss-thumb-wrap,
     .rss-thumb {
         width: 72px;
         height: 54px;
+    }
+
+    .rss-item h3 {
+        font-size: 0.9rem;
+    }
+
+    .rss-snippet {
+        font-size: 0.78rem;
+        -webkit-line-clamp: 2;
+    }
+
+    .rss-search-box {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    #page08-search-input {
+        flex: 1 1 100%;
+    }
+
+    .rss-search-all-btn {
+        flex: 1 1 100%;
+        padding: 9px 10px;
+    }
+}
+
+/* ── Responsive: very small phones — drop thumbnail, single column item ── */
+@media (max-width: 420px) {
+    .rss-rail {
+        max-height: 38vh;
+        padding: 14px;
+    }
+
+    .rss-rail h1 {
+        font-size: 1.1rem;
+    }
+
+    .rss-app main {
+        padding: 14px 12px 16px;
+    }
+
+    .rss-item {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .rss-thumb-wrap {
+        width: 100%;
+        height: 150px;
+    }
+
+    .rss-thumb {
+        width: 100%;
+        height: 150px;
+    }
+
+    .rss-meta {
+        font-size: 0.64rem;
     }
 }
 </style>

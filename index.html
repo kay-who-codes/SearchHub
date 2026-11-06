@@ -9,11 +9,6 @@
 <meta name="theme-color" content="#14171c">
 <meta name="color-scheme" content="dark">
 
-<!-- Web App Settings -->
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="SearchHub">
 
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,11 +18,14 @@
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
 
-<!-- Favicon (modern browsers) -->
-<link rel="icon" type="image/svg+xml" href="https://cdn.jsdelivr.net/gh/kay-who-codes/SVG-Browser@main/SVGs/Universe-Magnifying-Glass.svg">
-
-<!-- iOS Home Screen Icon (single 180x180 is sufficient) -->
-<link rel="apple-touch-icon" href="/AppFiles/Icons/apple-touch-icon-180x180.png">
+<!-- App icons -->
+<link rel="icon" type="image/x-icon" href="AppFiles/Icons/favicon.ico">
+<link rel="icon" type="image/png" sizes="192x192" href="AppFiles/Logos/AppIcon192px.png">
+<link rel="icon" type="image/png" sizes="512x512" href="AppFiles/Logos/AppIcon512px.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SearchHub">
+<!-- End app icons -->
 
 <!-- Manifest for Android/Chrome -->
 <link rel="manifest" href="/manifest.json">
@@ -926,7 +924,9 @@ html[data-theme="custom"] body {
         <span class="quote-text" id="footer-quote-text">Loading a quote…</span>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/gh/kay-who-codes/Kay-App-Assets@main/Headers/Header.js"></script><script>
+    <script src="https://cdn.jsdelivr.net/gh/kay-who-codes/Kay-App-Assets@main/Headers/Header.js"></script>
+    
+    <script>
         /* ────────────────────────────────────────────────────────────
            STORAGE KEYS
            Single source of truth for every localStorage key this app

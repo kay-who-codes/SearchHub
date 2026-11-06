@@ -605,7 +605,6 @@
   // reserved for future filtering and are also searchable.
   // ============================================================
 
-
   const FEEDS = [
     {
       name: "Word of the Day",
@@ -622,23 +621,77 @@
       tags: ["central-bank", "uk", "monetary-policy"]
     },
     {
-      name: "Vsauce",
-      url: "https://www.youtube.com/feeds/videos.xml?channel_id=UC6nSFpj9HTCZ5t-N3Rm3-HA",
-      type: "video",
-      category: "Science",
-      tags: ["youtube", "education"]
+      name: "CodePen",
+      url: "https://codepen.io/spark/feed",
+      type: "article",
+      category: "Programming",
+      tags: ["education"]
+    },
+    {
+      name: "REPO",
+      url: "https://store.steampowered.com/feeds/news/app/3241660",
+      type: "article",
+      category: "Gaming",
+      tags: ["co-op", "horror"]
+    },
+    {
+      name: "Skate.",
+      url: "https://store.steampowered.com/feeds/news/app/3354750",
+      type: "article",
+      category: "Gaming",
+      tags: ["sports", "multiplayer"]
+    },
+    {
+      name: "Phasmophobia",
+      url: "https://store.steampowered.com/feeds/news/app/739630",
+      type: "article",
+      category: "Gaming",
+      tags: ["horror", "co-op"]
+    },
+    {
+      name: "Tabletop Simulator",
+      url: "https://store.steampowered.com/feeds/news/app/286160",
+      type: "article",
+      category: "Gaming",
+      tags: ["simulation", "tabletop"]
+    },
+    {
+      name: "Borderlands 4",
+      url: "https://store.steampowered.com/feeds/news/app/1285190",
+      type: "article",
+      category: "Gaming",
+      tags: ["looter-shooter", "fps"]
+    },
+    {
+      name: "Wreckfest",
+      url: "https://store.steampowered.com/feeds/news/app/228380",
+      type: "article",
+      category: "Gaming",
+      tags: ["racing", "destruction"]
+    },
+    // Paradox Games (all games) cannot be represented by a single Steam feed URL.
+    // You would need to add each Paradox game individually using their specific App IDs.
+    {
+      name: "Mewgenics",
+      url: "https://store.steampowered.com/feeds/news/app/686060",
+      type: "article",
+      category: "Gaming",
+      tags: ["roguelike", "tactics"]
     }
   ];
 
-  
- 
-  const WORDS_PER_MIN = 200; // average adult silent reading speed (currently unused — see renderItems)
+  // Online version: intentionally keyless. Leave as "" (do not delete the
+  // constant; buildProxyUrl and loadFeed both reference it).
+  const RSS2JSON_API_KEY = "";
+  const WORDS_PER_MIN = 200;
   const PROXY = "https://api.rss2json.com/v1/api.json?rss_url=";
-  const STALE_MS = 5 * 60 * 1000;      // cached feed data older than this refetches on select
+  const FETCH_LIMIT = 4;
+  const THROTTLE_MS = 300;
+  const STALE_MS = 5 * 60 * 1000;
   const SEARCH_DEBOUNCE_MS = 250;
-  const RENDER_BATCH_SIZE = 30;         // items rendered per batch — keeps huge lists cheap to paint
+  const RENDER_BATCH_SIZE = 10;
   const MAX_SNIPPET_CHARS = 220;
- 
+
   // ---- DOM refs (scoped to this page's namespaced ids) ----
   const feedNav = document.getElementById("page08-feed-nav");
   const content = document.getElementById("page08-content");
@@ -648,14 +701,14 @@
   const searchInput = document.getElementById("page08-search-input");
   const searchAllBtn = document.getElementById("page08-search-all-btn");
   const searchHint = document.getElementById("page08-search-hint");
- 
+
   // ---- State ----
   const cache = {};              // feed.url -> {items, fetchedAt}
   const openCategories = new Set(FEEDS.map(f => f.category || "Uncategorized")); // start expanded
   let view = { mode: "feed", index: 0 };   // {mode:'feed', index} | {mode:'all'} | {mode:'search', query}
   let searchTimer = null;
   let observer = null;
- 
+
   // Group feeds by category, preserving FEEDS order within each group.
   function groupByCategory(){
     const groups = new Map();
@@ -666,13 +719,13 @@
     });
     return groups;
   }
- 
+
   // ============================================================
   // Rendering: left rail (category tree)
   // ============================================================
   function renderNav(){
     feedNav.innerHTML = "";
- 
+
     // "All" aggregate view
     const allBtn = document.createElement("button");
     allBtn.className = "rss-nav-item" + (view.mode === "all" ? " rss-active" : "");
@@ -681,14 +734,14 @@
     allBtn.innerHTML = `<span class="rss-dot"></span><span>All feeds</span><span class="rss-count">${totalLoaded || ""}</span>`;
     allBtn.addEventListener("click", () => selectAll());
     feedNav.appendChild(allBtn);
- 
+
     const groups = groupByCategory();
     groups.forEach((entries, category) => {
       const isOpen = openCategories.has(category);
- 
+
       const group = document.createElement("div");
       group.className = "rss-category-group";
- 
+
       const header = document.createElement("button");
       header.type = "button";
       header.className = "rss-category-header" + (isOpen ? " rss-open" : "");
@@ -699,7 +752,7 @@
         renderNav();
       });
       group.appendChild(header);
- 
+
       const feedsWrap = document.createElement("div");
       feedsWrap.className = "rss-category-feeds" + (isOpen ? " rss-open" : "");
       entries.forEach(({ feed, index }) => {
@@ -712,11 +765,11 @@
         feedsWrap.appendChild(btn);
       });
       group.appendChild(feedsWrap);
- 
+
       feedNav.appendChild(group);
     });
   }
- 
+
   // ============================================================
   // Helpers
   // ============================================================
@@ -725,36 +778,63 @@
       "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
     }[s]));
   }
- 
+
   function stripHtml(html){
     const tmp = document.createElement("div");
     tmp.innerHTML = html || "";
     return tmp.textContent || tmp.innerText || "";
   }
- 
+
   function extractThumbnail(item){
+    // 1. rss2json's thumbnail field, or the one our Steam loader set
+    //    from the first <img> in the update body (this is the per-update image).
     if (item.thumbnail && item.thumbnail.trim()) return item.thumbnail.trim();
+
+    // 2. <enclosure url="..."> — rss2json exposes it as item.enclosure.link
+    if (item.enclosure && item.enclosure.link && item.enclosure.link.trim()){
+      return item.enclosure.link.trim();
+    }
+
+    // 3. Media RSS <media:content url="..."> if the proxy passed it through
+    if (item.media && item.media.content && item.media.content.url){
+      return item.media.content.url;
+    }
+
+    // 4. <img> inside description/content HTML (generic feeds)
     const source = item.description || item.content || "";
     const match = source.match(/<img[^>]+src=["']([^"']+)["']/i);
-    return match ? match[1] : null;
+    if (match) return match[1];
+
+    // 5. Steam fallback: store header capsule from the App ID in the feed URL.
+    //    Only reached if the update body had no image at all. Every item
+    //    from the same game will share this image — acceptable last resort.
+    const feed = item._feed || {};
+    if (feed.url){
+      const appIdMatch = feed.url.match(/\/app\/(\d+)/);
+      if (appIdMatch){
+        return `https://cdn.akamai.steamstatic.com/steam/apps/${appIdMatch[1]}/header.jpg`;
+      }
+    }
+
+    return null;
   }
- 
+
   function wordCount(text){
     const trimmed = text.trim();
     if (!trimmed) return 0;
     return trimmed.split(/\s+/).length;
   }
- 
+
   function readingTime(words){
     return Math.max(1, Math.round(words / WORDS_PER_MIN));
   }
- 
+
   function formatDate(iso){
     const d = new Date(iso);
     if (isNaN(d)) return "";
     return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
   }
- 
+
   function timeAgo(iso){
     const d = new Date(iso);
     if (isNaN(d)) return "";
@@ -767,37 +847,161 @@
     if (days < 30) return `${days}d ago`;
     return formatDate(iso);
   }
- 
+
   // ============================================================
   // Data loading
   // ============================================================
+
+  // Builds the full rss2json proxy URL for a feed, appending the item
+  // count and (if configured) the API key. Kept in one place so every
+  // request is built identically.
+  function buildProxyUrl(feedUrl){
+    let url = PROXY + encodeURIComponent(feedUrl) + "&count=" + FETCH_LIMIT;
+    if (RSS2JSON_API_KEY){
+      url += "&api_key=" + encodeURIComponent(RSS2JSON_API_KEY);
+    }
+    return url;
+  }
+
+  const STEAM_NEWS_API = "https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/";
+  const STEAM_NEWS_VIEW = "https://store.steampowered.com/news/app/";
+  // Steam's API sends no CORS headers, so browser requests go through a
+  // third-party CORS proxy. If it misbehaves, swap this one line, e.g. for
+  // "https://api.allorigins.win/raw?url=" (same encodeURIComponent pattern).
+
+// Tried in order; the first one that returns a good response wins.
+const STEAM_PROXIES = [
+  u => "https://api.allorigins.win/raw?url=" + encodeURIComponent(u),
+  u => "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(u)
+];
+
+async function fetchSteamJson(target){
+  let lastErr;
+  for (const build of STEAM_PROXIES){
+    try {
+      const res = await fetch(build(target));
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return await res.json();
+    } catch (err){
+      lastErr = err;
+    }
+  }
+  throw new Error("All Steam proxies failed (" + (lastErr ? lastErr.message : "unknown") + ")");
+}
+
+  function steamAppIdFromUrl(feedUrl){
+    const m = String(feedUrl || "").match(/store\.steampowered\.com\/feeds\/news\/app\/(\d+)/);
+    return m ? m[1] : null;
+  }
+
+  // Pulls the first usable <img> out of Steam's update HTML. Steam
+  // sometimes wraps images in <a> or <figure>, so we just scan for the
+  // first <img src="..."> and skip obvious tracking pixels / spacers.
+  function firstImageFromHtml(html){
+    if (!html) return null;
+    const re = /<img[^>]+src=["']([^"']+)["']/gi;
+    let m;
+    while ((m = re.exec(html)) !== null){
+      const src = m[1].trim();
+      if (!src) continue;
+      // Skip 1x1 spacers / tracking pixels common in Steam bodies
+      if (/\/transparent\.gif$/i.test(src)) continue;
+      if (/\b(1x1|pixel|spacer)\b/i.test(src)) continue;
+      return src;
+    }
+    return null;
+  }
+
+  // Strips HTML to a plain-text snippet for the card body, collapsing
+  // Steam's [img] BBCode-ish leftovers and excess whitespace.
+  function steamHtmlToText(html){
+    return stripHtml(html || "")
+      .replace(/\[img\][\s\S]*?\[\/img\]/gi, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+async function loadSteamFeed(feed, appId){
+  const target = STEAM_NEWS_API +
+    "?appid=" + encodeURIComponent(appId) +
+    "&count=" + FETCH_LIMIT +
+    "&maxlength=0" +
+    "&format=json";
+
+  const data = await fetchSteamJson(target);
+
+  const news = (data && data.appnews && data.appnews.newsitems) || [];
+  // ...rest unchanged
+
+    const items = news.map(n => {
+      const contents = n.contents || "";
+      const thumb = firstImageFromHtml(contents);
+      const text = steamHtmlToText(contents);
+      return {
+        // Shape matches what rss2json returns, so the renderer needs no changes.
+        title: n.title || "(untitled)",
+        link: STEAM_NEWS_VIEW + appId + "/view/" + n.gid,
+        pubDate: n.date ? new Date(n.date * 1000).toISOString() : "",
+        description: text,
+        content: contents,
+        thumbnail: thumb || "",
+        _feed: feed
+      };
+    });
+
+    return { items, fetchedAt: new Date() };
+  }
+
+  // Dispatcher: Steam feeds go to the Steam API (via the CORS proxy);
+  // everything else goes through the rss2json proxy. Caching, staleness,
+  // and force-refresh semantics are identical for both paths.
   async function loadFeed(feed, force){
     const cached = cache[feed.url];
     const isStale = cached && (Date.now() - cached.fetchedAt.getTime() > STALE_MS);
     if (cached && !force && !isStale) return cached;
- 
-    const res = await fetch(PROXY + encodeURIComponent(feed.url));
-    if (!res.ok) throw new Error("Network error (" + res.status + ")");
-    const data = await res.json();
-    if (data.status !== "ok") throw new Error(data.message || "Feed could not be parsed");
- 
-    // Tag every item with its source feed so aggregate/search views
-    // can render badges and apply per-feed rules (type, category…)
-    // without re-fetching or losing provenance.
-    const items = (data.items || []).map(it => ({ ...it, _feed: feed }));
-    const entry = { items, fetchedAt: new Date() };
+
+    let entry;
+
+    const appId = steamAppIdFromUrl(feed.url);
+    if (appId){
+      // ---- Steam path: Steam API through the CORS proxy ----
+      entry = await loadSteamFeed(feed, appId);
+    } else {
+      // ---- Generic path: rss2json proxy ----
+      const res = await fetch(buildProxyUrl(feed.url));
+      if (!res.ok){
+        if (res.status === 429){
+          throw new Error("Network error (429 — rate-limited by rss2json). Wait a moment and try again.");
+        }
+        throw new Error("Network error (" + res.status + ")");
+      }
+      const data = await res.json();
+      if (data.status !== "ok") throw new Error(data.message || "Feed could not be parsed");
+
+      const items = (data.items || []).map(it => ({ ...it, _feed: feed }));
+      entry = { items, fetchedAt: new Date() };
+    }
+
     cache[feed.url] = entry;
     return entry;
   }
- 
-  // Load every feed not yet cached (or stale). Used by "All" and search
-  // so those views can operate over full data. At true "thousands of
-  // feeds" scale you'd want to lazy-load only expanded categories rather
-  // than everything — this is the point to add that limit.
+
   async function ensureAllLoaded(force){
-    await Promise.all(FEEDS.map(f => loadFeed(f, force).catch(() => null)));
+    for (const f of FEEDS) {
+      const cached = cache[f.url];
+      const isStale = cached && (Date.now() - cached.fetchedAt.getTime() > STALE_MS);
+      if (cached && !force && !isStale) continue;
+      try {
+        await loadFeed(f, force);
+      } catch (err) {
+        console.warn("Feed failed:", f.name, err.message);
+      }
+      if (!steamAppIdFromUrl(f.url)){
+        await new Promise(r => setTimeout(r, THROTTLE_MS));
+      }
+    }
   }
- 
+
   // ============================================================
   // Rendering: item list (shared by feed / all / search views)
   // Batched rendering + "load more" sentinel keeps large result
@@ -807,23 +1011,23 @@
   function renderItemList(items, opts){
     opts = opts || {};
     const showBadge = !!opts.showBadge;
- 
+
     if (!items.length){
       content.innerHTML = `<p class="rss-status">${escapeHtml(opts.emptyText || "No items to show.")}</p>`;
       return;
     }
- 
+
     content.innerHTML = "";
     const list = document.createElement("ul");
     list.className = "rss-items";
     content.appendChild(list);
- 
+
     const sentinel = document.createElement("div");
     sentinel.className = "rss-load-more-sentinel";
     content.appendChild(sentinel);
- 
+
     let rendered = 0;
- 
+
     function renderBatch(){
       const next = items.slice(rendered, rendered + RENDER_BATCH_SIZE);
       next.forEach(item => list.appendChild(buildItemNode(item, showBadge)));
@@ -836,9 +1040,9 @@
         observer = null;
       }
     }
- 
+
     renderBatch();
- 
+
     if (rendered < items.length){
       if (observer) observer.disconnect();
       observer = new IntersectionObserver(entries => {
@@ -847,26 +1051,26 @@
       observer.observe(sentinel);
     }
   }
- 
+
   function buildItemNode(item, showBadge){
     const feed = item._feed || {};
     const li = document.createElement("li");
     li.className = "rss-item";
- 
+
     const snippetText = stripHtml(item.description || item.content || "").trim();
     const thumbUrl = extractThumbnail(item);
     const initial = (item.title || "?").trim().charAt(0).toUpperCase();
- 
+
     const thumbHtml = thumbUrl
       ? `<img class="rss-thumb" src="${escapeHtml(thumbUrl)}" alt="" loading="lazy" onerror="this.outerHTML='<div class=&quot;rss-thumb rss-placeholder&quot;>${escapeHtml(initial)}</div>'">`
       : `<div class="rss-thumb rss-placeholder">${escapeHtml(initial)}</div>`;
- 
+
     // Reading-time estimate disabled — RSS summaries are too short/unreliable
     // to give a meaningful read-time for the full article. Left in place,
     // commented, in case a full-text fetch is added later.
     // const words = wordCount(snippetText);
     // const mins = words > 0 ? readingTime(words) : null;
- 
+
     const badgeHtml = showBadge && feed.name
       ? `<span class="rss-source-badge">${escapeHtml(feed.name)}</span><span class="rss-sep">·</span>`
       : "";
@@ -874,7 +1078,7 @@
       ? `<span class="rss-category">${escapeHtml(feed.category)}</span><span class="rss-sep">·</span>`
       : "";
     const tagsAttr = (feed.tags || []).join(",");
- 
+
     li.innerHTML = `
       <div class="rss-thumb-wrap">
         ${thumbHtml}
@@ -893,7 +1097,7 @@
     li.dataset.tags = tagsAttr; // invisible — not rendered, used by search
     return li;
   }
- 
+
   function renderSkeleton(){
     content.innerHTML = `
       <div class="rss-skeleton"></div>
@@ -901,7 +1105,7 @@
       <div class="rss-skeleton"></div>
     `;
   }
- 
+
   // ============================================================
   // View controllers
   // ============================================================
@@ -911,46 +1115,52 @@
     const feed = FEEDS[i];
     feedTitle.textContent = feed.name;
     renderNav();
- 
+
     const cached = cache[feed.url];
     if (!cached) renderSkeleton();
     else renderItemList(cached.items, { showBadge: false });
- 
+
     try {
       const entry = await loadFeed(feed, force);
       feedUpdated.textContent = "Updated " + entry.fetchedAt.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
       renderItemList(entry.items, { showBadge: false });
       renderNav();
     } catch (err) {
-      content.innerHTML = `<p class="rss-status rss-error">Couldn't load this feed — ${escapeHtml(err.message)}. The proxy service may be rate-limited; try refreshing in a moment.</p>`;
+      // A TypeError from fetch means the request never completed (CORS block,
+      // offline, blocked by an extension); anything else carries its own message.
+      const msg = err instanceof TypeError
+        ? "Request blocked or network unreachable (possibly CORS)"
+        : err.message;
+      console.error("Feed load failed:", feed.name, err);
+      content.innerHTML = `<p class="rss-status rss-error">Couldn't load this feed — ${escapeHtml(msg)}.</p>`;
       feedUpdated.textContent = "";
     }
   }
- 
+
   async function selectAll(force){
     searchInput.value = "";
     view = { mode: "all" };
     feedTitle.textContent = "All feeds";
     renderNav();
     renderSkeleton();
- 
+
     await ensureAllLoaded(force);
     const merged = FEEDS
       .flatMap(f => (cache[f.url] ? cache[f.url].items : []))
       .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
- 
+
     feedUpdated.textContent = "Updated " + new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
     renderItemList(merged, { showBadge: true, emptyText: "No items loaded yet." });
     renderNav();
   }
- 
+
   async function runSearch(query){
     view = { mode: "search", query };
     feedTitle.textContent = `Search: "${query}"`;
     feedUpdated.textContent = "";
     filterAndRender(query);
   }
- 
+
   // Filters whatever is currently cached — no network requests.
   // This is what runs on every keystroke.
   function filterAndRender(query){
@@ -967,19 +1177,19 @@
       ].join(" ").toLowerCase();
       return haystack.includes(q);
     }).sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
- 
+
     renderItemList(results, {
       showBadge: true,
       emptyText: `No items match "${query}".`
     });
- 
+
     const loadedCount = FEEDS.filter(f => cache[f.url]).length;
     searchHint.textContent = loadedCount < FEEDS.length
       ? `Showing results from ${loadedCount}/${FEEDS.length} loaded feeds. Press Enter or "Search all feeds" for full coverage.`
       : "";
     searchAllBtn.disabled = loadedCount >= FEEDS.length;
   }
- 
+
   // Loads every not-yet-cached feed, then re-filters. Only runs on
   // explicit user action (Enter key or the "Search all feeds" button) —
   // never automatically while typing, since at scale that would mean
@@ -991,14 +1201,14 @@
     feedTitle.textContent = `Search: "${query}"`;
     searchAllBtn.disabled = true;
     searchAllBtn.textContent = "Searching all feeds…";
- 
+
     await ensureAllLoaded(false);
- 
+
     searchAllBtn.textContent = "Search all feeds";
     filterAndRender(query);
     renderNav();
   }
- 
+
   // ============================================================
   // Search input wiring
   // Typing filters cached data only (debounced, no network calls).
@@ -1017,32 +1227,32 @@
     searchAllBtn.disabled = false;
     searchTimer = setTimeout(() => runSearch(q), SEARCH_DEBOUNCE_MS);
   }
- 
+
   function onSearchKeydown(e){
     if (e.key === "Enter"){
       clearTimeout(searchTimer);
       searchAllFeeds();
     }
   }
- 
+
   function onSearchAllClick(){ searchAllFeeds(); }
- 
+
   function onRefreshClick(){
     if (view.mode === "feed") selectFeed(view.index, true);
     else if (view.mode === "all") selectAll(true);
     else if (view.mode === "search") runSearch(view.query);
   }
- 
+
   searchInput.addEventListener("input", onSearchInput);
   searchInput.addEventListener("keydown", onSearchKeydown);
   searchAllBtn.addEventListener("click", onSearchAllClick);
   refreshBtn.addEventListener("click", onRefreshClick);
- 
+
   // ---- Init ----
   searchAllBtn.disabled = true;
   renderNav();
   selectFeed(0);
- 
+
   // ============================================================
   // Shell integration
   // ============================================================
@@ -1052,7 +1262,7 @@
   window.__pageFocus.page08 = function () {
     setTimeout(() => searchInput.focus(), 50);
   };
- 
+
   // Cleanup hook: called by the shell right before this fragment is
   // reloaded, so a stale timer or observer from a previous load doesn't
   // keep running against DOM nodes that are about to be replaced.
@@ -1064,6 +1274,6 @@
       observer = null;
     }
   };
- 
+
 })();
 </script>
